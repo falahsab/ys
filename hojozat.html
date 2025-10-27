@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>لوحة حجوزات الأطباء</title>
+<style>
+body { font-family:Tajawal; background:#0f1724; color:white; padding:20px;}
+select, input, button { margin:5px; padding:8px; border-radius:8px; border:none; font-size:16px;}
+button { background:#01C38D; cursor:pointer; }
+table { width:100%; margin-top:15px; border-collapse:collapse;}
+th, td { border:1px solid #fff; padding:8px; text-align:center;}
+th { background:#1E293B; cursor:pointer; }
+</style>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+<body>
+
+<h2>🏥 لوحة حجوزات الأطباء</h2>
+
+<div>
+  <label>اختر الدكتور: </label>
+  <select id="doctorSelect"></select>
+
+  <label>فرز/تصفية حسب المركز: </label>
+  <select id="centerSelect" style="width:200px;">
+    <option value="">الكل</option>
+  </select>
+
+  <label>بحث باسم المريض: </label>
+  <input type="text" id="searchName" placeholder="ابحث بالاسم">
+</div>
+
+<h3>إضافة حجز</h3>
+<input type="text" id="name" placeholder="اسم المريض">
+<input type="number" id="number" placeholder="رقم المريض">
+<input type="date" id="date">
+<input type="time" id="time">
+<select id="centerAdd" style="width:200px;"></select>
+<button onclick="addReservation()">إضافة</button>
+
+<h3>قائمة الحجوزات</h3>
+<table>
+  <thead>
+    <tr>
+      <th onclick="sortTable(0)">التاريخ</th>
+      <th onclick="sortTable(1)">المركز</th>
+      <th onclick="sortTable(2)">الاسم</th>
+      <th onclick="sortTable(3)">رقم</th>
+      <th onclick="sortTable(4)">الوقت</th>
+      <th onclick="sortTable(5)">الحالة</th>
+      <th>تحديث</th>
+    </tr>
+  </thead>
+  <tbody id="reservationsTable"></tbody>
+</table>
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbxg3Evj-Y3EAFIIL6r_Abc1kx-NdpTG9nI00_To4v2uQpdalNo8mBJiX7pxTxiC-V8f/exec";
+
+let allReservations = [];
+
+function fetchDoctors(){
+  fetch(`${API_URL}?action=getDoctors`)
+    .then(res=>res.json())
+    .then(data=>{
+      const sel = document.getElementById('doctorSelect');
+      sel.innerHTML = data.doctors.map(d=>`<option value="${d}">${d}</option>`).join('');
+      loadReservations();
+    });
+}
+
+document.getElementById('doctorSelect').addEventListener('change',loadReservations);
+document.getElementById('searchName').addEventListener('input',filterTable);
+
+function loadReservations(){
+  const doctor = document.getElementById('doctorSelect').value;
+  fetch(`${API_URL}?action=getReservations&doctor=${doctor}`)
+    .then(res=>res.json())
+    .then(data=>{
+      allReservations = data.reservations;
+      updateCentersDropdown();
+      renderTable();
+    });
+}
+
+function updateCentersDropdown(){
+  const centers = Array.from(new Set(allReservations.map(r=>r.center)));
+  const centerSel = document.getElementById('centerSelect');
+  centerSel.innerHTML = `<option value="">الكل</option>` + centers.map(c=>`<option value="${c}">${c}</option>`).join('');
+  const centerAdd = document.getElementById('centerAdd');
+  centerAdd.innerHTML = centers.map(c=>`<option value="${c}">${c}</option>`).join('');
+  $('#centerAdd').select2({width:'200px'});
+}
+
+document.getElementById('centerSelect').addEventListener('change',renderTable);
+
+function renderTable(){
+  const filterCenter = document.getElementById('centerSelect').value;
+  const filterName = document.getElementById('searchName').value.toLowerCase();
+  const tbody = document.getElementById('reservationsTable');
+  tbody.innerHTML = "";
+  allReservations.forEach((r,i)=>{
+    if((!filterCenter || r.center===filterCenter) && (!filterName || r.name.toLowerCase().includes(filterName))){
+      const formattedDate = formatDate(r.date);
+      const formattedTime = formatTime(r.time);
+      tbody.innerHTML += `
+        <tr>
+          <td>${formattedDate}</td>
+          <td>${r.center}</td>
+          <td>${r.name}</td>
+          <td>${r.number}</td>
+          <td>${formattedTime}</td>
+          <td>${r.statue}</td>
+          <td>
+            <button onclick="updateStatus(${i},'تم')">تم</button>
+          </td>
+        </tr>
+      `;
+    }
+  });
+}
+
+function formatDate(d){
+  const date = new Date(d);
+  return ("0"+date.getDate()).slice(-2)+"/"+("0"+(date.getMonth()+1)).slice(-2)+"/"+date.getFullYear();
+}
+
+function formatTime(t){
+  const [h,m] = t.split(":");
+  let hours = Number(h);
+  const ampm = hours>=12?'م':'ص';
+  hours = hours%12||12;
+  return `${hours}:${m} ${ampm}`;
+}
+
+function addReservation(){
+  const doctor = document.getElementById('doctorSelect').value;
+  const name = document.getElementById('name').value;
+  const number = document.getElementById('number').value;
+  const date = document.getElementById('date').value;
+  const time = document.getElementById('time').value;
+  const center = document.getElementById('centerAdd').value;
+  if(!name||!number||!date||!time||!center) return alert("املأ كل الحقول");
+
+  fetch(`${API_URL}?action=addReservation&doctor=${encodeURIComponent(doctor)}&name=${encodeURIComponent(name)}&number=${encodeURIComponent(number)}&date=${date}&time=${time}&center=${encodeURIComponent(center)}`)
+    .then(res=>res.json())
+    .then(()=> {
+      document.getElementById('name').value="";
+      document.getElementById('number').value="";
+      document.getElementById('date').value="";
+      document.getElementById('time').value="";
+      loadReservations();
+    });
+}
+
+function updateStatus(row,status){
+  const doctor = document.getElementById('doctorSelect').value;
+  fetch(`${API_URL}?action=updateStatus&doctor=${encodeURIComponent(doctor)}&row=${row}&status=${encodeURIComponent(status)}`)
+    .then(res=>res.json())
+    .then(()=>loadReservations());
+}
+
+// فلترة بالاسم مباشرة
+function filterTable(){ renderTable(); }
+
+// فرز الجدول حسب العمود
+function sortTable(n){
+  const table = document.querySelector("table");
+  let switching = true;
+  let dir = "asc";
+  while(switching){
+    switching = false;
+    const rows = table.rows;
+    for(let i=1;i<rows.length-1;i++){
+      let x = rows[i].getElementsByTagName("TD")[n];
+      let y = rows[i+1].getElementsByTagName("TD")[n];
+      let shouldSwitch = false;
+      if(dir==="asc" && x.innerText.toLowerCase()>y.innerText.toLowerCase()){ shouldSwitch=true; }
+      else if(dir==="desc" && x.innerText.toLowerCase()<y.innerText.toLowerCase()){ shouldSwitch=true; }
+      if(shouldSwitch){
+        rows[i].parentNode.insertBefore(rows[i+1],rows[i]);
+        switching=true;
+      }
+    }
+    if(!switching && dir==="asc"){ dir="desc"; switching=true; }
+  }
+}
+
+fetchDoctors();
+</script>
+
+</body>
+</html>
