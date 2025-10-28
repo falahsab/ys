@@ -150,11 +150,51 @@ function addPoints(){
     });
 }
 
-function resetPoints(){
+
+async function resetPoints() {
   const num = document.getElementById("userNumber").value.trim();
-  if(!num) return alert("ادخل رقم اللاعب");
-  fetch(API_URL, {method:"POST", body:JSON.stringify({number:num, points:0})})
-    .then(()=>{ showMessage("♻️ تم تصفير النقاط"); refreshRanking(); });
+  if (!num) return alert("ادخل رقم اللاعب");
+
+  try {
+    // 1) نطلب نقاط اللاعب الحالية (نستخدم POST لأن الخادم يتعامل مع POST لطلبات الفردية)
+    let res = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({ number: num })
+    });
+    let data = await res.json();
+
+    if (data.error) {
+      showMessage("❌ " + data.error, true);
+      return;
+    }
+
+    // بعض نسخ السكربت ترجع field باسم points أو point — نتعامل مع كلاهما
+    const current = Number(data.points ?? data.point ?? 0);
+
+    // إذا بالفعل صفر، لا حاجة للإرسال
+    if (current === 0) {
+      showMessage("ℹ️ النقاط مسبقاً صفر بالفعل");
+      refreshRanking();
+      return;
+    }
+
+    // 2) نرسل قيمة سالبة تساوي -current بحيث يصبح المجموع 0
+    let res2 = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({ number: num, points: -current })
+    });
+    let data2 = await res2.json();
+
+    if (data2.error) {
+      showMessage("❌ " + data2.error, true);
+    } else {
+      showMessage("♻️ تم تصفير النقاط");
+      refreshRanking();
+    }
+  } catch (err) {
+    console.error(err);
+    showMessage("⚠️ فشل في الاتصال بالخادم", true);
+  }
 }
 
 function addPlayer(){
