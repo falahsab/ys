@@ -4,30 +4,37 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🏆 لوحة نقاط المسابقة</title>
-
 <style>
-body { background:#0F172A; color:#fff; font-family:"Tajawal",sans-serif; padding:20px; text-align:center; }
+body { background:#0F172A; color:#fff; font-family:"Tajawal",sans-serif; padding:10px; text-align:center; }
 input, button, select { padding:10px; margin:5px; font-size:16px; border-radius:10px; border:none; outline:none; }
 input { width:200px; text-align:center; }
 button { background:#01C38D; cursor:pointer; transition:.2s; }
 button:hover { background:#00A97A; }
-.result { background:#1E293B; padding:15px; border-radius:12px; margin-top:5px; font-size:16px; min-height:30px; display:flex; align-items:center; justify-content:center; }
+.result { background:#1E293B; padding:10px; border-radius:12px; margin-top:10px;margin-bottom:10px; font-size:14px; min-height:30px; display:flex; align-items:center; justify-content:center; }
 table { width:90%; margin:auto; margin-top:5px; border-collapse:collapse; }
-th, td { border:1px solid #fff; padding:5px; font-size:14px; }
+th, td { border:1px solid #fff; padding:2px; font-size:14px; }
 th { background:#1E293B; }
-.deleteBtn { background:#E11D48; padding:6px 10px; border-radius:6px; font-size:14px; }
+.deleteBtn { background:#E11D48; padding:2px 10px; border-radius:6px; font-size:14px; }
 .deleteBtn:hover { background:#9F1239; }
 </style>
-
+</head>
 <body>
-
 <h2>🏆 لوحة نقاط المسابقة</h2>
 
 <input type="number" id="userNumber" placeholder="رقم اللاعب">
 <button onclick="getPoints()">عرض النقاط</button>
 <br>
+
+
 <div id="result" class="result"></div>
-<br>
+
+
+<label>📊 ترتيب حسب:</label>
+<select id="sortType" onchange="refreshRanking()">
+  <option value="desc">الأعلى نقاطاً</option>
+  <option value="asc">الأقل نقاطاً</option>
+  <option value="num">ترتيب حسب الرقم</option>
+</select>
 <input type="number" id="filterPoints" placeholder="تصفية بالنقاط">
 <button onclick="filterByPoints()">🔍 تصفية</button>
 <button onclick="refreshRanking()">🔄 عرض الكل</button>
@@ -44,120 +51,110 @@ th { background:#1E293B; }
 </table>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwDKAydttnPT7uahoqkuEnVUfHsSzNf1cTk3kaMtga_ASWqM6UdKS6OfBjBvy3lkU6nfA/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbw7RXPYnh15df-tyFio_dj6FHlJXCPz3oAquRsqXqTCu2lXjILC-agXDONLrLMkPByDiQ/exec";
 
-function showMessage(msg, isError = false) {
+function showMessage(msg, isError=false){
   const resultEl = document.getElementById("result");
   resultEl.textContent = msg;
   resultEl.style.color = isError ? "#FF4D4D" : "#01C38D";
 }
 
-// جلب لاعبين من API
-function getPlayers(callback) {
-  fetch(`${API_URL}`)
+function getPlayers(callback){
+  fetch(API_URL)
     .then(res => res.json())
-    .then(data => {
-      if (!data.error) callback(data.players);
-    });
+    .then(data => { if(!data.error) callback(data.players); });
 }
 
-// إبراز المتصدرين بلون ذهبي وتاج
-function highlightLeaders(players) {
-  let maxPoints = Math.max(...players.map(p => p.point));
-  players.forEach(p => {
-    if (p.point === maxPoints) {
-      p.isLeader = true;
-    }
-  });
+function highlightLeaders(players){
+  const maxPoints = Math.max(...players.map(p=>p.points));
+  players.forEach(p=>{ p.isLeader = (p.points === maxPoints); });
 }
 
-// تحديث جدول الترتيب
-function renderTable(players) {
+function renderTable(players){
   const tbody = document.querySelector("#ranking tbody");
   tbody.innerHTML = "";
-
   highlightLeaders(players);
 
-  players.sort((a, b) => b.point - a.point).forEach(p => {
-    const row = `<tr style="background:${p.isLeader ? '#D4AF37' : '#1E293B'};">
-      <td>${p.isLeader ? "👑 " : ""}${p.number}</td>
-      <td>${p.point}</td>
+  const sort = document.getElementById("sortType").value;
+  if(sort==="desc") players.sort((a,b)=>b.points-a.points);
+  if(sort==="asc") players.sort((a,b)=>a.points-b.points);
+  if(sort==="num") players.sort((a,b)=>a.number-b.number);
+
+  players.forEach(p=>{
+    const row = `<tr style="background:${p.isLeader?'#D4AF37':'#1E293B'};">
+      <td>${p.isLeader?'👑 ':''}${p.number}</td>
+      <td>${p.points}</td>
     </tr>`;
     tbody.innerHTML += row;
   });
 }
 
-function refreshRanking() {
-  getPlayers(players => renderTable(players));
-}
+function refreshRanking(){ getPlayers(players=>renderTable(players)); }
 
-// دالة التصفية حسب النقاط
-function filterByPoints() {
-  const value = document.getElementById("filterPoints").value.trim();
-  if (!value) return alert("اكتب عدد النقاط التي تريد تصفية اللاعبين بناءً عليها");
-
-  getPlayers(players => {
-    let filtered = players.filter(p => p.point == value);
+function filterByPoints(){
+  const val = document.getElementById("filterPoints").value.trim();
+  if(!val) return alert("أدخل عدد النقاط للتصفية");
+  getPlayers(players=>{
+    const filtered = players.filter(p=>p.points == val);
     renderTable(filtered);
   });
 }
 
-/* وظائف النقاط كما هي */
 function getPoints() {
-  const userNumber = document.getElementById("userNumber").value.trim();
-  if (!userNumber) return alert("ادخل رقم اللاعب");
+  const num = document.getElementById("userNumber").value.trim();
+  if(!num) return alert("ادخل رقم اللاعب");
 
-  fetch(`${API_URL}?number=${encodeURIComponent(userNumber)}`)
-    .then(res => res.json())
-    .then(data => {
-      if (data.error) showMessage("❌ " + data.error, true);
-      else showMessage(`✅ رقم اللاعب: ${data.number} | النقاط: ${data.points}`);
-      refreshRanking();
-    })
-    .catch(() => showMessage("⚠️ خطأ باتصال الخادم", true));
+  fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify({number: num})
+  })
+  .then(res => res.json())
+  .then(data => {
+    if(data.error) showMessage("❌ " + data.error, true);
+    else if(data.points !== undefined)
+      showMessage(`✅ رقم اللاعب: ${data.number} | النقاط: ${data.points}`);
+    else
+      showMessage("⚠️ لا يوجد بيانات لهذا اللاعب", true);
+    refreshRanking();
+  })
+  .catch(() => showMessage("⚠️ خطأ باتصال الخادم", true));
 }
 
-function addPoints() {
-  const userNumber = document.getElementById("userNumber").value.trim();
-  const points = document.getElementById("pointsToAdd").value.trim();
-  if (!userNumber || !points) return alert("ادخل رقم اللاعب وعدد النقاط");
 
-  fetch(`${API_URL}?number=${encodeURIComponent(userNumber)}&points=${encodeURIComponent(points)}`)
-    .then(res => res.json())
-    .then(data => {
-      if (data.error) showMessage("❌ " + data.error, true);
-      else {
+
+function addPoints(){
+  const num = document.getElementById("userNumber").value.trim();
+  const pts = document.getElementById("pointsToAdd").value.trim();
+  if(!num || !pts) return alert("ادخل رقم اللاعب وعدد النقاط");
+  fetch(API_URL, {method:"POST", body:JSON.stringify({number:num, points:pts})})
+    .then(res=>res.json())
+    .then(data=>{
+      if(data.error) showMessage("❌ "+data.error,true);
+      else{
         showMessage(`🎯 تم التحديث | النقاط الجديدة: ${data.points}`);
         document.getElementById("pointsToAdd").value = "";
         refreshRanking();
       }
-    })
-    .catch(() => showMessage("⚠️ خطأ أثناء حفظ البيانات", true));
-}
-
-function resetPoints() {
-  const userNumber = document.getElementById("userNumber").value.trim();
-  if(!userNumber) return alert("ادخل رقم اللاعب");
-
-  fetch(`${API_URL}?number=${encodeURIComponent(userNumber)}&points=0`)
-    .then(res => res.json())
-    .then(() => {
-      showMessage(`♻️ تم تصفير النقاط`);
-      refreshRanking();
     });
 }
 
-function addPlayer() {
-  const newNumber = document.getElementById("newNumber").value.trim();
-  const newPoints = document.getElementById("newPoints").value.trim();
-  if(!newNumber || !newPoints) return alert("ادخل الرقم والنقاط للاعب الجديد");
+function resetPoints(){
+  const num = document.getElementById("userNumber").value.trim();
+  if(!num) return alert("ادخل رقم اللاعب");
+  fetch(API_URL, {method:"POST", body:JSON.stringify({number:num, points:0})})
+    .then(()=>{ showMessage("♻️ تم تصفير النقاط"); refreshRanking(); });
+}
 
-  fetch(`${API_URL}?number=${encodeURIComponent(newNumber)}&points=${encodeURIComponent(newPoints)}&add=true`)
-    .then(res => res.json())
-    .then(data => {
+function addPlayer(){
+  const num = document.getElementById("newNumber").value.trim();
+  const pts = document.getElementById("newPoints").value.trim();
+  if(!num || !pts) return alert("ادخل الرقم والنقاط للاعب الجديد");
+  fetch(API_URL, {method:"POST", body:JSON.stringify({add:true, number:num, points:pts})})
+    .then(res=>res.json())
+    .then(data=>{
       if(data.error) showMessage("❌ "+data.error,true);
       else {
-        showMessage(`➕ تم إضافة اللاعب ${data.number} بالنقاط ${data.points}`);
+        showMessage(`➕ تم إضافة اللاعب ${data.number} | بالنقاط ${data.points}`);
         document.getElementById("newNumber").value = "";
         document.getElementById("newPoints").value = "";
         refreshRanking();
@@ -165,7 +162,29 @@ function addPlayer() {
     });
 }
 
+function deletePlayer(number){
+  if(!confirm(`⚠️ هل أنت متأكد من حذف اللاعب رقم ${number}؟`)) return;
+
+  fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify({delete: true, number: number})
+  })
+  .then(res => res.json())
+  .then(data => {
+    if(data.error) showMessage("❌ "+data.error,true);
+    else {
+      showMessage(`🗑️ تم حذف اللاعب رقم ${number}`);
+      refreshRanking();  // إعادة تحميل الجدول بعد الحذف
+    }
+  })
+  .catch(() => showMessage("⚠️ فشل في الاتصال بالخادم", true));
+}
+
+
 refreshRanking();
+document.getElementById("sortType").style.display = "none";
+document.querySelector("label").style.display = "none";
+
 </script>
 
 </body>
