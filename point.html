@@ -4,18 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🏆 لوحة نقاط المسابقة</title>
+
 <style>
-body { background: #0F172A; color: #fff; font-family: "Tajawal", sans-serif; padding: 20px; text-align: center; }
-input, button { padding: 10px; margin: 8px; font-size: 18px; border-radius: 10px; border: none; outline: none; }
-input { width: 200px; text-align: center; }
-button { background: #01C38D; cursor: pointer; transition: 0.2s; }
-button:hover { background: #00A97A; }
-.result { background:#1E293B; padding:15px; border-radius:12px; margin-top:20px; font-size:22px; min-height: 40px; display:flex; align-items:center; justify-content:center;}
-table { width: 90%; margin:auto; margin-top:20px; border-collapse: collapse; }
-th, td { border:1px solid #fff; padding:8px; font-size:18px; }
+body { background:#0F172A; color:#fff; font-family:"Tajawal",sans-serif; padding:20px; text-align:center; }
+input, button, select { padding:10px; margin:8px; font-size:18px; border-radius:10px; border:none; outline:none; }
+input { width:200px; text-align:center; }
+button { background:#01C38D; cursor:pointer; transition:.2s; }
+button:hover { background:#00A97A; }
+.result { background:#1E293B; padding:15px; border-radius:12px; margin-top:20px; font-size:22px; min-height:40px; display:flex; align-items:center; justify-content:center; }
+table { width:90%; margin:auto; margin-top:20px; border-collapse:collapse; }
+th, td { border:1px solid #fff; padding:5px; font-size:14px; }
 th { background:#1E293B; }
+.deleteBtn { background:#E11D48; padding:6px 10px; border-radius:6px; font-size:16px; }
+.deleteBtn:hover { background:#9F1239; }
 </style>
 </head>
+
 <body>
 
 <h2>🏆 لوحة نقاط المسابقة</h2>
@@ -23,22 +27,37 @@ th { background:#1E293B; }
 <input type="number" id="userNumber" placeholder="رقم اللاعب">
 <button onclick="getPoints()">عرض النقاط</button>
 <br>
+
 <input type="number" id="pointsToAdd" placeholder="نقاط +">
 <button onclick="addPoints()">إضافة النقاط</button>
 <button onclick="resetPoints()">♻️ تصفير النقاط</button>
 <br>
+
 <input type="number" id="newNumber" placeholder="رقم اللاعب الجديد">
 <input type="number" id="newPoints" placeholder="نقاط ابتدائية">
 <button onclick="addPlayer()">➕ إضافة لاعب</button>
 
 <div id="result" class="result"></div>
+<br>
 
+<label>📊 ترتيب حسب:</label>
+<select id="sortType" onchange="refreshRanking()">
+  <option value="desc">الأعلى نقاطاً</option>
+  <option value="asc">الأقل نقاطاً</option>
+  <option value="num">ترتيب حسب الرقم</option>
+</select>
+<br>
+<input type="number" id="filterPoints" placeholder="تصفية بالنقاط">
+<button onclick="filterByPoints()">🔍 تصفية</button>
+<button onclick="refreshRanking()">🔄 عرض الكل</button>
+<br>
 <h3>🏅 ترتيب اللاعبين</h3>
 <table id="ranking">
 <thead>
 <tr>
   <th>الرقم</th>
   <th>النقاط</th>
+ 
 </tr>
 </thead>
 <tbody></tbody>
@@ -53,6 +72,57 @@ function showMessage(msg, isError = false) {
   resultEl.style.color = isError ? "#FF4D4D" : "#01C38D";
 }
 
+// جلب لاعبين من API
+function getPlayers(callback) {
+  fetch(`${API_URL}`)
+    .then(res => res.json())
+    .then(data => {
+      if (!data.error) callback(data.players);
+    });
+}
+
+// إبراز المتصدرين بلون ذهبي وتاج
+function highlightLeaders(players) {
+  let maxPoints = Math.max(...players.map(p => p.point));
+  players.forEach(p => {
+    if (p.point === maxPoints) {
+      p.isLeader = true;
+    }
+  });
+}
+
+// تحديث جدول الترتيب
+function renderTable(players) {
+  const tbody = document.querySelector("#ranking tbody");
+  tbody.innerHTML = "";
+
+  highlightLeaders(players);
+
+  players.sort((a, b) => b.point - a.point).forEach(p => {
+    const row = `<tr style="background:${p.isLeader ? '#D4AF37' : '#1E293B'};">
+      <td>${p.isLeader ? "👑 " : ""}${p.number}</td>
+      <td>${p.point}</td>
+    </tr>`;
+    tbody.innerHTML += row;
+  });
+}
+
+function refreshRanking() {
+  getPlayers(players => renderTable(players));
+}
+
+// دالة التصفية حسب النقاط
+function filterByPoints() {
+  const value = document.getElementById("filterPoints").value.trim();
+  if (!value) return alert("اكتب عدد النقاط التي تريد تصفية اللاعبين بناءً عليها");
+
+  getPlayers(players => {
+    let filtered = players.filter(p => p.point == value);
+    renderTable(filtered);
+  });
+}
+
+/* وظائف النقاط كما هي */
 function getPoints() {
   const userNumber = document.getElementById("userNumber").value.trim();
   if (!userNumber) return alert("ادخل رقم اللاعب");
@@ -91,16 +161,12 @@ function resetPoints() {
 
   fetch(`${API_URL}?number=${encodeURIComponent(userNumber)}&points=0`)
     .then(res => res.json())
-    .then(data => {
-      if(data.error) showMessage("❌ "+data.error,true);
-      else {
-        showMessage(`♻️ تم تصفير النقاط`);
-        refreshRanking();
-      }
+    .then(() => {
+      showMessage(`♻️ تم تصفير النقاط`);
+      refreshRanking();
     });
 }
 
-// إضافة لاعب جديد
 function addPlayer() {
   const newNumber = document.getElementById("newNumber").value.trim();
   const newPoints = document.getElementById("newPoints").value.trim();
@@ -119,27 +185,6 @@ function addPlayer() {
     });
 }
 
-// تحديث ترتيب اللاعبين
-function refreshRanking() {
-  fetch(`${API_URL}`)
-    .then(res => res.json())
-    .then(data => {
-      if(data.error) return;
-      const tbody = document.querySelector("#ranking tbody");
-      tbody.innerHTML = "";
-      data.players.sort((a,b) => b.point - a.point);
-      data.players.forEach(p => {
-        const color = p.point >= 50 ? '#01C38D' : (p.point >= 20 ? '#FFC107' : '#FF4D4D');
-        const row = `<tr style="background:${color};">
-          <td>${p.number}</td>
-          <td>${p.point}</td>
-        </tr>`;
-        tbody.innerHTML += row;
-      });
-    });
-}
-
-// عند تحميل الصفحة
 refreshRanking();
 </script>
 
