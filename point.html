@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🏆 لوحة نقاط المسابقة</title>
+
 <style>
 body { background:#0F172A; color:#fff; font-family:"Tajawal",sans-serif; padding:10px; text-align:center; }
 input, button, select { padding:10px; margin:5px; font-size:16px; border-radius:10px; border:none; outline:none; }
@@ -16,9 +17,69 @@ th, td { border:1px solid #fff; padding:2px; font-size:14px; }
 th { background:#1E293B; }
 .deleteBtn { background:#E11D48; padding:2px 10px; border-radius:6px; font-size:14px; }
 .deleteBtn:hover { background:#9F1239; }
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 30px;
+  vertical-align: middle;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #d9534f;
+  transition: 0.3s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+}
+
+/* عندما يكون ON ✅ */
+input:checked + .slider {
+  background-color: #5cb85c;
+}
+
+input:checked + .slider:before {
+  transform: translateX(30px);
+}
+
+#switchText {
+  font-size: 16px;
+  margin-right: 10px;
+  color: #ffffff;
+}
 </style>
 </head>
 <body>
+<label class="switch">
+  <input type="checkbox" id="toggleSwitch" onchange="toggleControls()">
+  <span class="slider"></span>
+</label>
+<span id="switchText">إظهار التحكم</span>
+
+<br><br>
+<div id="controlsBox" style="display:none;">
+
+
 
 <h2>🏆 لوحة نقاط المسابقة</h2>
 
@@ -49,6 +110,7 @@ th { background:#1E293B; }
 <button onclick="filterByPoints()">🔍 تصفية</button>
 <button onclick="refreshRanking()">🔄 عرض الكل</button>
 <br>
+</div>
 <h3>🏅 ترتيب اللاعبين</h3>
 <table id="ranking">
 <thead>
@@ -232,8 +294,22 @@ function deletePlayer(number){
   .catch(() => showMessage("⚠️ فشل في الاتصال بالخادم", true));
 }
 
-
 refreshRanking();
+// زر اخفاء واضهار التحكم
+function toggleControls() {
+  const box = document.getElementById("controlsBox");
+  const text = document.getElementById("switchText");
+  const isChecked = document.getElementById("toggleSwitch").checked;
+
+  if (isChecked) {
+    box.style.display = "block";
+    text.textContent = "إخفاء التحكم";
+  } else {
+    box.style.display = "none";
+    text.textContent = "إظهار التحكم";
+  }
+}
+
 </script>
 
 </body>
