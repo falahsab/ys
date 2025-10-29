@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>متابعة حالة الطلب</title>
+<style>
+body{margin:0;font-family:sans-serif;background:#0f1724;color:#e6eef8;display:flex;justify-content:center;align-items:center;height:100vh;}
+.container{background:#0b1220;padding:20px;border-radius:12px;max-width:400px;width:90%;text-align:center;}
+input{padding:10px;border-radius:8px;border:none;width:80%;margin-bottom:10px;background:rgba(255,255,255,0.05);color:#e6eef8;}
+button{padding:10px 20px;border:none;border-radius:8px;background:#06b6d4;color:#012;font-weight:700;cursor:pointer;}
+.result{margin-top:20px;font-size:16px;}
+.statusBadge{display:inline-block;padding:6px 12px;border-radius:50px;font-weight:700;margin-top:10px;}
+.badge-received{background:rgba(6,182,212,0.2);color:#06b6d4;}
+.badge-processing{background:rgba(245,158,11,0.2);color:#f59e0b;}
+.badge-ready{background:rgba(16,185,129,0.2);color:#10b981;}
+.badge-delivered{background:rgba(124,58,237,0.2);color:#7c3aed;}
+</style>
+</head>
+<body>
+<div class="container">
+<h2>متابعة حالة الطلب</h2>
+<input type="text" id="orderID" placeholder="أدخل رقم الطلب">
+<button id="checkBtn">عرض الحالة</button>
+<div class="result" id="result"></div>
+</div>
+
+<script>
+const API_BASE="https://script.google.com/macros/s/AKfycbyrGHgDi-fLdF7-LtNhDtff7bSfLm7dZ-aSTEtUA2RPdVXWHM8QswiTWaFv1Stin3yT/exec"; // نفس Web App لكن يمكن الوصول للقراءة
+const $ = s=>document.querySelector(s);
+
+$('#checkBtn').onclick=async()=>{
+  const id=$('#orderID').value.trim();
+  if(!id){alert('أدخل رقم الطلب'); return;}
+  try{
+    const orders=await (await fetch(API_BASE)).json();
+    const o=orders.find(x=>String(x.OrderID)===id);
+    const resEl=$('#result');
+    if(!o){resEl.innerHTML=`<span>لم يتم العثور على الطلب رقم ${id}</span>`; return;}
+    
+    const statusTexts=['تم الاستلام','قيد التجهيز','جاهز','تم التسليم'];
+    const statusClasses=['badge-received','badge-processing','badge-ready','badge-delivered'];
+    const date=new Date(o.Date);
+    const dateFormatted=(('0'+date.getDate()).slice(-2))+'/'+(('0'+(date.getMonth()+1)).slice(-2))+'/'+date.getFullYear();
+    
+    resEl.innerHTML=`
+      <div><strong>#${o.OrderID} — ${o.CustomerName}</strong></div>
+      <div>📞 ${o.Phone||'-'} | 💰 ${o.Price||'-'} | 📅 ${dateFormatted}</div>
+      <div class="statusBadge ${statusClasses[o.Status-1]}">${statusTexts[o.Status-1]}</div>
+    `;
+  }catch(e){
+    alert('فشل جلب البيانات'); console.error(e);
+  }
+};
+</script>
+</body>
+</html>
