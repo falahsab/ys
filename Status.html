@@ -20,7 +20,7 @@ button{padding:10px 20px;border:none;border-radius:8px;background:#06b6d4;color:
 <body>
 <div class="container">
 <h2>متابعة حالة الطلب</h2>
-<input type="text" id="orderID" placeholder="أدخل رقم الطلب">
+<input type="number" id="orderID" placeholder="أدخل رقم الطلب" min="1" step="1" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
 <button id="checkBtn">عرض الحالة</button>
 <div class="result" id="result"></div>
 </div>
