@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>استعلام حالة الطلب | متجر الهدايا</title>
 <style>
 :root {
@@ -11,6 +11,7 @@
   --accent:#06b6d4;
   --text:#e2e8f0;
 }
+*{box-sizing:border-box}
 body {
   font-family:"Tajawal",sans-serif;
   background:var(--bg);
@@ -21,40 +22,45 @@ body {
   justify-content:space-between;
   align-items:center;
   min-height:100vh;
-  padding:20px;
+  padding:15px;
 }
 .logo {
   text-align:center;
   margin-top:20px;
 }
 .logo img {
-  width:90px;
-  height:90px;
+  width:100px;
+  height:100px;
   border-radius:50%;
   object-fit:cover;
-  box-shadow:0 0 10px rgba(6,182,212,0.4);
+  box-shadow:0 0 10px rgba(6,182,212,0.5);
 }
 .container {
   background:var(--card);
-  border-radius:10px;
-  padding:30px 25px;
-  box-shadow:0 4px 15px rgba(0,0,0,0.3);
+  border-radius:8px;
+  padding:25px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.4);
   width:100%;
   max-width:420px;
   text-align:center;
-  margin:20px 0;
+  margin:25px 0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
 }
 h2 {
-  margin-bottom:25px;
+  margin-bottom:20px;
   color:var(--accent);
+  font-size:1.4rem;
 }
 .input-box {
   display:flex;
   justify-content:center;
+  width:100%;
 }
 input[type=number] {
-  width:70%;
-  padding:10px;
+  width:85%;
+  padding:12px;
   border-radius:30px;
   border:none;
   font-size:16px;
@@ -71,7 +77,7 @@ button {
   background:var(--accent);
   color:white;
   border:none;
-  padding:12px 30px;
+  padding:12px 32px;
   border-radius:30px;
   font-size:16px;
   font-weight:bold;
@@ -93,6 +99,8 @@ button:hover {background:#0891b2;}
   background:rgba(255,255,255,0.05);
   text-align:center;
   line-height:1.8;
+  width:100%;
+  word-wrap:break-word;
 }
 .statusBadge {
   display:inline-block;
@@ -108,14 +116,29 @@ footer {
   text-align:center;
   font-size:14px;
   color:#94a3b8;
-  padding:10px;
+  padding:15px;
+  line-height:1.6;
 }
 footer a {
   color:var(--accent);
   text-decoration:none;
 }
-footer a:hover {
-  text-decoration:underline;
+footer a:hover {text-decoration:underline;}
+
+@media (max-width:480px){
+  .container{
+    padding:20px 15px;
+    border-radius:15px;
+  }
+  input[type=number]{
+    width:100%;
+    font-size:15px;
+  }
+  button{
+    width:100%;
+    font-size:15px;
+  }
+  h2{font-size:1.2rem;}
 }
 </style>
 </head>
@@ -171,9 +194,9 @@ $('#checkBtn').onclick = async () => {
         ('0'+date.getDate()).slice(-2)+'/'+('0'+(date.getMonth()+1)).slice(-2)+'/'+date.getFullYear().toString().slice(-2);
 
       $('#result').innerHTML = `
-        <div><strong>#${order.OrderID} — ${order.CustomerName}</strong></div>
-        <div>📞 ${order.Phone||'-'} | 💰 ${order.Price||'-'} | 📅 ${dateFormatted}</div>
-        <div class="statusBadge ${statusClasses[order.Status-1]}">${statusTexts[order.Status-1]}</div>
+        <div style="font-size:18px;font-weight:bold;">#${order.OrderID} — ${order.CustomerName}</div>
+        <div style="margin-top:5px;">📞 ${order.Phone||'-'} | 💰 ${order.Price||'-'} | 📅 ${dateFormatted}</div>
+        <div class="statusBadge ${statusClasses[order.Status-1]}" style="margin-top:10px;">${statusTexts[order.Status-1]}</div>
       `;
     }
   } catch(err) {
