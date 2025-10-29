@@ -202,17 +202,23 @@ $('#result').innerHTML = `
   <div style="font-size:18px;font-weight:bold;">#${order.OrderID} — ${order.CustomerName}</div>
   <div style="margin-top:5px;">📞 ${order.Phone||'-'} | 💰 ${order.Price||'-'} | 📅 ${dateFormatted}</div>
   <div class="statusBadge ${statuses[statusIndex].cls}" style="margin-top:10px;">${statuses[statusIndex].text}</div>
-  ${order.Status == 3 ? 
+     ${order.Status == 1 ? 
     `<div class="statusBadge ${statuses[statusIndex].cls}" style="border-radius:10px;margin-top:10px;">
-      🎁 خبر سار! طلبك جاهز الآن. تعال واستلمه في أي وقت يناسبك!
+     📦 تم استلام طلبك بنجاح، شكرًا لك ${order.CustomerName}! سيتم التعامل معه بكل عناية وسنوافيك بالتحديث قريباً.
     </div>` 
     : ''}
-     ${order.Status == 2 ? 
+      ${order.Status == 2 ? 
     `<div class="statusBadge ${statuses[statusIndex].cls}" style="border-radius:10px; margin-top:10px;">
       ✨ مرحبًا ${order.CustomerName}! طلبك الآن قيد الإعداد وسيكون جاهزاً قريباً. شكراً لصبرك!
     </div>` 
     : ''}
-         ${order.Status == 4 ? 
+    ${order.Status == 3 ? 
+    `<div class="statusBadge ${statuses[statusIndex].cls}" style="border-radius:10px;margin-top:10px;">
+      🎁 خبر سار! طلبك جاهز الآن. تعال واستلمه في أي وقت يناسبك!
+    </div>` 
+    : ''}
+
+    ${order.Status == 4 ? 
     `<div class="statusBadge ${statuses[statusIndex].cls}" style="border-radius:10px;margin-top:10px;">
       🌟 شكرًا لك ${order.CustomerName} .لقد استلمت طلبك بنجاح. نتمنى أن تستمتع بمشترياتك! شكراً لاختيارك متجرنا ونتطلع لخدمتك مرة أخرى.
     </div>` 
