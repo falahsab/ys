@@ -3,55 +3,152 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>متابعة حالة الطلب</title>
+<title>استعلام حالة الطلب</title>
 <style>
-body{margin:0;font-family:sans-serif;background:#0f1724;color:#e6eef8;display:flex;justify-content:center;align-items:center;height:100vh;}
-.container{background:#0b1220;padding:20px;border-radius:12px;max-width:400px;width:90%;text-align:center;}
-input{padding:10px;border-radius:8px;border:none;width:80%;margin-bottom:10px;background:rgba(255,255,255,0.05);color:#e6eef8;}
-button{padding:10px 20px;border:none;border-radius:8px;background:#06b6d4;color:#012;font-weight:700;cursor:pointer;}
-.result{margin-top:20px;font-size:16px;}
-.statusBadge{display:inline-block;padding:6px 12px;border-radius:50px;font-weight:700;margin-top:10px;}
-.badge-received{background:rgba(6,182,212,0.2);color:#06b6d4;}
-.badge-processing{background:rgba(245,158,11,0.2);color:#f59e0b;}
-.badge-ready{background:rgba(16,185,129,0.2);color:#10b981;}
-.badge-delivered{background:rgba(124,58,237,0.2);color:#7c3aed;}
+:root {
+  --bg:#0f172a;
+  --card:#1e293b;
+  --accent:#06b6d4;
+  --text:#e2e8f0;
+}
+body {
+  font-family:"Tajawal",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  margin:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  padding:20px;
+}
+.container {
+  background:var(--card);
+  border-radius:10px;
+  padding:30px 25px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.3);
+  width:100%;
+  max-width:420px;
+  text-align:center;
+}
+h2 {
+  margin-bottom:25px;
+  color:var(--accent);
+}
+.input-box {
+  display:flex;
+  justify-content:center;
+}
+input[type=number] {
+  width:70%;
+  padding:10px;
+  border-radius:30px;
+  border:none;
+  font-size:16px;
+  background:rgba(255,255,255,0.07);
+  color:var(--text);
+  text-align:center;
+  transition:0.3s;
+}
+input[type=number]:focus {
+  outline:none;
+  box-shadow:0 0 10px var(--accent);
+}
+button {
+  background:var(--accent);
+  color:white;
+  border:none;
+  padding:12px 30px;
+  border-radius:30px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+  margin-top:20px;
+  transition:0.3s;
+}
+button:hover {background:#0891b2;}
+.loading {
+  display:none;
+  margin-top:10px;
+  color:var(--accent);
+  font-weight:bold;
+}
+.result {
+  margin-top:20px;
+  padding:15px;
+  border-radius:5px;
+  background:rgba(255,255,255,0.05);
+  text-align:center;
+  line-height:1.8;
+}
+.statusBadge {
+  display:inline-block;
+  padding:6px 12px;
+  border-radius:20px;
+  font-weight:bold;
+}
+.badge-received {background:#4ade80;color:#064e3b;}
+.badge-processing {background:#facc15;color:#78350f;}
+.badge-ready {background:#60a5fa;color:#172554;}
+.badge-delivered {background:#a78bfa;color:#312e81;}
 </style>
 </head>
 <body>
+
 <div class="container">
-<h2>متابعة حالة الطلب</h2>
-<input type="number" id="orderID" placeholder="أدخل رقم الطلب" min="1" step="1" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-<button id="checkBtn">عرض الحالة</button>
-<div class="result" id="result"></div>
+  <h2>استعلام حالة الطلب</h2>
+  
+  <div class="input-box">
+    <input type="number" id="orderID" placeholder="أدخل رقم الطلب"
+           oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+  </div>
+  
+  <button id="checkBtn">استعلام</button>
+  <div id="loading" class="loading">جاري الاستعلام عن حالة طلبك...</div>
+  <div id="result" class="result"></div>
 </div>
 
 <script>
-const API_BASE="https://script.google.com/macros/s/AKfycbyrGHgDi-fLdF7-LtNhDtff7bSfLm7dZ-aSTEtUA2RPdVXWHM8QswiTWaFv1Stin3yT/exec"; // نفس Web App لكن يمكن الوصول للقراءة
-const $ = s=>document.querySelector(s);
+const API_BASE = "https://script.google.com/macros/s/AKfycbyrGHgDi-fLdF7-LtNhDtff7bSfLm7dZ-aSTEtUA2RPdVXWHM8QswiTWaFv1Stin3yT/exec";
+const $ = id => document.querySelector(id);
 
-$('#checkBtn').onclick=async()=>{
-  const id=$('#orderID').value.trim();
-  if(!id){alert('أدخل رقم الطلب'); return;}
-  try{
-    const orders=await (await fetch(API_BASE)).json();
-    const o=orders.find(x=>String(x.OrderID)===id);
-    const resEl=$('#result');
-    if(!o){resEl.innerHTML=`<span>لم يتم العثور على الطلب رقم ${id}</span>`; return;}
-    
-    const statusTexts=['تم الاستلام','قيد التجهيز','جاهز','تم التسليم'];
-    const statusClasses=['badge-received','badge-processing','badge-ready','badge-delivered'];
-    const date=new Date(o.Date);
-    const dateFormatted=(('0'+date.getDate()).slice(-2))+'/'+(('0'+(date.getMonth()+1)).slice(-2))+'/'+date.getFullYear();
-    
-    resEl.innerHTML=`
-      <div><strong>#${o.OrderID} — ${o.CustomerName}</strong></div>
-      <div>📞 ${o.Phone||'-'} | 💰 ${o.Price||'-'} | 📅 ${dateFormatted}</div>
-      <div class="statusBadge ${statusClasses[o.Status-1]}">${statusTexts[o.Status-1]}</div>
-    `;
-  }catch(e){
-    alert('فشل جلب البيانات'); console.error(e);
+$('#checkBtn').onclick = async () => {
+  const id = $('#orderID').value.trim();
+  if(!id){ alert('الرجاء إدخال رقم الطلب'); return; }
+
+  $('#checkBtn').style.display = 'none';
+  $('#loading').style.display = 'block';
+  $('#result').innerHTML = '';
+
+  try {
+    const res = await fetch(API_BASE);
+    const orders = await res.json();
+    const order = orders.find(o => String(o.OrderID) === id);
+
+    if(!order){
+      $('#result').innerHTML = `<span>لم يتم العثور على الطلب رقم ${id}</span>`;
+    } else {
+      const statusTexts = ['تم الاستلام','قيد التجهيز','جاهز','تم التسليم'];
+      const statusClasses = ['badge-received','badge-processing','badge-ready','badge-delivered'];
+      const date = new Date(order.Date);
+      const dateFormatted =
+        ('0'+date.getDate()).slice(-2)+'/'+('0'+(date.getMonth()+1)).slice(-2)+'/'+date.getFullYear().toString().slice(-2);
+
+      $('#result').innerHTML = `
+        <div><strong>#${order.OrderID} — ${order.CustomerName}</strong></div>
+        <div>📞 ${order.Phone||'-'} | 💰 ${order.Price||'-'} | 📅 ${dateFormatted}</div>
+        <div class="statusBadge ${statusClasses[order.Status-1]}">${statusTexts[order.Status-1]}</div>
+      `;
+    }
+  } catch(err) {
+    console.error(err);
+    alert('فشل جلب البيانات من الخادم');
+  } finally {
+    $('#loading').style.display = 'none';
+    setTimeout(()=>$('#checkBtn').style.display = 'inline-block',500);
   }
 };
 </script>
+
 </body>
 </html>
