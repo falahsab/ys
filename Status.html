@@ -37,7 +37,7 @@ body {
 }
 .container {
   background:var(--card);
-  border-radius:8px;
+  border-radius:12px;
   padding:25px;
   box-shadow:0 4px 15px rgba(0,0,0,0.4);
   width:100%;
@@ -59,7 +59,7 @@ h2 {
   width:100%;
 }
 input[type=number] {
-  width:85%;
+  width:75%;
   padding:12px;
   border-radius:30px;
   border:none;
@@ -77,7 +77,7 @@ button {
   background:var(--accent);
   color:white;
   border:none;
-  padding:12px 32px;
+  padding:12px 40px;
   border-radius:30px;
   font-size:16px;
   font-weight:bold;
@@ -95,7 +95,7 @@ button:hover {background:#0891b2;}
 .result {
   margin-top:20px;
   padding:15px;
-  border-radius:5px;
+  border-radius:8px;
   background:rgba(255,255,255,0.05);
   text-align:center;
   line-height:1.8;
@@ -131,11 +131,11 @@ footer a:hover {text-decoration:underline;}
     border-radius:15px;
   }
   input[type=number]{
-    width:100%;
+    width:90%;
     font-size:15px;
   }
   button{
-    width:100%;
+    width:90%;
     font-size:15px;
   }
   h2{font-size:1.2rem;}
@@ -148,16 +148,15 @@ footer a:hover {text-decoration:underline;}
   <img src="https://yt3.googleusercontent.com/ytc/AIdro_mCPykcDOrbHq_sT6fy3LmV7Rjz3of8y3ZL8P6NWm3RAQ=s900-c-k-c0x00ffffff-no-rj" alt="شعار المتجر">
 </div>
 <div>متجر الفؤاد | للتحف والهدايا</div>
+
 <div class="container">
   <h2>استعلام حالة الطلب</h2>
-  
   <div class="input-box">
     <input type="number" id="orderID" placeholder="أدخل رقم الطلب"
            oninput="this.value=this.value.replace(/[^0-9]/g,'')">
   </div>
-  
   <button id="checkBtn">استعلام</button>
-  <div id="loading" class="loading">جاري الاستعلام عن حالة طلبك...</div>
+  <div id="loading" class="loading">🔍 جاري الاستعلام عن حالة طلبك...</div>
   <div id="result" class="result"></div>
 </div>
 
@@ -168,8 +167,10 @@ footer a:hover {text-decoration:underline;}
 </footer>
 
 <script>
-const API_BASE = "https://script.google.com/macros/s/AKfycbyrGHgDi-fLdF7-LtNhDtff7bSfLm7dZ-aSTEtUA2RPdVXWHM8QswiTWaFv1Stin3yT/exec";
-const $ = id => document.querySelector(id);
+// 🧩 ضع فقط المعرّف هنا بدون الرابط الكامل
+const SCRIPT_ID = "AKfycbyrGHgDi-fLdF7-LtNhDtff7bSfLm7dZ-aSTEtUA2RPdVXWHM8QswiTWaFv1Stin3yT";
+const API_BASE = `https://script.google.com/macros/s/${SCRIPT_ID}/exec`;
+const $ = s => document.querySelector(s);
 
 $('#checkBtn').onclick = async () => {
   const id = $('#orderID').value.trim();
@@ -185,26 +186,48 @@ $('#checkBtn').onclick = async () => {
     const order = orders.find(o => String(o.OrderID) === id);
 
     if(!order){
-      $('#result').innerHTML = `<span>لم يتم العثور على الطلب رقم ${id}</span>`;
+      $('#result').innerHTML = `<span>🚫 لم يتم العثور على الطلب رقم ${id}</span>`;
     } else {
-      const statusTexts = ['تم الاستلام','قيد التجهيز','جاهز','تم التسليم'];
-      const statusClasses = ['badge-received','badge-processing','badge-ready','badge-delivered'];
+      const statuses = [
+        {text:'تم استلام طلبك', cls:'badge-received'},
+        {text:'⏳ جاري تجهيز طلبك', cls:'badge-processing'},
+        {text:'🥳 طلبك جاهز 🥳', cls:'badge-ready'},
+        {text:'تم التسليم', cls:'badge-delivered'}
+      ];
+      const statusIndex = order.Status ? order.Status - 1 : 0;
       const date = new Date(order.Date);
-      const dateFormatted =
-        ('0'+date.getDate()).slice(-2)+'/'+('0'+(date.getMonth()+1)).slice(-2)+'/'+date.getFullYear().toString().slice(-2);
+      const dateFormatted = ('0'+date.getDate()).slice(-2)+'/'+('0'+(date.getMonth()+1)).slice(-2)+'/'+date.getFullYear().toString().slice(-2);
 
-      $('#result').innerHTML = `
-        <div style="font-size:18px;font-weight:bold;">#${order.OrderID} — ${order.CustomerName}</div>
-        <div style="margin-top:5px;">📞 ${order.Phone||'-'} | 💰 ${order.Price||'-'} | 📅 ${dateFormatted}</div>
-        <div class="statusBadge ${statusClasses[order.Status-1]}" style="margin-top:10px;">${statusTexts[order.Status-1]}</div>
-      `;
+$('#result').innerHTML = `
+  <div style="font-size:18px;font-weight:bold;">#${order.OrderID} — ${order.CustomerName}</div>
+  <div style="margin-top:5px;">📞 ${order.Phone||'-'} | 💰 ${order.Price||'-'} | 📅 ${dateFormatted}</div>
+  <div class="statusBadge ${statuses[statusIndex].cls}" style="margin-top:10px;">${statuses[statusIndex].text}</div>
+  ${order.Status == 3 ? 
+    `<div class="statusBadge ${statuses[statusIndex].cls}" style="border-radius:10px;margin-top:10px;">
+      🎁 خبر سار! طلبك جاهز الآن. تعال واستلمه في أي وقت يناسبك!
+    </div>` 
+    : ''}
+     ${order.Status == 2 ? 
+    `<div class="statusBadge ${statuses[statusIndex].cls}" style="border-radius:10px; margin-top:10px;">
+      ✨ مرحبًا ${order.CustomerName}! طلبك الآن قيد الإعداد وسيكون جاهزاً قريباً. شكراً لصبرك!
+    </div>` 
+    : ''}
+         ${order.Status == 4 ? 
+    `<div class="statusBadge ${statuses[statusIndex].cls}" style="border-radius:10px;margin-top:10px;">
+      🌟 شكرًا لك ${order.CustomerName} .لقد استلمت طلبك بنجاح. نتمنى أن تستمتع بمشترياتك! شكراً لاختيارك متجرنا ونتطلع لخدمتك مرة أخرى.
+    </div>` 
+    : ''}
+    
+    
+    
+`;
     }
   } catch(err) {
     console.error(err);
-    alert('فشل جلب البيانات من الخادم');
+    $('#result').innerHTML = `<span>⚠️ حدث خطأ أثناء جلب البيانات من الخادم</span>`;
   } finally {
     $('#loading').style.display = 'none';
-    setTimeout(()=>$('#checkBtn').style.display = 'inline-block',500);
+    setTimeout(()=>$('#checkBtn').style.display = 'inline-block',700);
   }
 };
 </script>
