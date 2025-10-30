@@ -1,7 +1,4 @@
-// 🧩 استخدم الآن الـ proxy بدلاً من رابط Script المباشر
-const API_BASE = "/api/proxy";
-const API_TOKEN = "s3cr3tK3y123"; // نفس التوكن الموجود في Vercel
-
+const API_BASE = "/api/proxy"; // كل الطلبات تمر عبر السيرفر
 const $ = s => document.querySelector(s);
 
 $('#checkBtn').onclick = async () => {
@@ -13,12 +10,7 @@ $('#checkBtn').onclick = async () => {
   $('#result').innerHTML = '';
 
   try {
-    // إرسال طلب GET إلى الـ proxy مع التوكن
-    const res = await fetch(API_BASE, {
-      method: 'GET',
-      headers: { 'x-api-token': API_TOKEN }
-    });
-    
+    const res = await fetch(API_BASE); // لا حاجة لإرسال توكن من المتصفح
     const orders = await res.json();
     const order = orders.find(o => String(o.OrderID) === id);
 
@@ -44,7 +36,7 @@ $('#checkBtn').onclick = async () => {
             📦 تم استلام طلبك بنجاح، شكرًا لك ${order.CustomerName}! سيتم التعامل معه بكل عناية وسنوافيك بالتحديث قريباً.
           </div>` : ''}
         ${order.Status == 2 ? 
-          `<div class="statusBadge ${statuses[statusIndex].cls}" style="border-radius:10px; margin-top:10px;">
+          `<div class="statusBadge ${statuses[statusIndex].cls}" style="border-radius:10px;margin-top:10px;">
             ✨ مرحبًا ${order.CustomerName}! طلبك الآن قيد الإعداد وسيكون جاهزاً قريباً. شكراً لصبرك!
           </div>` : ''}
         ${order.Status == 3 ? 
