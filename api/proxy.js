@@ -1,7 +1,7 @@
 // api/proxy.js
 export default async function handler(req, res) {
   const API_TOKEN = process.env.API_TOKEN; // التوكن مخفي
-  const SCRIPT_URL = "https//script.google.com/macros/s/AKfycbz6OKgn9xmj4zQbfTKAuGleNrWyUyqRDewWL0GfcXx4xSRr0xO3xiYAX8nNCMaZ15SE/exec"; // رابط Web App الخاص بك
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxRHd9riOPb0inbyCf_7JpQAXPZNsIeKoGprI21IpolQd9nUQLn1nnNrpzOh5ni6KKR/exec"; // رابط Web App الخاص بك
 
   // تحقق من التوكن المرسل من المتصفح
   if (req.headers['x-api-token'] !== API_TOKEN) {
