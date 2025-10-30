@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
   const API_TOKEN = "s3cr3tK3y123"; // التوكن المخفي
-  const SCRIPT_ID = "AKfycbAq40UiBAHlUmiEdaXHP3jSumBJl8o86kWZHpXdUNZ3Z7N5ccLREB9Wcjz8Wz4kQOk";
+  const SCRIPT_ID = "AKfycbxa5MKkdT0skVXhAjmCT6jY78bfD2viTlZi4ntrxP-NlIWDmsLTZjQgiWVZLNFKwmCz";
   const SCRIPT_URL = `https://script.google.com/macros/s/${SCRIPT_ID}/exec`;
 
   try {
