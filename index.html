@@ -1,307 +1,242 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>طرق الدفع - جيب استور</title>
-  <style>
-    body {
-      background: #000;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>استعلام حالة الطلب | الفؤاد للهدايا</title>
+<style>
+:root {
+  --bg:#0f172a;
+  --card:#1e293b;
+  --accent:#06b6d4;
+  --text:#e2e8f0;
+}
+*{box-sizing:border-box}
+body {
+  font-family:"Tajawal",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  margin:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  align-items:center;
+  min-height:100vh;
+  padding:15px;
+}
+.logo {
+  text-align:center;
+  margin-top:20px;
+}
+.logo img {
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  object-fit:cover;
+  box-shadow:0 0 10px rgba(6,182,212,0.5);
+}
+.container {
+  background:var(--card);
+  border-radius:12px;
+  padding:25px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.4);
+  width:100%;
+  max-width:420px;
+  text-align:center;
+  margin:25px 0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+h2 {
+  margin-bottom:20px;
+  color:var(--accent);
+  font-size:1.4rem;
+}
+.input-box {
+  display:flex;
+  justify-content:center;
+  width:100%;
+}
+input[type=number] {
+  width:75%;
+  padding:12px;
+  border-radius:30px;
+  border:none;
+  font-size:16px;
+  background:rgba(255,255,255,0.07);
+  color:var(--text);
+  text-align:center;
+  transition:0.3s;
+}
+input[type=number]:focus {
+  outline:none;
+  box-shadow:0 0 10px var(--accent);
+}
+button {
+  background:var(--accent);
+  color:white;
+  border:none;
+  padding:12px 40px;
+  border-radius:30px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+  margin-top:20px;
+  transition:0.3s;
+}
+button:hover {background:#0891b2;}
+.loading {
+  display:none;
+  margin-top:10px;
+  color:var(--accent);
+  font-weight:bold;
+}
+.result {
+  margin-top:20px;
+  padding:15px;
+  border-radius:8px;
+  background:rgba(255,255,255,0.05);
+  text-align:center;
+  line-height:1.8;
+  width:100%;
+  word-wrap:break-word;
+}
+.statusBadge {
+  display:inline-block;
+  padding:6px 12px;
+  border-radius:20px;
+  font-weight:bold;
+}
+.badge-received {background:#4ade80;color:#064e3b;}
+.badge-processing {background:#facc15;color:#78350f;}
+.badge-ready {background:#60a5fa;color:#172554;}
+.badge-delivered {background:#a78bfa;color:#312e81;}
+footer {
+  text-align:center;
+  font-size:14px;
+  color:#94a3b8;
+  padding:15px;
+  line-height:1.6;
+}
+footer a {
+  color:var(--accent);
+  text-decoration:none;
+}
+footer a:hover {text-decoration:underline;}
 
-    header {
-      padding: 20px;
-    }
-
-    header img {
-      width: 80px;
-      height: auto;
-      display: block;
-      margin: 0 auto 10px;
-    }
-
-    h1 {
-      margin: 10px 0;
-      font-size: 26px;
-      color: #0ff;
-    }
-
-    h2 {
-      font-size: 20px;
-      margin-bottom: 20px;
-      color: #ffd700;
-    }
-
-    /* صندوق الادخال في الأعلى */
-    .top-box {
-      background: #111;
-      border-radius: 12px;
-      padding: 20px;
-      margin: 15px auto;
-      max-width: 500px;
-      text-align: right;
-      box-shadow: 0 0 10px rgba(255,255,255,0.2);
-    }
-
-    .top-box label {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 14px;
-      color: #0ff;
-    }
-
-    .top-box input {
-      width: 100%;
-      padding: 8px;
-      border-radius: 8px;
-      border: none;
-      margin-bottom: 12px;
-      font-size: 15px;
-    }
-
-    .top-box .pay-box {
-      background: #222;
-      padding: 10px;
-      border-radius: 8px;
-      margin-bottom: 12px;
-      text-align: center;
-    }
-
-    .top-box .pay-box img {
-      width: 50px;
-      display: block;
-      margin: 0 auto 8px;
-    }
-
-    .flex-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #222;
-      padding: 8px;
-      border-radius: 8px;
-    }
-
-    .flex-row button {
-      background: #0ff;
-      border: none;
-      border-radius: 6px;
-      padding: 6px 12px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 15px;
-      padding: 20px;
-      max-width: 1100px;
-      margin: auto;
-    }
-
-    .card {
-      background: #111;
-      border-radius: 12px;
-      padding: 15px;
-      position: relative;
-      box-shadow: 0 0 10px rgba(255,255,255,0.1);
-    }
-
-    .info-icon {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      cursor: pointer;
-      color: #0ff;
-      font-size: 18px;
-    }
-
-    .card img {
-      width: 40px;
-      vertical-align: middle;
-      margin-right: 10px;
-    }
-
-    .info {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin: 8px 0;
-      background: #222;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 15px;
-    }
-
-    .copy-btn {
-      cursor: pointer;
-      color: #0ff;
-      font-size: 16px;
-      margin-left: 8px;
-    }
-
-    .message {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #0f0;
-      color: #000;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-weight: bold;
-      display: none;
-      z-index: 10;
-    }
-
-    /* نافذة منبثقة */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 100;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7);
-      justify-content: center;
-      align-items: center;
-    }
-
-    .modal-content {
-      background: #222;
-      color: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      width: 80%;
-      max-width: 400px;
-      text-align: center;
-    }
-
-    .close {
-      float: left;
-      cursor: pointer;
-      font-size: 20px;
-      color: #0ff;
-    }
-  </style>
+@media (max-width:480px){
+  .container{
+    padding:20px 15px;
+    border-radius:15px;
+  }
+  input[type=number]{
+    width:90%;
+    font-size:15px;
+  }
+  button{
+    width:90%;
+    font-size:15px;
+  }
+  h2{font-size:1.2rem;}
+}
+</style>
 </head>
 <body>
 
-  <header>
-    <img src="https://via.placeholder.com/80" alt="شعار المتجر">
-    <h1>جيب استور</h1>
-    <h2>طرق الدفع الإلكترونية</h2>
-  </header>
+<div class="logo">
+  <img src="https://yt3.googleusercontent.com/ytc/AIdro_mCPykcDOrbHq_sT6fy3LmV7Rjz3of8y3ZL8P6NWm3RAQ=s900-c-k-c0x00ffffff-no-rj" alt="شعار المتجر">
+</div>
+<div>متجر الفؤاد | للتحف والهدايا</div>
 
-  <!-- صندوق الإدخال -->
-  <div class="top-box">
-    <label>أدخل رقم الرسيفر</label>
-    <input type="text" placeholder="رقم الرسيفر">
-
-    <div class="pay-box">
-      <img id="selectedWalletImg" src="https://via.placeholder.com/50" alt="محفظة">
-      <div id="selectedWalletName">—</div>
-    </div>
-
-    <div class="flex-row">
-      <input type="text" id="operationNumber" placeholder="رقم العملية">
-      <button onclick="pasteText()">لصق</button>
-    </div>
+<div class="container">
+  <h2>استعلام حالة الطلب</h2>
+  <div class="input-box">
+    <input type="number" id="orderID" placeholder="أدخل رقم الطلب"
+           oninput="this.value=this.value.replace(/[^0-9]/g,'')">
   </div>
+  <button id="checkBtn">استعلام</button>
+  <div id="loading" class="loading">🔍 جاري الاستعلام عن حالة طلبك...</div>
+  <div id="result" class="result"></div>
+</div>
 
-  <!-- الصناديق -->
-  <div class="container">
-    <div class="card">
-      <div class="message">تم النسخ ✔</div>
-      <span class="info-icon" onclick="openModal('اشرح طريقة الدفع لهذه المحفظة')">ℹ</span>
-      <div class="info">
-        <img src="https://via.placeholder.com/40" alt="محفظة">
-        <span id="wallet1">123456789</span>
-        <span class="copy-btn" onclick="copyWallet('wallet1','https://via.placeholder.com/40','محفظة X')">📋</span>
-      </div>
-      <div class="info">
-        <span id="name1">أحمد محمد</span>
-        <span class="copy-btn" onclick="copyText('name1', this)">📋</span>
-      </div>
-    </div>
+<footer>
+  <div>📍 ذمار - خط المغرب - جوار مدرسة الميثاق للبنات</div>
+  <div>📞 777123456 | ☎️ 01-234567</div>
+  <div>💬 <a href="https://wa.me/967777123456" target="_blank">تواصل عبر واتساب</a></div>
+</footer>
 
-    <div class="card">
-      <div class="message">تم النسخ ✔</div>
-      <span class="info-icon" onclick="openModal('تفاصيل الدفع لمحفظة Y')">ℹ</span>
-      <div class="info">
-        <img src="https://via.placeholder.com/40" alt="محفظة">
-        <span id="wallet2">987654321</span>
-        <span class="copy-btn" onclick="copyWallet('wallet2','https://via.placeholder.com/40','محفظة Y')">📋</span>
-      </div>
-      <div class="info">
-        <span id="name2">خالد علي</span>
-        <span class="copy-btn" onclick="copyText('name2', this)">📋</span>
-      </div>
-    </div>
-  </div>
+<script>
+// 🧩 ضع فقط المعرّف هنا بدون الرابط الكامل
+const SCRIPT_ID = "AKfycbz6OKgn9xmj4zQbfTKAuGleNrWyUyqRDewWL0GfcXx4xSRr0xO3xiYAX8nNCMaZ15SE";
+const API_BASE = `https://script.google.com/macros/s/${SCRIPT_ID}/exec`;
+const $ = s => document.querySelector(s);
 
-  <!-- النافذة المنبثقة -->
-  <div id="modal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal()">✖</span>
-      <p id="modalText"></p>
-    </div>
-  </div>
+$('#checkBtn').onclick = async () => {
+  const id = $('#orderID').value.trim();
+  if(!id){ alert('الرجاء إدخال رقم الطلب'); return; }
 
-  <script>
-    function copyText(id, el) {
-      const text = document.getElementById(id).innerText;
-      navigator.clipboard.writeText(text);
+  $('#checkBtn').style.display = 'none';
+  $('#loading').style.display = 'block';
+  $('#result').innerHTML = '';
 
-      const card = el.closest(".card");
-      const message = card.querySelector(".message");
-      message.style.display = "block";
+  try {
+    const res = await fetch(API_BASE);
+    const orders = await res.json();
+    const order = orders.find(o => String(o.OrderID) === id);
 
-      setTimeout(() => {
-        message.style.display = "none";
-      }, 1000);
+    if(!order){
+      $('#result').innerHTML = `<span>🚫 لم يتم العثور على الطلب رقم ${id}</span>`;
+    } else {
+      const statuses = [
+        {text:'تم استلام طلبك', cls:'badge-received'},
+        {text:'⏳ جاري تجهيز طلبك', cls:'badge-processing'},
+        {text:'🥳 طلبك جاهز 🥳', cls:'badge-ready'},
+        {text:'تم التسليم', cls:'badge-delivered'}
+      ];
+      const statusIndex = order.Status ? order.Status - 1 : 0;
+      const date = new Date(order.Date);
+      const dateFormatted = ('0'+date.getDate()).slice(-2)+'/'+('0'+(date.getMonth()+1)).slice(-2)+'/'+date.getFullYear().toString().slice(-2);
+
+$('#result').innerHTML = `
+  <div style="font-size:18px;font-weight:bold;">#${order.OrderID} — ${order.CustomerName}</div>
+  <div style="margin-top:5px;">📞 ${order.Phone||'-'} | 💰 ${order.Price||'-'} | 📅 ${dateFormatted}</div>
+  <div class="statusBadge ${statuses[statusIndex].cls}" style="margin-top:10px;">${statuses[statusIndex].text}</div>
+     ${order.Status == 1 ? 
+    `<div class="statusBadge ${statuses[statusIndex].cls}" style="border-radius:10px;margin-top:10px;">
+     📦 تم استلام طلبك بنجاح، شكرًا لك ${order.CustomerName}! سيتم التعامل معه بكل عناية وسنوافيك بالتحديث قريباً.
+    </div>` 
+    : ''}
+      ${order.Status == 2 ? 
+    `<div class="statusBadge ${statuses[statusIndex].cls}" style="border-radius:10px; margin-top:10px;">
+      ✨ مرحبًا ${order.CustomerName}! طلبك الآن قيد الإعداد وسيكون جاهزاً قريباً. شكراً لصبرك!
+    </div>` 
+    : ''}
+    ${order.Status == 3 ? 
+    `<div class="statusBadge ${statuses[statusIndex].cls}" style="border-radius:10px;margin-top:10px;">
+      🎁 خبر سار! طلبك جاهز الآن. تعال واستلمه في أي وقت يناسبك!
+    </div>` 
+    : ''}
+
+    ${order.Status == 4 ? 
+    `<div class="statusBadge ${statuses[statusIndex].cls}" style="border-radius:10px;margin-top:10px;">
+      🌟 شكرًا لك ${order.CustomerName} .لقد استلمت طلبك بنجاح. نتمنى أن تستمتع بمشترياتك! شكراً لاختيارك متجرنا ونتطلع لخدمتك مرة أخرى.
+    </div>` 
+    : ''}
+    
+    
+    
+`;
     }
+  } catch(err) {
+    console.error(err);
+    $('#result').innerHTML = `<span>⚠️ حدث خطأ أثناء جلب البيانات من الخادم</span>`;
+  } finally {
+    $('#loading').style.display = 'none';
+    setTimeout(()=>$('#checkBtn').style.display = 'inline-block',700);
+  }
+};
+</script>
 
-    function copyWallet(id, imgSrc, name) {
-      const text = document.getElementById(id).innerText;
-      navigator.clipboard.writeText(text);
-
-      // تحديث الصندوق العلوي
-      document.getElementById("selectedWalletImg").src = imgSrc;
-      document.getElementById("selectedWalletName").innerText = name;
-
-      // رسالة تم النسخ
-      const card = document.getElementById(id).closest(".card");
-      const message = card.querySelector(".message");
-      message.style.display = "block";
-
-      setTimeout(() => {
-        message.style.display = "none";
-      }, 1000);
-    }
-
-    async function pasteText() {
-      try {
-        const text = await navigator.clipboard.readText();
-        document.getElementById("operationNumber").value = text || "";
-      } catch (err) {
-        alert("المتصفح لا يسمح باللصق التلقائي. يرجى لصق الرقم يدويًا.");
-      }
-    }
-
-    function openModal(text) {
-      document.getElementById("modalText").innerText = text;
-      document.getElementById("modal").style.display = "flex";
-    }
-
-    function closeModal() {
-      document.getElementById("modal").style.display = "none";
-    }
-  </script>
 </body>
 </html>
