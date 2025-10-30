@@ -1,7 +1,7 @@
-// 🧩 الآن كل الطلبات تمر عبر السيرفر Proxy
-const API_BASE = "/api/proxy"; 
+// 🧩 استخدم الآن الـ proxy بدلاً من رابط Script المباشر
+const API_BASE = "/api/proxy";
+const API_TOKEN = "s3cr3tK3y123"; // نفس التوكن الموجود في Vercel
 
-const API_TOKEN = "s3cr3tK3y123"; // نفس التوكن الموجود في Apps Script
 const $ = s => document.querySelector(s);
 
 $('#checkBtn').onclick = async () => {
@@ -13,11 +13,12 @@ $('#checkBtn').onclick = async () => {
   $('#result').innerHTML = '';
 
   try {
+    // إرسال طلب GET إلى الـ proxy مع التوكن
     const res = await fetch(API_BASE, {
-      headers: {
-        "X-API-TOKEN": API_TOKEN // نرسل التوكن في الهيدر
-      }
+      method: 'GET',
+      headers: { 'x-api-token': API_TOKEN }
     });
+    
     const orders = await res.json();
     const order = orders.find(o => String(o.OrderID) === id);
 
@@ -40,24 +41,20 @@ $('#checkBtn').onclick = async () => {
         <div class="statusBadge ${statuses[statusIndex].cls}" style="margin-top:10px;">${statuses[statusIndex].text}</div>
         ${order.Status == 1 ? 
           `<div class="statusBadge ${statuses[statusIndex].cls}" style="border-radius:10px;margin-top:10px;">
-           📦 تم استلام طلبك بنجاح، شكرًا لك ${order.CustomerName}! سيتم التعامل معه بكل عناية وسنوافيك بالتحديث قريباً.
-          </div>` 
-        : ''}
+            📦 تم استلام طلبك بنجاح، شكرًا لك ${order.CustomerName}! سيتم التعامل معه بكل عناية وسنوافيك بالتحديث قريباً.
+          </div>` : ''}
         ${order.Status == 2 ? 
           `<div class="statusBadge ${statuses[statusIndex].cls}" style="border-radius:10px; margin-top:10px;">
             ✨ مرحبًا ${order.CustomerName}! طلبك الآن قيد الإعداد وسيكون جاهزاً قريباً. شكراً لصبرك!
-          </div>` 
-        : ''}
+          </div>` : ''}
         ${order.Status == 3 ? 
           `<div class="statusBadge ${statuses[statusIndex].cls}" style="border-radius:10px;margin-top:10px;">
             🎁 خبر سار! طلبك جاهز الآن. تعال واستلمه في أي وقت يناسبك!
-          </div>` 
-        : ''}
+          </div>` : ''}
         ${order.Status == 4 ? 
           `<div class="statusBadge ${statuses[statusIndex].cls}" style="border-radius:10px;margin-top:10px;">
             🌟 شكرًا لك ${order.CustomerName} .لقد استلمت طلبك بنجاح. نتمنى أن تستمتع بمشترياتك! شكراً لاختيارك متجرنا ونتطلع لخدمتك مرة أخرى.
-          </div>` 
-        : ''}
+          </div>` : ''}
       `;
     }
   } catch(err) {
