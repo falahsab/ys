@@ -1,7 +1,7 @@
-// 🧩 ضع فقط المعرّف هنا بدون الرابط الكامل
-// const API_BASE = `https://script.google.com/macros/s/${SCRIPT_ID}/exec`;
-const API_BASE = "/api/proxy"; // الآن كل الطلبات تمر عبر السيرفر
+// 🧩 الآن كل الطلبات تمر عبر السيرفر Proxy
+const API_BASE = "/api/proxy"; 
 
+const API_TOKEN = "s3cr3tK3y123"; // نفس التوكن الموجود في Apps Script
 const $ = s => document.querySelector(s);
 
 $('#checkBtn').onclick = async () => {
@@ -13,7 +13,11 @@ $('#checkBtn').onclick = async () => {
   $('#result').innerHTML = '';
 
   try {
-    const res = await fetch(API_BASE);
+    const res = await fetch(API_BASE, {
+      headers: {
+        "X-API-TOKEN": API_TOKEN // نرسل التوكن في الهيدر
+      }
+    });
     const orders = await res.json();
     const order = orders.find(o => String(o.OrderID) === id);
 
@@ -30,35 +34,31 @@ $('#checkBtn').onclick = async () => {
       const date = new Date(order.Date);
       const dateFormatted = ('0'+date.getDate()).slice(-2)+'/'+('0'+(date.getMonth()+1)).slice(-2)+'/'+date.getFullYear().toString().slice(-2);
 
-$('#result').innerHTML = `
-  <div style="font-size:18px;font-weight:bold;">#${order.OrderID} — ${order.CustomerName}</div>
-  <div style="margin-top:5px;">📞 ${order.Phone||'-'} | 💰 ${order.Price||'-'} | 📅 ${dateFormatted}</div>
-  <div class="statusBadge ${statuses[statusIndex].cls}" style="margin-top:10px;">${statuses[statusIndex].text}</div>
-     ${order.Status == 1 ? 
-    `<div class="statusBadge ${statuses[statusIndex].cls}" style="border-radius:10px;margin-top:10px;">
-     📦 تم استلام طلبك بنجاح، شكرًا لك ${order.CustomerName}! سيتم التعامل معه بكل عناية وسنوافيك بالتحديث قريباً.
-    </div>` 
-    : ''}
-      ${order.Status == 2 ? 
-    `<div class="statusBadge ${statuses[statusIndex].cls}" style="border-radius:10px; margin-top:10px;">
-      ✨ مرحبًا ${order.CustomerName}! طلبك الآن قيد الإعداد وسيكون جاهزاً قريباً. شكراً لصبرك!
-    </div>` 
-    : ''}
-    ${order.Status == 3 ? 
-    `<div class="statusBadge ${statuses[statusIndex].cls}" style="border-radius:10px;margin-top:10px;">
-      🎁 خبر سار! طلبك جاهز الآن. تعال واستلمه في أي وقت يناسبك!
-    </div>` 
-    : ''}
-
-    ${order.Status == 4 ? 
-    `<div class="statusBadge ${statuses[statusIndex].cls}" style="border-radius:10px;margin-top:10px;">
-      🌟 شكرًا لك ${order.CustomerName} .لقد استلمت طلبك بنجاح. نتمنى أن تستمتع بمشترياتك! شكراً لاختيارك متجرنا ونتطلع لخدمتك مرة أخرى.
-    </div>` 
-    : ''}
-    
-    
-    
-`;
+      $('#result').innerHTML = `
+        <div style="font-size:18px;font-weight:bold;">#${order.OrderID} — ${order.CustomerName}</div>
+        <div style="margin-top:5px;">📞 ${order.Phone||'-'} | 💰 ${order.Price||'-'} | 📅 ${dateFormatted}</div>
+        <div class="statusBadge ${statuses[statusIndex].cls}" style="margin-top:10px;">${statuses[statusIndex].text}</div>
+        ${order.Status == 1 ? 
+          `<div class="statusBadge ${statuses[statusIndex].cls}" style="border-radius:10px;margin-top:10px;">
+           📦 تم استلام طلبك بنجاح، شكرًا لك ${order.CustomerName}! سيتم التعامل معه بكل عناية وسنوافيك بالتحديث قريباً.
+          </div>` 
+        : ''}
+        ${order.Status == 2 ? 
+          `<div class="statusBadge ${statuses[statusIndex].cls}" style="border-radius:10px; margin-top:10px;">
+            ✨ مرحبًا ${order.CustomerName}! طلبك الآن قيد الإعداد وسيكون جاهزاً قريباً. شكراً لصبرك!
+          </div>` 
+        : ''}
+        ${order.Status == 3 ? 
+          `<div class="statusBadge ${statuses[statusIndex].cls}" style="border-radius:10px;margin-top:10px;">
+            🎁 خبر سار! طلبك جاهز الآن. تعال واستلمه في أي وقت يناسبك!
+          </div>` 
+        : ''}
+        ${order.Status == 4 ? 
+          `<div class="statusBadge ${statuses[statusIndex].cls}" style="border-radius:10px;margin-top:10px;">
+            🌟 شكرًا لك ${order.CustomerName} .لقد استلمت طلبك بنجاح. نتمنى أن تستمتع بمشترياتك! شكراً لاختيارك متجرنا ونتطلع لخدمتك مرة أخرى.
+          </div>` 
+        : ''}
+      `;
     }
   } catch(err) {
     console.error(err);
