@@ -7,8 +7,10 @@ $('#checkBtn').onclick = async () => {
   const id = $('#orderID').value.trim();
   if(!id){ alert('الرجاء إدخال رقم الطلب'); return; }
 
-  $('#checkBtn').style.display = 'none';
-  $('#loading').style.display = 'block';
+const btn = $('#checkBtn');
+btn.disabled = true;
+btn.innerText = '🔍 جاري الاستعلام عن حالة طلبك...';
+
   $('#result').innerHTML = '';
 
   try {
@@ -56,6 +58,7 @@ $('#checkBtn').onclick = async () => {
     $('#result').innerHTML = `<span>⚠️ حدث خطأ أثناء جلب البيانات من الخادم</span>`;
   } finally {
     $('#loading').style.display = 'none';
-    setTimeout(()=>$('#checkBtn').style.display = 'inline-block',700);
+    btn.disabled = false;
+     btn.innerText = 'استعلام';
   }
 };
