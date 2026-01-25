@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إدارة أجهزة يمن ستلايت</title>
+
+<style>
+*{box-sizing:border-box;font-family:Tajawal,Arial}
+body{margin:0;background:#f4f6f9}
+header{
+  background:#0d6efd;
+  color:#fff;
+  padding:15px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+header button{
+  background:#fff;
+  color:#0d6efd;
+  border:none;
+  padding:8px 14px;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+.container{max-width:1100px;margin:auto;padding:15px}
+
+/* صندوق البحث */
+.search-box{
+  position:relative;
+}
+.search-box input{
+  width:100%;
+  padding:12px 40px 12px 12px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  margin-bottom:15px;
+}
+.paste-btn{
+  position:absolute;
+  left:12px;
+  top:50%;
+  transform:translateY(-50%);
+  cursor:pointer;
+  font-size:18px;
+  opacity:.7;
+}
+.paste-btn:hover{
+  opacity:1;
+}
+
+/* الكروت */
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+  gap:15px;
+}
+.card{
+  background:#fff;
+  border-radius:16px;
+  padding:15px;
+  box-shadow:0 6px 15px rgba(0,0,0,.08);
+  cursor:pointer;
+}
+.card .user{color:#0d6efd;font-weight:bold}
+.card .device{color:#555}
+
+/* ===== مودال ===== */
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.4);
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+.modal-content{
+  background:#fff;
+  width:95%;
+  max-width:420px;
+  padding:20px;
+  border-radius:18px;
+}
+.modal-content input{
+  width:100%;
+  padding:11px;
+  margin-bottom:8px;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
+.modal-content input#snumber{
+  ime-mode: numeric;
+}
+.modal-content input#usernumber{
+  ime-mode: numeric;
+}
+.modal-content button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  margin-top:6px;
+}
+.save{background:#198754;color:#fff;}
+.close{background:#adb5bd;}
+.deleteBtn{background:#dc3545;color:#fff;}
+</style>
+</head>
+
+<body>
+
+<header>
+  <span>📡 إدارة الأجهزة</span>
+  <button onclick="openAdd()">➕ إضافة جهاز</button>
+</header>
+
+<div class="container">
+  <div class="search-box">
+    <input id="search" placeholder="🔍 بحث برقم الجهاز أو المستخدم" inputmode="numeric">
+    <span class="paste-btn" onclick="pasteFromClipboard()">📋</span>
+  </div>
+
+  <div class="cards" id="cards"></div>
+</div>
+
+<!-- نافذة إضافة / تعديل -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <input id="usernumber" placeholder="رقم المستخدم">
+    <input id="snumber" placeholder="رقم الجهاز">
+    <input id="vip1m" placeholder="شهر">
+    <input id="vip3m" placeholder="3 أشهر">
+    <input id="vip6m" placeholder="6 أشهر">
+    <input id="vip12m" placeholder="سنة">
+
+    <button class="save" onclick="save()">💾 حفظ</button>
+    <button class="deleteBtn" onclick="deleteDeviceModal()" style="display:none;">🗑️ حذف</button>
+    <button class="close" onclick="closeModal()">إغلاق</button>
+  </div>
+</div>
+
+<script>
+const API = "https://script.google.com/macros/s/AKfycbzTwerDEs4BoHQkXVQJdH4CWWUlN_uvfPbmOd5Q7WD9cbWZRzETfC6Nkpc506KQTa29qQ/exec";
+let devices=[], editOld=null;
+
+// تحميل البيانات
+function load(){
+  fetch(`${API}?action=list`)
+  .then(r=>r.json())
+  .then(d=>{devices=d;draw(d)})
+}
+
+// رسم الكروت
+function draw(data){
+  const cards = document.getElementById("cards");
+  cards.innerHTML="";
+  data.forEach(x=>{
+    let c=document.createElement("div");
+    c.className="card";
+    c.innerHTML=`<div class="user">${x.usernumber}</div><div class="device">${x.snumber}</div>`;
+    c.onclick=()=>edit(x);
+    cards.appendChild(c);
+  });
+}
+
+// فلترة الكروت
+document.getElementById("search").addEventListener("input",()=>{
+  let v=document.getElementById("search").value;
+  draw(devices.filter(d=>String(d.snumber).includes(v)||String(d.usernumber).includes(v)));
+});
+
+// لصق من الحافظة
+function pasteFromClipboard(){
+  navigator.clipboard.readText().then(text=>{
+    if(!text) return;
+    const clean = text.replace(/\D/g,""); 
+    document.getElementById("search").value = clean;
+    document.getElementById("search").dispatchEvent(new Event("input")); 
+  }).catch(()=>{
+    alert("⚠️ المتصفح لا يسمح باللصق تلقائياً، الصق يدويًا");
+  });
+}
+
+// فتح مودال إضافة
+function openAdd(){
+  editOld=null;
+  document.getElementById("usernumber").value="";
+  document.getElementById("snumber").value="";
+  document.getElementById("vip1m").value="";
+  document.getElementById("vip3m").value="";
+  document.getElementById("vip6m").value="";
+  document.getElementById("vip12m").value="";
+  document.querySelector(".deleteBtn").style.display="none";
+  document.getElementById("modal").style.display="flex";
+}
+
+// فتح مودال تعديل
+function edit(d){
+  editOld=d.snumber;
+  document.getElementById("usernumber").value=d.usernumber;
+  document.getElementById("snumber").value=d.snumber;
+  document.getElementById("vip1m").value=d.vip1m;
+  document.getElementById("vip3m").value=d.vip3m;
+  document.getElementById("vip6m").value=d.vip6m;
+  document.getElementById("vip12m").value=d.vip12m;
+  document.querySelector(".deleteBtn").style.display="block";
+  document.getElementById("modal").style.display="flex";
+}
+
+// حفظ التعديل أو الإضافة
+function save(){
+  const sn = document.getElementById("snumber").value.replace(/\D/g,"");
+  document.getElementById("snumber").value = sn;
+  const un = document.getElementById("usernumber").value.replace(/\D/g,"");
+  document.getElementById("usernumber").value = un;
+
+  if(!sn || sn.length!==12 || !un){
+    alert("⚠️ تأكد من إدخال رقم جهاز صحيح (12 رقم) ورقم المستخدم بالأرقام فقط");
+    return;
+  }
+
+  let action = editOld ? "update&oldSnumber="+editOld : "add";
+  fetch(`${API}?action=${action}&usernumber=${un}&snumber=${sn}&vip1m=${vip1m.value}&vip3m=${vip3m.value}&vip6m=${vip6m.value}&vip12m=${vip12m.value}`)
+  .then(r=>r.json())
+  .then(()=>{closeModal();load();});
+}
+
+// حذف الجهاز من المودال
+function deleteDeviceModal(){
+  if(!editOld) return;
+  if(!confirm("هل أنت متأكد من حذف هذا الجهاز؟")) return;
+  fetch(`${API}?action=delete&snumber=${editOld}`)
+  .then(r=>r.json())
+  .then(()=>{closeModal();load();});
+}
+
+// إغلاق المودال
+function closeModal(){
+  document.getElementById("modal").style.display="none";
+}
+
+// تحميل الكروت عند فتح الصفحة
+load();
+</script>
+
+</body>
+</html>
