@@ -92,9 +92,11 @@ header button{
   border:1px solid #ccc;
 }
 .modal-content input#snumber{
+  /* رقم الجهاز 12 رقم فقط */
   ime-mode: numeric;
 }
 .modal-content input#usernumber{
+  /* رقم المستخدم أرقام فقط */
   ime-mode: numeric;
 }
 .modal-content button{
@@ -103,11 +105,9 @@ header button{
   border:none;
   border-radius:12px;
   cursor:pointer;
-  margin-top:6px;
 }
-.save{background:#198754;color:#fff;}
-.close{background:#adb5bd;}
-.deleteBtn{background:#dc3545;color:#fff;}
+.save{background:#198754;color:#fff;margin-top:6px;}
+.close{background:#adb5bd;margin-top:6px}
 </style>
 </head>
 
@@ -123,6 +123,8 @@ header button{
     <input id="search" placeholder="🔍 بحث برقم الجهاز أو المستخدم" inputmode="numeric">
     <span class="paste-btn" onclick="pasteFromClipboard()">📋</span>
   </div>
+<!-- داخل container، أعلى الكروت -->
+<div id="totalDevices" style="margin-bottom:10px;font-weight:bold;color:#0d6efd;"></div>
 
   <div class="cards" id="cards"></div>
 </div>
@@ -138,7 +140,6 @@ header button{
     <input id="vip12m" placeholder="سنة">
 
     <button class="save" onclick="save()">💾 حفظ</button>
-    <button class="deleteBtn" onclick="deleteDeviceModal()" style="display:none;">🗑️ حذف</button>
     <button class="close" onclick="closeModal()">إغلاق</button>
   </div>
 </div>
@@ -177,9 +178,9 @@ document.getElementById("search").addEventListener("input",()=>{
 function pasteFromClipboard(){
   navigator.clipboard.readText().then(text=>{
     if(!text) return;
-    const clean = text.replace(/\D/g,""); 
+    const clean = text.replace(/\D/g,""); // أرقام فقط
     document.getElementById("search").value = clean;
-    document.getElementById("search").dispatchEvent(new Event("input")); 
+    document.getElementById("search").dispatchEvent(new Event("input")); // فلترة مباشرة
   }).catch(()=>{
     alert("⚠️ المتصفح لا يسمح باللصق تلقائياً، الصق يدويًا");
   });
@@ -194,7 +195,6 @@ function openAdd(){
   document.getElementById("vip3m").value="";
   document.getElementById("vip6m").value="";
   document.getElementById("vip12m").value="";
-  document.querySelector(".deleteBtn").style.display="none";
   document.getElementById("modal").style.display="flex";
 }
 
@@ -207,12 +207,12 @@ function edit(d){
   document.getElementById("vip3m").value=d.vip3m;
   document.getElementById("vip6m").value=d.vip6m;
   document.getElementById("vip12m").value=d.vip12m;
-  document.querySelector(".deleteBtn").style.display="block";
   document.getElementById("modal").style.display="flex";
 }
 
 // حفظ التعديل أو الإضافة
 function save(){
+  // التحقق من رقم الجهاز 12 رقم
   const sn = document.getElementById("snumber").value.replace(/\D/g,"");
   document.getElementById("snumber").value = sn;
   const un = document.getElementById("usernumber").value.replace(/\D/g,"");
@@ -229,15 +229,6 @@ function save(){
   .then(()=>{closeModal();load();});
 }
 
-// حذف الجهاز من المودال
-function deleteDeviceModal(){
-  if(!editOld) return;
-  if(!confirm("هل أنت متأكد من حذف هذا الجهاز؟")) return;
-  fetch(`${API}?action=delete&snumber=${editOld}`)
-  .then(r=>r.json())
-  .then(()=>{closeModal();load();});
-}
-
 // إغلاق المودال
 function closeModal(){
   document.getElementById("modal").style.display="none";
@@ -245,6 +236,21 @@ function closeModal(){
 
 // تحميل الكروت عند فتح الصفحة
 load();
+function draw(data){
+  // تحديث إجمالي عدد الأجهزة
+  document.getElementById("totalDevices").textContent = `إجمالي الأجهزة: ${data.length}`;
+
+  const cards = document.getElementById("cards");
+  cards.innerHTML="";
+  data.forEach(x=>{
+    let c=document.createElement("div");
+    c.className="card";
+    c.innerHTML=`<div class="user">${x.usernumber}</div><div class="device">${x.snumber}</div>`;
+    c.onclick=()=>edit(x);
+    cards.appendChild(c);
+  });
+}
+
 </script>
 
 </body>
