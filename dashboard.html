@@ -2,257 +2,229 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة الموزع </title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>لوحة الموزع | يمن ستلايت</title>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
+<!-- ======================= CSS ======================= -->
 <style>
-body{
-  font-family:Tahoma, Arial;
-  background:#f4f6f9;
-  margin:0;
-  padding:15px;
-}
-.container{
-  max-width:1200px;
-  margin:auto;
-  background:#fff;
-  padding:20px;
-  border-radius:12px;
-  box-shadow:0 4px 20px rgba(0,0,0,.1);
-}
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
-}
-.header h3{color:#0d6efd;margin:0}
-button{
-  padding:10px 14px;
-  border:none;
-  border-radius:6px;
-  background:#0d6efd;
-  color:#fff;
-  cursor:pointer;
-  font-size:14px;
-}
-button.logout{background:#dc3545}
-button.gray{background:#6c757d}
-
-.summary{
-  background:#e9f5ff;
-  padding:12px;
-  border-radius:8px;
-  margin:15px 0;
-  font-weight:bold;
-  border:1px solid #0d6efd;
+body {
+  font-family: "Tajawal", sans-serif;
+  background: #f1f5f9;
+  margin: 0;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
-/* فلاتر */
-.filters-box{
-  background:#f8f9fb;
-  padding:15px;
-  border-radius:10px;
-  margin-bottom:15px;
-  border:1px solid #ddd;
-}
-.filter-row{
-  display:;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-bottom:10px;
-}
-.filter-row > div{
-  flex:;
-  min-width:180px;
-}
-label{
-  font-size:13px;
-  font-weight:bold;
-  display:block;
-  margin-bottom:4px;
-}
-input,select{
-  width:90%;
-  padding:10px;
-  border-radius:6px;
-  border:1px solid #ccc;
-}
-.filter-actions{
-  display:flex;
-  gap:10px;
+h2 {
+  text-align: center;
+  color: #0f172a;
 }
 
-/* جدول */
-.table-container{overflow-x:auto}
-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:10px;
-  font-size:13px;
+.summary {
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 10px #0001;
 }
-th,td{
-  border:1px solid #ddd;
-  padding:8px;
-  text-align:center;
-}
-th{
-  background:#0d6efd;
-  color:#fff;
-}
-.status-Refund{color:red;font-weight:bold}
-.status-Completed{color:green;font-weight:bold}
-.status-Pending{color:orange;font-weight:bold}
 
-@media(max-width:768px){
-  table{font-size:12px}
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.filters input,
+.filters select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  flex: 1;
+  min-width: 150px;
+}
+
+.filters button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.filters button:hover { background: #1d4ed8; }
+
+#dataTable {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px #0001;
+}
+
+#dataTable th,
+#dataTable td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+#dataTable th { background: #2563eb; color: white; }
+
+.status-Refund { color: red; font-weight: bold; }
+.status-Completed { color: green; }
+.status-Pending { color: orange; }
+
+@media (max-width: 600px){
+  .filters { flex-direction: column; }
+  #dataTable th, #dataTable td { font-size: 12px; padding: 6px; }
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<h2>لوحة الموزع</h2>
 
-  <div class="header">
-    <h3 id="welcome">لوحة الموزع</h3>
-    <button class="logout" onclick="logout()">تسجيل خروج</button>
-  </div>
-
+<!-- ======================= الإجماليات ======================= -->
 <div class="summary">
   💰 إجمالي الربح: <span id="totalProfit">0</span> ريال<br>
   🛒 إجمالي المبالغ: <span id="totalAmount">0</span> ريال<br>
   🔢 إجمالي الأكواد المباعه: <span id="totalCodes">0</span><br>
   ❌ عدد الأكواد الملغيه: <span id="cancelledCodes">0</span><br>
-  ✅ صافي الأكواد المباعه: <span id="netCodes">0</span>
+  ✅ صافي الأكواد المباعه: <span id="netCodes">0</span><br>
+  🎯 الهدف: <span id="targetProfit">0</span> ريال<br>
+  📈 نسبة تحقيق الهدف: <span id="targetPercent">0</span> %
 </div>
 
-
-
-  <!-- الفلاتر -->
-  <div class="filters-box">
-
-    <div class="filter-row">
-      <div>
-        <label>من تاريخ</label>
-        <input type="date" id="fromDate">
-      </div>
-      <div>
-        <label>إلى تاريخ</label>
-        <input type="date" id="toDate">
-      </div>
-    </div>
-
-    <div class="filter-row">
-      <div>
-        <label>User</label>
-        <select id="userFilter">
-          <option value="">الكل</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="filter-actions">
-      <button onclick="applyFilter()">تطبيق الفلترة</button>
-      <button class="gray" onclick="clearFilter()">إلغاء الفلترة</button>
-    </div>
-
-  </div>
-
-  <button onclick="exportExcel()">⬇ تحميل Excel</button>
-
-  <div class="table-container">
-    <table id="dataTable">
-      <thead>
-        <tr>
-          <th>التاريخ</th>
-          <th>المنتج</th>
-          <th>المبلغ</th>
-          <th>User</th>
-          <th>SN</th>
-          <th>الربح</th>
-          <th>الحالة</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-
+<!-- ======================= الفلاتر ======================= -->
+<div class="filters">
+  <input type="date" id="filterDate">
+  <select id="filterUser">
+    <option value="">اختر المستخدم</option>
+  </select>
+  <button onclick="applyFilters()">تطبيق الفلترة</button>
+  <button onclick="resetFilters()">إلغاء الفلترة</button>
+  <button onclick="exportExcel()">تصدير Excel</button>
+  <button onclick="logout()">خروج</button>
 </div>
 
+<!-- ======================= الجدول ======================= -->
+<table id="dataTable">
+  <thead>
+    <tr>
+      <th>التاريخ</th>
+      <th>المنتج</th>
+      <th>المبلغ</th>
+      <th>المستخدم</th>
+      <th>SN</th>
+      <th>Profit</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<!-- ======================= JS ======================= -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-/* ===== الإعدادات ===== */
-const API_URL = "https://script.google.com/macros/s/AKfycbxvIAJHjwxAHqJO-dQLWwXD2I1NTgK1wy3gH60GWmB6d73aCqkmLcA6WUlKaZixVspFjQ/exec";
-
-/* ===== حماية الصفحة ===== */
-const dealer = sessionStorage.getItem("dealer");
-if(!dealer){
-  window.location.href = "login.html";
-}
-document.getElementById("welcome").innerText = "مرحبًا " + dealer;
-
-/* ===== المتغيرات ===== */
+const API_URL = "ضع_رابط_AppsScript_هنا"; // رابط سكربتك
 let allData = [];
 let filteredData = [];
+const dealer = sessionStorage.getItem("dealer");
 
-/* ===== جلب البيانات ===== */
-fetch(API_URL,{
-  method:"POST",
-  body:JSON.stringify({ dealer: dealer })
-})
-.then(r=>r.json())
-.then(d=>{
-  allData = d.data || [];
-  filteredData = [...allData];
+// ======================= جلب البيانات =======================
+async function loadData(){
+  try {
+    const res = await fetch(API_URL,{
+      method:"POST",
+      body: JSON.stringify({ mobile: dealer, password: "" })
+    });
+    const data = await res.json();
+    if(!data.success){ alert("خطأ في جلب البيانات"); return; }
 
-  fillUserFilter(allData);
-  renderTable(filteredData);
-});
+    allData = data.data || [];
+    filteredData = [...allData];
 
-/* ===== تعبئة Users ===== */
+    fillUserFilter(allData);
+    renderTable(filteredData, data.target);
+  } catch(err){
+    console.error(err);
+    alert("خطأ في الاتصال بالخادم");
+  }
+}
+
+// ======================= تعبئة قائمة المستخدمين =======================
 function fillUserFilter(data){
-  const select = document.getElementById("userFilter");
-  const users = new Set();
-
-  data.forEach(r=>{
-    if(r[3]) users.add(r[3]);
-  });
-
+  const select = document.getElementById("filterUser");
+  const users = [...new Set(data.map(r => r[3]))]; // إزالة المكررات
   users.forEach(u=>{
-    let o = document.createElement("option");
-    o.value = u;
-    o.textContent = u;
-    select.appendChild(o);
+    if(u) {
+      const option = document.createElement("option");
+      option.value = u; option.innerText = u;
+      select.appendChild(option);
+    }
   });
 }
 
-/* ===== رسم الجدول ===== */
-function renderTable(data){
+// ======================= تطبيق الفلترة =======================
+function applyFilters(){
+  const date = document.getElementById("filterDate").value;
+  const user = document.getElementById("filterUser").value;
+
+  filteredData = allData.filter(r=>{
+    let ok = true;
+    if(date) ok = ok && r[0].startsWith(date);
+    if(user) ok = ok && r[3] === user;
+    return ok;
+  });
+  renderTable(filteredData);
+}
+
+// ======================= إلغاء الفلترة =======================
+function resetFilters(){
+  document.getElementById("filterDate").value = "";
+  document.getElementById("filterUser").value = "";
+  filteredData = [...allData];
+  renderTable(filteredData);
+}
+
+// ======================= تصدير Excel =======================
+function exportExcel(){
+  let table = document.getElementById("dataTable");
+  let wb = XLSX.utils.table_to_book(table, { sheet:"Sheet1" });
+  let fileName = (dealer || "dealer") + "_report.xlsx";
+  XLSX.writeFile(wb, fileName);
+}
+
+// ======================= تسجيل الخروج =======================
+function logout(){
+  sessionStorage.clear();
+  window.location.href = "login.html";
+}
+
+// ======================= رسم الجدول والحسابات =======================
+function renderTable(data, targetProfit){
   const tbody = document.querySelector("#dataTable tbody");
   tbody.innerHTML = "";
 
-  let totalProfit = 0;
-  let totalAmount = 0;
-  let totalCodes = data.length;
-  let cancelledCodes = 0;
+  let totalProfit = 0, totalAmount = 0, totalCodes = data.length, cancelledCodes = 0;
 
   data.forEach(r=>{
-    let profit = Number(r[5]) || 0;
+    const profit = Number(r[5]) || 0;
     totalProfit += profit;
     totalAmount += Number(r[2]) || 0;
+    if(profit < 0) cancelledCodes += 1;
 
-    if(profit < 0){
-      cancelledCodes += 1;
-    }
+    const statusClass =
+      r[6]==="Refund" ? "status-Refund" :
+      r[6]==="Completed" ? "status-Completed" :
+      r[6]==="Pending" ? "status-Pending" : "";
 
-    let statusClass =
-      r[6] === "Refund" ? "status-Refund" :
-      r[6] === "Completed" ? "status-Completed" :
-      r[6] === "Pending" ? "status-Pending" : "";
-
-    let tr = document.createElement("tr");
+    const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${r[0].split("T")[0]}</td>
       <td>${r[1]}</td>
@@ -265,53 +237,23 @@ function renderTable(data){
     tbody.appendChild(tr);
   });
 
-  let netCodes = totalCodes - 2 * cancelledCodes;
+  const netCodes = totalCodes - 2*cancelledCodes;
 
-  // تحديث الواجهة
   document.getElementById("totalProfit").innerText = totalProfit.toLocaleString();
   document.getElementById("totalAmount").innerText = totalAmount.toLocaleString();
   document.getElementById("totalCodes").innerText = totalCodes;
   document.getElementById("cancelledCodes").innerText = cancelledCodes;
   document.getElementById("netCodes").innerText = netCodes;
+
+  // Target ثابت لكل الموزعين
+  targetProfit = targetProfit || 200; // إذا لم يرسل API قيمة
+  document.getElementById("targetProfit").innerText = targetProfit.toLocaleString();
+  const percent = targetProfit>0 ? ((totalProfit/targetProfit)*100).toFixed(2) : 0;
+  document.getElementById("targetPercent").innerText = percent;
 }
 
-
-/* ===== الفلترة ===== */
-function applyFilter(){
-  const from = fromDate.value;
-  const to = toDate.value;
-  const user = userFilter.value;
-
-  filteredData = allData.filter(r=>{
-    const d = r[0].split("T")[0];
-    if(from && d < from) return false;
-    if(to && d > to) return false;
-    if(user && r[3] !== user) return false;
-    return true;
-  });
-
-  renderTable(filteredData);
-}
-
-function clearFilter(){
-  fromDate.value = "";
-  toDate.value = "";
-  userFilter.value = "";
-  filteredData = [...allData];
-  renderTable(filteredData);
-}
-
-/* ===== تصدير Excel ===== */
-function exportExcel(){
-  const wb = XLSX.utils.table_to_book(dataTable,{sheet:"Report"});
-  XLSX.writeFile(wb,"dealer_report.xlsx");
-}
-
-/* ===== خروج ===== */
-function logout(){
-  sessionStorage.clear();
-  window.location.href = "login.html";
-}
+// ======================= تحميل البيانات عند فتح الصفحة =======================
+window.addEventListener("DOMContentLoaded", loadData);
 </script>
 
 </body>
