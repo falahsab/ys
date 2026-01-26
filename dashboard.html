@@ -3,21 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة الموزع</title>
+<title>لوحة الموزع - يمن ستلايت</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <style>
-body{font-family:Tahoma;background:#f4f6f9;margin:0;padding:15px}
+body{
+  font-family:Tahoma, Arial;
+  background:#f4f6f9;
+  margin:0;
+  padding:15px;
+}
 .container{
-  max-width:1100px;
+  max-width:1200px;
   margin:auto;
   background:#fff;
   padding:20px;
   border-radius:12px;
   box-shadow:0 4px 20px rgba(0,0,0,.1);
 }
-h3{color:#0d6efd}
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.header h3{color:#0d6efd;margin:0}
 button{
   padding:10px 14px;
   border:none;
@@ -25,19 +36,61 @@ button{
   background:#0d6efd;
   color:#fff;
   cursor:pointer;
+  font-size:14px;
 }
 button.logout{background:#dc3545}
+button.gray{background:#6c757d}
+
 .summary{
   background:#e9f5ff;
   padding:12px;
-  margin:10px 0;
-  border-radius:6px;
+  border-radius:8px;
+  margin:15px 0;
   font-weight:bold;
+  border:1px solid #0d6efd;
 }
+
+/* فلاتر */
+.filters-box{
+  background:#f8f9fb;
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:15px;
+  border:1px solid #ddd;
+}
+.filter-row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+.filter-row > div{
+  flex:1;
+  min-width:180px;
+}
+label{
+  font-size:13px;
+  font-weight:bold;
+  display:block;
+  margin-bottom:4px;
+}
+input,select{
+  width:100%;
+  padding:10px;
+  border-radius:6px;
+  border:1px solid #ccc;
+}
+.filter-actions{
+  display:flex;
+  gap:10px;
+}
+
+/* جدول */
+.table-container{overflow-x:auto}
 table{
   width:100%;
   border-collapse:collapse;
-  margin-top:15px;
+  margin-top:10px;
   font-size:13px;
 }
 th,td{
@@ -45,64 +98,144 @@ th,td{
   padding:8px;
   text-align:center;
 }
-th{background:#0d6efd;color:#fff}
+th{
+  background:#0d6efd;
+  color:#fff;
+}
 .status-Refund{color:red;font-weight:bold}
+.status-Completed{color:green;font-weight:bold}
+.status-Pending{color:orange;font-weight:bold}
+
+@media(max-width:768px){
+  table{font-size:12px}
+}
 </style>
 </head>
 
 <body>
 
 <div class="container">
-  <div style="display:flex;justify-content:space-between;align-items:center">
-    <h3 id="welcome"></h3>
-    <button class="logout" onclick="logout()">خروج</button>
+
+  <div class="header">
+    <h3 id="welcome">لوحة الموزع</h3>
+    <button class="logout" onclick="logout()">تسجيل خروج</button>
   </div>
 
   <div class="summary">
     💰 إجمالي الربح: <span id="totalProfit">0</span> ريال
   </div>
 
-  <table id="dataTable">
-    <thead>
-      <tr>
-        <th>التاريخ</th>
-        <th>المنتج</th>
-        <th>المبلغ</th>
-        <th>User</th>
-        <th>SN</th>
-        <th>الربح</th>
-        <th>الحالة</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <!-- الفلاتر -->
+  <div class="filters-box">
 
-  <br>
-  <button onclick="exportExcel()">تحميل Excel</button>
+    <div class="filter-row">
+      <div>
+        <label>من تاريخ</label>
+        <input type="date" id="fromDate">
+      </div>
+      <div>
+        <label>إلى تاريخ</label>
+        <input type="date" id="toDate">
+      </div>
+    </div>
+
+    <div class="filter-row">
+      <div>
+        <label>User</label>
+        <select id="userFilter">
+          <option value="">الكل</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="filter-actions">
+      <button onclick="applyFilter()">تطبيق الفلترة</button>
+      <button class="gray" onclick="clearFilter()">إلغاء الفلترة</button>
+    </div>
+
+  </div>
+
+  <button onclick="exportExcel()">⬇ تحميل Excel</button>
+
+  <div class="table-container">
+    <table id="dataTable">
+      <thead>
+        <tr>
+          <th>التاريخ</th>
+          <th>المنتج</th>
+          <th>المبلغ</th>
+          <th>User</th>
+          <th>SN</th>
+          <th>الربح</th>
+          <th>الحالة</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
 </div>
 
 <script>
+/* ===== الإعدادات ===== */
 const API_URL = "https://script.google.com/macros/s/AKfycbxvIAJHjwxAHqJO-dQLWwXD2I1NTgK1wy3gH60GWmB6d73aCqkmLcA6WUlKaZixVspFjQ/exec";
 
-// منع الدخول بدون تسجيل
-let dealer = sessionStorage.getItem("dealer");
+/* ===== حماية الصفحة ===== */
+const dealer = sessionStorage.getItem("dealer");
 if(!dealer){
-  window.location.href = "/login.html";
+  window.location.href = "login.html";
 }
-
 document.getElementById("welcome").innerText = "مرحبًا " + dealer;
 
+/* ===== المتغيرات ===== */
+let allData = [];
+let filteredData = [];
+
+/* ===== جلب البيانات ===== */
 fetch(API_URL,{
   method:"POST",
   body:JSON.stringify({ dealer: dealer })
 })
 .then(r=>r.json())
 .then(d=>{
-  let tbody = document.querySelector("tbody");
+  allData = d.data || [];
+  filteredData = [...allData];
+
+  fillUserFilter(allData);
+  renderTable(filteredData);
+});
+
+/* ===== تعبئة Users ===== */
+function fillUserFilter(data){
+  const select = document.getElementById("userFilter");
+  const users = new Set();
+
+  data.forEach(r=>{
+    if(r[3]) users.add(r[3]);
+  });
+
+  users.forEach(u=>{
+    let o = document.createElement("option");
+    o.value = u;
+    o.textContent = u;
+    select.appendChild(o);
+  });
+}
+
+/* ===== رسم الجدول ===== */
+function renderTable(data){
+  const tbody = document.querySelector("#dataTable tbody");
+  tbody.innerHTML = "";
   let total = 0;
 
-  d.data.forEach(r=>{
+  data.forEach(r=>{
     total += Number(r[5]) || 0;
+
+    let statusClass =
+      r[6] === "Refund" ? "status-Refund" :
+      r[6] === "Completed" ? "status-Completed" :
+      r[6] === "Pending" ? "status-Pending" : "";
+
     let tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${r[0].split("T")[0]}</td>
@@ -111,22 +244,49 @@ fetch(API_URL,{
       <td>${r[3]}</td>
       <td>${r[4]}</td>
       <td>${r[5]}</td>
-      <td class="${r[6]==='Refund'?'status-Refund':''}">${r[6]}</td>
+      <td class="${statusClass}">${r[6]}</td>
     `;
     tbody.appendChild(tr);
   });
 
   totalProfit.innerText = total.toLocaleString();
-});
+}
 
+/* ===== الفلترة ===== */
+function applyFilter(){
+  const from = fromDate.value;
+  const to = toDate.value;
+  const user = userFilter.value;
+
+  filteredData = allData.filter(r=>{
+    const d = r[0].split("T")[0];
+    if(from && d < from) return false;
+    if(to && d > to) return false;
+    if(user && r[3] !== user) return false;
+    return true;
+  });
+
+  renderTable(filteredData);
+}
+
+function clearFilter(){
+  fromDate.value = "";
+  toDate.value = "";
+  userFilter.value = "";
+  filteredData = [...allData];
+  renderTable(filteredData);
+}
+
+/* ===== تصدير Excel ===== */
+function exportExcel(){
+  const wb = XLSX.utils.table_to_book(dataTable,{sheet:"Report"});
+  XLSX.writeFile(wb,"dealer_report.xlsx");
+}
+
+/* ===== خروج ===== */
 function logout(){
   sessionStorage.clear();
   window.location.href = "login.html";
-}
-
-function exportExcel(){
-  let wb = XLSX.utils.table_to_book(dataTable,{sheet:"Report"});
-  XLSX.writeFile(wb,"dealer_report.xlsx");
 }
 </script>
 
