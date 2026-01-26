@@ -3,80 +3,130 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تسجيل دخول الموزع</title>
+<title>لوحة الموزع</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <style>
-body{
-  font-family:Tahoma;
-  background:#f4f6f9;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-}
-.login-box{
+body{font-family:Tahoma;background:#f4f6f9;margin:0;padding:15px}
+.container{
+  max-width:1100px;
+  margin:auto;
   background:#fff;
-  padding:30px;
-  width:100%;
-  max-width:360px;
+  padding:20px;
   border-radius:12px;
-  box-shadow:0 10px 30px rgba(0,0,0,.15);
+  box-shadow:0 4px 20px rgba(0,0,0,.1);
 }
-h3{text-align:center;color:#0d6efd}
-input,button{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border-radius:6px;
-  border:1px solid #ccc;
-  font-size:14px;
-}
+h3{color:#0d6efd}
 button{
+  padding:10px 14px;
+  border:none;
+  border-radius:6px;
   background:#0d6efd;
   color:#fff;
-  border:none;
   cursor:pointer;
 }
-button:hover{opacity:.9}
+button.logout{background:#dc3545}
+.summary{
+  background:#e9f5ff;
+  padding:12px;
+  margin:10px 0;
+  border-radius:6px;
+  font-weight:bold;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:15px;
+  font-size:13px;
+}
+th,td{
+  border:1px solid #ddd;
+  padding:8px;
+  text-align:center;
+}
+th{background:#0d6efd;color:#fff}
+.status-Refund{color:red;font-weight:bold}
 </style>
 </head>
 
 <body>
 
-<div class="login-box">
-  <h3>دخول الموزع</h3>
-  <input id="mobile" placeholder="رقم الجوال">
-  <input id="password" type="password" placeholder="كلمة المرور">
-  <button onclick="login()">دخول</button>
+<div class="container">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h3 id="welcome"></h3>
+    <button class="logout" onclick="logout()">خروج</button>
+  </div>
+
+  <div class="summary">
+    💰 إجمالي الربح: <span id="totalProfit">0</span> ريال
+  </div>
+
+  <table id="dataTable">
+    <thead>
+      <tr>
+        <th>التاريخ</th>
+        <th>المنتج</th>
+        <th>المبلغ</th>
+        <th>User</th>
+        <th>SN</th>
+        <th>الربح</th>
+        <th>الحالة</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <br>
+  <button onclick="exportExcel()">تحميل Excel</button>
 </div>
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbz9-PcXjV4RxpN6996rhgyYIScNbo8rDnhROrAh_Lp3b75lnwqX5k_I0nafkIJ8WjgJZQ/exec";
 
-function login(){
-  fetch(API_URL,{
-    method:"POST",
-    body:JSON.stringify({
-      mobile: mobile.value,
-      password: password.value
-    })
-  })
-  .then(r=>r.json())
-  .then(d=>{
-    if(!d.success){
-      alert("بيانات الدخول غير صحيحة");
-      return;
-    }
+// منع الدخول بدون تسجيل
+let dealer = sessionStorage.getItem("dealer");
+if(!dealer){
+  window.location.href = "/login.html";
+}
 
-    // حفظ اسم الموزع مؤقتًا
-    sessionStorage.setItem("dealer", d.dealer);
+document.getElementById("welcome").innerText = "مرحبًا " + dealer;
 
-    // الانتقال للوحة التحكم
-    window.location.href = "dashboard.html";
-  })
-  .catch(()=>{
-    alert("فشل الاتصال بالخادم");
+fetch(API_URL,{
+  method:"POST",
+  body:JSON.stringify({ dealer: dealer })
+})
+.then(r=>r.json())
+.then(d=>{
+  let tbody = document.querySelector("tbody");
+  let total = 0;
+
+  d.data.forEach(r=>{
+    total += Number(r[5]) || 0;
+    let tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${r[0].split("T")[0]}</td>
+      <td>${r[1]}</td>
+      <td>${r[2]}</td>
+      <td>${r[3]}</td>
+      <td>${r[4]}</td>
+      <td>${r[5]}</td>
+      <td class="${r[6]==='Refund'?'status-Refund':''}">${r[6]}</td>
+    `;
+    tbody.appendChild(tr);
   });
+
+  totalProfit.innerText = total.toLocaleString();
+});
+
+function logout(){
+  sessionStorage.clear();
+  window.location.href = "login.html";
+}
+
+function exportExcel(){
+  let wb = XLSX.utils.table_to_book(dataTable,{sheet:"Report"});
+  XLSX.writeFile(wb,"dealer_report.xlsx");
 }
 </script>
 
