@@ -246,10 +246,24 @@ function applyFilter(){
 
 
 // تصدير Excel بنفس تنسيق الجدول
-function exportExcel(){
+function exportExcel1(){
   let table = document.getElementById("dataTable");
   let wb = XLSX.utils.table_to_book(table, {sheet:"Sheet1"});
   XLSX.writeFile(wb, "dealer_report.xlsx");
+}
+
+function exportExcel(){
+  let table = document.getElementById("dataTable");
+
+  // اسم الديلر من الجلسة
+  let dealerName = sessionStorage.getItem("dealer") || "dealer";
+
+  // تنظيف الاسم من الرموز غير المسموحة في اسم الملف
+  dealerName = dealerName.replace(/[\\\/:*?"<>|]/g, "_");
+
+  let wb = XLSX.utils.table_to_book(table, { sheet: "Report" });
+
+  XLSX.writeFile(wb, dealerName + "_report.xlsx");
 }
 </script>
 
