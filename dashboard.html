@@ -15,11 +15,27 @@ body {
   box-sizing: border-box;
 }
 
-h2 {
-  text-align: center;
-  color: #0f172a;
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 15px;
 }
+
+h2 {
+  color: #0f172a;
+}
+
+.logout-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.logout-btn:hover { background: #dc2626; }
 
 .summary {
   background: #fff;
@@ -106,7 +122,11 @@ h2 {
 
 <body>
 
-<h2>لوحة الموزع</h2>
+<!-- ======================= Header ======================= -->
+<div class="header">
+  <h2 id="welcomeMsg">مرحبا، <span id="dealerName"></span></h2>
+  <button class="logout-btn" onclick="logout()">خروج</button>
+</div>
 
 <!-- ======================= الإجماليات ======================= -->
 <div class="summary">
@@ -133,7 +153,6 @@ h2 {
   <button onclick="applyFilters()">تطبيق الفلترة</button>
   <button onclick="resetFilters()">إلغاء الفلترة</button>
   <button onclick="exportExcel()">تصدير Excel</button>
-  <button onclick="logout()">خروج</button>
 </div>
 
 <!-- ======================= الجدول ======================= -->
@@ -155,40 +174,35 @@ h2 {
 <!-- ======================= JS ======================= -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-// رابط سكربت Apps Script المصحح
-const API_URL = "https://script.google.com/macros/s/AKfycbyxZ2RsVQyQdDC_pzCPIsIzj4MLFZeoFUF1rvyHFxlynEXsa-kJBY6d_eY8gxXaBNoX0Q/exec"; // ضع هنا رابط Web App
+const API_URL = "https://script.google.com/macros/s/AKfycbyxZ2RsVQyQdDC_pzCPIsIzj4MLFZeoFUF1rvyHFxlynEXsa-kJBY6d_eY8gxXaBNoX0Q/exec"; 
 let allData = [];
 let filteredData = [];
 const dealer = sessionStorage.getItem("dealer");
 
-// ======================= تحميل البيانات =======================
-async function loadData(){
-  if(!dealer){ alert("يرجى تسجيل الدخول أولاً"); window.location.href="login.html"; return; }
+function loadData(){
+  if(!dealer){ alert("يرجى تسجيل الدخول"); window.location.href="login.html"; return; }
 
-  try {
-    const res = await fetch(API_URL,{
-      method:"POST",
-      body: JSON.stringify({ dealer })
-    });
-    const data = await res.json();
+  document.getElementById("dealerName").innerText = dealer;
+
+  fetch(API_URL,{
+    method:"POST",
+    body: JSON.stringify({ dealer })
+  })
+  .then(res => res.json())
+  .then(data => {
     if(!data.success){ alert("خطأ في جلب البيانات"); return; }
-
     allData = data.data || [];
     filteredData = [...allData];
-
     fillUserFilter(allData);
     renderTable(filteredData, data.target);
-  } catch(err){
-    console.error(err);
-    alert("خطأ في الاتصال بالخادم");
-  }
+  })
+  .catch(err => { console.error(err); alert("خطأ في الاتصال بالخادم"); });
 }
 
-// ======================= قائمة المستخدمين =======================
 function fillUserFilter(data){
   const select = document.getElementById("filterUser");
   select.innerHTML = '<option value="">اختر المستخدم</option>';
-  const users = [...new Set(data.map(r => r[3]))]; // إزالة التكرارات
+  const users = [...new Set(data.map(r=>r[3]))];
   users.forEach(u=>{
     if(u){
       const option = document.createElement("option");
@@ -198,21 +212,18 @@ function fillUserFilter(data){
   });
 }
 
-// ======================= تطبيق الفلترة =======================
 function applyFilters(){
   const date = document.getElementById("filterDate").value;
   const user = document.getElementById("filterUser").value;
-
   filteredData = allData.filter(r=>{
     let ok = true;
-    if(date) ok = ok && r[0].startsWith(date);
+    if(date) ok = ok && r[0].split("T")[0] === date;
     if(user) ok = ok && r[3] === user;
     return ok;
   });
   renderTable(filteredData);
 }
 
-// ======================= إلغاء الفلترة =======================
 function resetFilters(){
   document.getElementById("filterDate").value = "";
   document.getElementById("filterUser").value = "";
@@ -220,21 +231,17 @@ function resetFilters(){
   renderTable(filteredData);
 }
 
-// ======================= تصدير Excel =======================
 function exportExcel(){
-  let table = document.getElementById("dataTable");
-  let wb = XLSX.utils.table_to_book(table, { sheet:"Sheet1" });
-  let fileName = (dealer || "dealer") + "_report.xlsx";
-  XLSX.writeFile(wb, fileName);
+  const table = document.getElementById("dataTable");
+  const wb = XLSX.utils.table_to_book(table, { sheet:"Sheet1" });
+  XLSX.writeFile(wb, (dealer || "dealer") + "_report.xlsx");
 }
 
-// ======================= تسجيل الخروج =======================
 function logout(){
   sessionStorage.clear();
   window.location.href = "login.html";
 }
 
-// ======================= رسم الجدول والحسابات =======================
 function renderTable(data, targetProfit){
   const tbody = document.querySelector("#dataTable tbody");
   tbody.innerHTML = "";
@@ -267,27 +274,23 @@ function renderTable(data, targetProfit){
 
   const netCodes = totalCodes - 2*cancelledCodes;
 
-  // تحديث الإجماليات
   document.getElementById("totalProfit").innerText = totalProfit.toLocaleString();
   document.getElementById("totalAmount").innerText = totalAmount.toLocaleString();
   document.getElementById("totalCodes").innerText = totalCodes;
   document.getElementById("cancelledCodes").innerText = cancelledCodes;
   document.getElementById("netCodes").innerText = netCodes;
 
-  // Target ثابت لكل الموزعين
   targetProfit = targetProfit || 200;
   document.getElementById("targetProfit").innerText = targetProfit.toLocaleString();
 
   const percent = targetProfit>0 ? ((totalProfit/targetProfit)*100).toFixed(2) : 0;
   document.getElementById("targetPercent").innerText = percent;
 
-  // تحديث Progress Bar
   const progressBar = document.getElementById("progressBar");
   progressBar.style.width = percent + "%";
   progressBar.innerText = percent + "%";
 }
 
-// ======================= تحميل البيانات عند فتح الصفحة =======================
 window.addEventListener("DOMContentLoaded", loadData);
 </script>
 
