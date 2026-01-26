@@ -124,8 +124,11 @@ th{
 <div class="summary">
   💰 إجمالي الربح: <span id="totalProfit">0</span> ريال<br>
   🛒 إجمالي المبالغ: <span id="totalAmount">0</span> ريال<br>
-  🔢 عدد الأكواد المباعة: <span id="totalCodes">0</span>
+  🔢 إجمالي الأكواد المباعه: <span id="totalCodes">0</span><br>
+  ❌ عدد الأكواد الملغيه: <span id="cancelledCodes">0</span><br>
+  ✅ صافي الأكواد المباعه: <span id="netCodes">0</span>
 </div>
+
 
 
   <!-- الفلاتر -->
@@ -232,11 +235,17 @@ function renderTable(data){
 
   let totalProfit = 0;
   let totalAmount = 0;
-  let totalCodes = data.length; // عدد الأكواد = عدد الصفوف
+  let totalCodes = data.length;
+  let cancelledCodes = 0;
 
   data.forEach(r=>{
-    totalProfit += Number(r[5]) || 0; // عمود Profit
-    totalAmount += Number(r[2]) || 0; // عمود Amount
+    let profit = Number(r[5]) || 0;
+    totalProfit += profit;
+    totalAmount += Number(r[2]) || 0;
+
+    if(profit < 0){
+      cancelledCodes += 1;
+    }
 
     let statusClass =
       r[6] === "Refund" ? "status-Refund" :
@@ -256,10 +265,14 @@ function renderTable(data){
     tbody.appendChild(tr);
   });
 
+  let netCodes = totalCodes - 2 * cancelledCodes;
+
   // تحديث الواجهة
   document.getElementById("totalProfit").innerText = totalProfit.toLocaleString();
   document.getElementById("totalAmount").innerText = totalAmount.toLocaleString();
   document.getElementById("totalCodes").innerText = totalCodes;
+  document.getElementById("cancelledCodes").innerText = cancelledCodes;
+  document.getElementById("netCodes").innerText = netCodes;
 }
 
 
