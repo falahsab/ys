@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حساب الموزع - يمن ستلايت</title>
+
+<!-- مكتبة XLSX لتصدير Excel -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<style>
+body{
+  font-family: Tahoma, Arial;
+  background:#f4f6f9;
+  margin:0;
+  padding:15px;
+}
+.container{
+  max-width:1100px;
+  margin:auto;
+  background:#fff;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 4px 20px rgba(0,0,0,.1);
+}
+h3,h4{margin:10px 0;font-weight:bold;color:#0d6efd;}
+input,button,select{
+  padding:10px;
+  font-size:14px;
+  margin:5px 0;
+  border-radius:6px;
+  border:1px solid #ccc;
+}
+button{
+  background:#0d6efd;
+  color:#fff;
+  border:none;
+  cursor:pointer;
+}
+button:hover{opacity:.9;}
+.summary{
+  background:#e9f5ff;
+  padding:12px;
+  border:1px solid #0d6efd;
+  border-radius:6px;
+  margin:10px 0;
+  font-weight:bold;
+}
+.filters{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+.filters div{flex:1}
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:15px;
+  font-size:13px;
+}
+th,td{
+  border:1px solid #ddd;
+  padding:8px;
+  text-align:center;
+}
+th{
+  background:#0d6efd;
+  color:#fff;
+}
+.status-Completed{color:green;font-weight:bold}
+.status-Pending{color:orange;font-weight:bold}
+.status-Canceled{color:red;font-weight:bold}
+.status-Refund{color:red;font-weight:bold}
+
+@media(max-width:768px){
+  table{font-size:12px;}
+  .filters{flex-direction:column;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h3>تسجيل دخول الموزع</h3>
+
+<div id="loginBox">
+  <input id="mobile" placeholder="رقم الجوال">
+  <input id="password" type="password" placeholder="كلمة المرور">
+  <button onclick="login()">دخول</button>
+</div>
+
+<div id="dashboard" style="display:none">
+
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <h4 id="welcome"></h4>
+    <button onclick="logout()">تسجيل خروج</button>
+  </div>
+
+  <div class="summary">
+    💰 إجمالي الربح: <span id="totalProfit">0</span> ريال
+  </div>
+
+  <div class="filters">
+    <div>
+      <label>من تاريخ</label>
+      <input type="date" id="fromDate">
+    </div>
+    <div>
+      <label>إلى تاريخ</label>
+      <input type="date" id="toDate">
+    </div>
+    <div>
+      <label>User</label>
+      <select id="userFilter"><option value="">الكل</option></select>
+    </div>
+    <div>
+      <label>&nbsp;</label>
+      <button onclick="applyFilter()">فلترة</button>
+    </div>
+  </div>
+
+  <button onclick="exportExcel()">⬇ تحميل Excel</button>
+
+  <div style="overflow-x:auto">
+    <table id="dataTable">
+      <thead>
+        <tr>
+          <th>الوقت</th>
+          <th>المنتج</th>
+          <th>المبلغ</th>
+          <th>User</th>
+          <th>SN</th>
+          <th>الربح</th>
+          <th>الحالة</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+</div>
+
+</div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbz9-PcXjV4RxpN6996rhgyYIScNbo8rDnhROrAh_Lp3b75lnwqX5k_I0nafkIJ8WjgJZQ/exec"; // ضع هنا رابط Web App
+let allData = [];
+
+function login(){
+  fetch(API_URL,{
+    method:"POST",
+    body:JSON.stringify({
+      mobile: mobile.value,
+      password: password.value
+    })
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    if(!d.success){
+      alert("بيانات الدخول غير صحيحة");
+      return;
+    }
+
+    document.getElementById("loginBox").style.display="none";
+    document.getElementById("dashboard").style.display="block";
+    document.getElementById("welcome").innerText="مرحبًا " + d.dealer;
+
+    allData = d.data; // البيانات مرتبة بالفعل من Apps Script
+    populateUserFilter(allData);
+    renderTable(allData);
+  })
+  .catch(e=>{
+    alert("خطأ في الاتصال بالخادم: " + e);
+  });
+}
+
+// زر خروج
+function logout(){
+  document.getElementById("loginBox").style.display="block";
+  document.getElementById("dashboard").style.display="none";
+  mobile.value = "";
+  password.value = "";
+  allData = [];
+  document.getElementById("userFilter").innerHTML = '<option value="">الكل</option>';
+}
+
+// تعبئة قائمة Users بدون تكرار
+function populateUserFilter(data){
+  const select = document.getElementById("userFilter");
+  let usersSet = new Set();
+  data.forEach(r=>{
+    if(r[3]) usersSet.add(r[3]);
+  });
+  usersSet.forEach(u=>{
+    let option = document.createElement("option");
+    option.value = u;
+    option.innerText = u;
+    select.appendChild(option);
+  });
+}
+
+function renderTable(data){
+  let tbody = document.querySelector("#dataTable tbody");
+  tbody.innerHTML="";
+  let total = 0;
+
+  data.forEach(r=>{
+    total += Number(r[5]) || 0;
+    let statusClass = r[6] === "Refund" ? "status-Refund" : "status-" + r[6];
+    let tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${r[0]}</td>
+      <td>${r[1]}</td>
+      <td>${r[2]}</td>
+      <td>${r[3]}</td>
+      <td>${r[4]}</td>
+      <td>${r[5]}</td>
+      <td class="${statusClass}">${r[6]}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById("totalProfit").innerText = total.toLocaleString();
+}
+
+function applyFilter(){
+  let from = fromDate.value ? fromDate.value : null; // YYYY-MM-DD
+  let to = toDate.value ? toDate.value : null;
+  let user = userFilter.value;
+
+  let filtered = allData.filter(r=>{
+    // تحويل r[0] (الوقت الكامل) إلى YYYY-MM-DD فقط
+    let dateStr = r[0].split('T')[0];
+
+    if(from && dateStr < from) return false;
+    if(to && dateStr > to) return false;
+    if(user && r[3] !== user) return false;
+    return true;
+  });
+
+  renderTable(filtered);
+}
+
+
+// تصدير Excel بنفس تنسيق الجدول
+function exportExcel(){
+  let table = document.getElementById("dataTable");
+  let wb = XLSX.utils.table_to_book(table, {sheet:"Sheet1"});
+  XLSX.writeFile(wb, "dealer_report.xlsx");
+}
+</script>
+
+</body>
+</html>
