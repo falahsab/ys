@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>لوحة الموزع | يمن ستلايت</title>
+<title>لوحة الموزع </title>
 
 <style>
 body { font-family:"Tajawal",sans-serif; background:#f1f5f9; margin:0; padding:20px; box-sizing:border-box; }
@@ -48,11 +48,11 @@ h2 { color:#0f172a; margin:5px 0; }
 
 <div class="summary">
   💰 إجمالي الربح: <span id="totalProfit">0</span> ريال<br>
-  🛒 إجمالي المبالغ: <span id="totalAmount">0</span> ريال<br>
-  🔢 إجمالي الأكواد المباعه: <span id="totalCodes">0</span><br>
+  🛒 إجمالي المبيعات: <span id="totalAmount">0</span> ريال<br>
+  🔢 إجمالي العمليات: <span id="totalCodes">0</span><br>
   ❌ عدد الأكواد الملغيه: <span id="cancelledCodes">0</span><br>
   ✅ صافي الأكواد المباعه: <span id="netCodes">0</span><br>
-  🎯 الهدف: <span id="targetProfit">0</span> ريال<br>
+  🎯 اجمالي ارباح الفريق: <span id="targetProfit">0</span> ريال<br>
   📈 نسبة تحقيق الهدف: <span id="targetPercent">0</span> %
 </div>
 
@@ -61,7 +61,9 @@ h2 { color:#0f172a; margin:5px 0; }
 </div>
 
 <div class="filters">
+  <label>من تاريخ</label>
   <input type="date" id="startDate" placeholder="من">
+  <label>من تاريخ</label>
   <input type="date" id="endDate" placeholder="إلى">
   <select id="filterUser"><option value="">اختر المستخدم</option></select>
   <button onclick="applyFilters()">تطبيق الفلترة</button>
