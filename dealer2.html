@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>لوحة الموزع | يمن ستلايت</title>
+<style>
+body { font-family:"Tajawal",sans-serif; background:#f1f5f9; margin:0; padding:20px; box-sizing:border-box; }
+.card { width:100%; max-width:400px; background:white; padding:30px 20px 40px 20px; border-radius:15px; box-shadow:0 4px 15px #0001; text-align:center; box-sizing:border-box; margin:auto; }
+.logo { width:100px; height:100px; margin:0 auto 20px auto; display:block; object-fit:contain; }
+h2 { margin-bottom:20px; color:#0f172a; }
+input, select { width:100%; padding:12px; margin-top:10px; border-radius:8px; border:1px solid #d1d5db; font-size:15px; box-sizing:border-box; }
+button { width:100%; padding:12px; margin-top:15px; border:none; border-radius:8px; background:#2563eb; color:white; font-size:17px; cursor:pointer; transition:0.3s; }
+button:hover { background:#1d4ed8; }
+#msg { margin-top:15px; color:red; font-weight:bold; }
+.header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:15px; }
+.logout-btn { background:#ef4444; color:white; border:none; border-radius:8px; padding:8px 12px; cursor:pointer; transition:0.3s; }
+.logout-btn:hover { background:#dc2626; }
+.summary { background:#fff; padding:15px; border-radius:12px; margin-bottom:15px; box-shadow:0 4px 10px #0001; font-size:14px; }
+.progress-container { background:#e5e7eb; border-radius:10px; height:25px; margin-bottom:15px; overflow:hidden; }
+#progressBar { height:100%; width:0%; background:#2563eb; text-align:center; color:white; line-height:25px; font-weight:bold; }
+.filters { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:15px; }
+.filters input, .filters select { padding:10px; border-radius:8px; border:1px solid #d1d5db; flex:1; min-width:120px; }
+.filters button { padding:10px 20px; border-radius:8px; border:none; background:#2563eb; color:white; cursor:pointer; transition:0.3s; }
+.filters button:hover { background:#1d4ed8; }
+.table-container { overflow-x:auto; background:#fff; border-radius:12px; box-shadow:0 4px 10px #0001; }
+#dataTable { width:100%; border-collapse:collapse; min-width:600px; }
+#dataTable th, #dataTable td { padding:8px 12px; border-bottom:1px solid #e5e7eb; text-align:center; white-space:nowrap; }
+#dataTable th { background:#2563eb; color:white; }
+.status-Refund { color:red; font-weight:bold; }
+.status-Completed { color:green; }
+.status-Pending { color:orange; }
+@media(max-width:600px){
+  .filters { flex-direction:column; }
+  .summary { font-size:13px; }
+  #dataTable th,#dataTable td{ font-size:12px; padding:6px; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ======================= نموذج تسجيل الدخول ======================= -->
+<div class="card" id="loginCard">
+  <img src="https://raw.githubusercontent.com/falahsab/jedwal/refs/heads/main/img/yemen-sat.png" alt="لوغو" class="logo">
+  <h2>تسجيل دخول الموزع</h2>
+  <input id="dealerInput" placeholder="اسم الموزع">
+  <button onclick="login()">دخول</button>
+  <p id="msg"></p>
+</div>
+
+<!-- ======================= لوحة الموزع ======================= -->
+<div id="dashboard" style="display:none;">
+  <div class="header">
+    <h2 id="welcomeMsg">مرحبا، <span id="dealerName"></span></h2>
+    <button class="logout-btn" onclick="logout()">خروج</button>
+  </div>
+
+  <div class="summary">
+    💰 إجمالي الربح: <span id="totalProfit">0</span> ريال<br>
+    🛒 إجمالي المبالغ: <span id="totalAmount">0</span> ريال<br>
+    🔢 إجمالي الأكواد المباعه: <span id="totalCodes">0</span><br>
+    ❌ عدد الأكواد الملغيه: <span id="cancelledCodes">0</span><br>
+    ✅ صافي الأكواد المباعه: <span id="netCodes">0</span><br>
+    🎯 الهدف: <span id="targetProfit">0</span> ريال<br>
+    📈 نسبة تحقيق الهدف: <span id="targetPercent">0</span> %
+  </div>
+
+  <div class="progress-container">
+    <div id="progressBar">0%</div>
+  </div>
+
+  <div class="filters">
+    <input type="date" id="startDate" placeholder="من">
+    <input type="date" id="endDate" placeholder="إلى">
+    <select id="filterUser"><option value="">اختر المستخدم</option></select>
+    <button onclick="applyFilters()">تطبيق الفلترة</button>
+    <button onclick="resetFilters()">إلغاء الفلترة</button>
+    <button onclick="exportExcel()">تصدير Excel</button>
+  </div>
+
+  <div class="table-container">
+    <table id="dataTable">
+      <thead>
+        <tr>
+          <th>التاريخ</th>
+          <th>المنتج</th>
+          <th>المبلغ</th>
+          <th>المستخدم</th>
+          <th>SN</th>
+          <th>Profit</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbxvIAJHjwxAHqJO-dQLWwXD2I1NTgK1wy3gH60GWmB6d73aCqkmLcA6WUlKaZixVspFjQ/exec";
+let allData=[], filteredData=[], dealer="", fixedTarget=0;
+
+// ======================= تسجيل الدخول =======================
+function login(){
+  dealer = document.getElementById("dealerInput").value.trim();
+  const msg=document.getElementById("msg");
+  if(!dealer){ msg.innerText="يرجى إدخال اسم الموزع"; return; }
+  msg.innerText="";
+
+  // جلب البيانات من Apps Script
+  fetch(API_URL,{
+    method:"POST",
+    body: JSON.stringify({ dealer })
+  }).then(res=>res.json()).then(data=>{
+    if(!data.success){ msg.innerText="لا توجد بيانات لهذا الموزع"; return; }
+
+    allData = data.data.filter(r=>r[8]===dealer); // فلترة حسب عمود dealer
+    filteredData = [...allData];
+
+    fixedTarget = data.target || 200;
+    document.getElementById("targetProfit").innerText = fixedTarget.toLocaleString();
+
+    // Progress Bar ثابت
+    const percent=((fixedTarget*100)/200).toFixed(2);
+    document.getElementById("targetPercent").innerText = percent;
+    document.getElementById("progressBar").style.width=percent+"%";
+    document.getElementById("progressBar").innerText=percent+"%";
+
+    fillUserFilter(allData);
+    renderTable(filteredData);
+
+    document.getElementById("dealerName").innerText=dealer;
+    document.getElementById("loginCard").style.display="none";
+    document.getElementById("dashboard").style.display="block";
+  }).catch(err=>{ console.error(err); msg.innerText="خطأ في الاتصال بالخادم"; });
+}
+
+// ======================= فلترة المستخدم =======================
+function fillUserFilter(data){
+  const select=document.getElementById("filterUser");
+  select.innerHTML='<option value="">اختر المستخدم</option>';
+  const users=[...new Set(data.map(r=>r[3]))];
+  users.forEach(u=>{ if(u){ const opt=document.createElement("option"); opt.value=u; opt.innerText=u; select.appendChild(opt); } });
+}
+
+function applyFilters(){
+  const start=document.getElementById("startDate").value;
+  const end=document.getElementById("endDate").value;
+  const user=document.getElementById("filterUser").value;
+
+  filteredData = allData.filter(r=>{
+    let ok=true;
+    const d=r[0].split("T")[0];
+    if(start) ok=ok && d>=start;
+    if(end) ok=ok && d<=end;
+    if(user) ok=ok && r[3]===user;
+    return ok;
+  });
+  renderTable(filteredData);
+}
+
+function resetFilters(){
+  document.getElementById("startDate").value="";
+  document.getElementById("endDate").value="";
+  document.getElementById("filterUser").value="";
+  filteredData=[...allData];
+  renderTable(filteredData);
+}
+
+// ======================= تصدير Excel =======================
+function exportExcel(){
+  const table=document.getElementById("dataTable");
+  const wb=XLSX.utils.table_to_book(table,{ sheet:"Sheet1" });
+  XLSX.writeFile(wb, dealer+"_report.xlsx");
+}
+
+// ======================= زر خروج =======================
+function logout(){
+  dealer="";
+  allData=[];
+  filteredData=[];
+  document.getElementById("loginCard").style.display="block";
+  document.getElementById("dashboard").style.display="none";
+}
+
+// ======================= عرض الجدول وحسابات الإجمالي =======================
+function renderTable(data){
+  const tbody=document.querySelector("#dataTable tbody");
+  tbody.innerHTML="";
+  let totalProfit=0, totalAmount=0, totalCodes=data.length, cancelledCodes=0;
+
+  data.forEach(r=>{
+    const profit=Number(r[5])||0;
+    totalProfit+=profit;
+    totalAmount+=Number(r[2])||0;
+    if(profit<0) cancelledCodes++;
+
+    const statusClass = r[6]==="Refund"?"status-Refund":r[6]==="Completed"?"status-Completed":r[6]==="Pending"?"status-Pending":"";
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td>${r[0].split("T")[0]}</td>
+      <td>${r[1]}</td>
+      <td>${r[2]}</td>
+      <td>${r[3]}</td>
+      <td>${r[4]}</td>
+      <td>${r[5]}</td>
+      <td class="${statusClass}">${r[6]}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  const netCodes=totalCodes-2*cancelledCodes;
+  document.getElementById("totalProfit").innerText=totalProfit.toLocaleString();
+  document.getElementById("totalAmount").innerText=totalAmount.toLocaleString();
+  document.getElementById("totalCodes").innerText=totalCodes;
+  document.getElementById("cancelledCodes").innerText=cancelledCodes;
+  document.getElementById("netCodes").innerText=netCodes;
+}
+</script>
+
+</body>
+</html>
