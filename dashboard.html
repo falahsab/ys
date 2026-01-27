@@ -71,10 +71,15 @@ button { width:100%; padding:12px; margin-top:15px; border:none; border-radius:8
 </div>
 
 <div class="filters">
-  <label>من تاريخ</label>
-  <input type="date" id="startDate" placeholder="من">
-  <label>الى تاريخ</label>
-  <input type="date" id="endDate" placeholder="إلى">
+ <div>
+    <label for="startDate">من تاريخ</label>
+    <input type="date" id="startDate">
+  </div>
+
+  <div>
+    <label for="endDate">إلى تاريخ</label>
+    <input type="date" id="endDate">
+  </div>
   <select id="filterUser"><option value="">اختر المستخدم</option></select>
   <button onclick="applyFilters()">تطبيق الفلترة</button>
   <button onclick="resetFilters()">إلغاء الفلترة</button>
