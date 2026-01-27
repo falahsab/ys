@@ -114,10 +114,12 @@ async function loadData(){
 
     // Progress Bar ثابت لا يتغير
     const totalProfitAll = allData.reduce((a,r)=> a + (Number(r[5])||0), 0);
-    const percent = fixedTarget>0 ? ((totalProfitAll/fixedTarget)*100).toFixed(2) : 0;
-    document.getElementById("targetPercent").innerText = percent;
-    document.getElementById("progressBar").style.width = percent+"%";
-    document.getElementById("progressBar").innerText = percent+"%";
+// Progress Bar ثابت: نسبة تحقق الهدف = (Target * 100) / 200
+const percent = ((fixedTarget * 100) / 200).toFixed(2);
+document.getElementById("targetPercent").innerText = percent;
+document.getElementById("progressBar").style.width = percent + "%";
+document.getElementById("progressBar").innerText = percent + "%";
+
 
     fillUserFilter(allData);
     renderTable(filteredData);
