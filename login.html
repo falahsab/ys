@@ -39,7 +39,8 @@ button:hover { background:#1d4ed8; }
   <img src="https://app.wallet.metamango.org/img/login_logo.f7859e79.png" alt="لوغو" class="logo">
   <h2>تسجيل دخول النظام</h2>
   <form id="loginForm" onsubmit="login(); return false;">
-    <input id="mobile" name="mobile" placeholder="رقم الجوال">
+    <input id="mobile"  name="mobile"  type="tel"  inputmode="numeric"  pattern="[0-9]*"  placeholder="رقم الجوال"  oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+
     <input id="password" name="password" type="password" placeholder="كلمة المرور">
     <button type="submit">دخول</button>
   </form>
