@@ -3,152 +3,77 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>تسجيل دخول الموزع | يمن مانجو</title>
+<title>تسجيل دخول الموزع | يمن ستلايت</title>
 
-<!-- =======================  CSS  ======================= -->
 <style>
-    body {
-        font-family: "Tajawal", sans-serif;
-        background: #f1f5f9;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        height: 100vh;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .card {
-        width: 100%;
-        max-width: 400px;
-        background: white;
-        padding: 30px 20px 40px 20px;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px #0001;
-        text-align: center;
-        box-sizing: border-box;
-    }
-
-    .logo {
-        width: 100px;
-        height: 100px;
-        margin: 0 auto 20px auto;
-        display: block;
-        object-fit: contain;
-    }
-
-    h2 {
-        margin-bottom: 20px;
-        color: #0f172a;
-    }
-
-    input {
-        width: 100%;
-        padding: 12px;
-        margin-top: 10px;
-        border-radius: 8px;
-        border: 1px solid #d1d5db;
-        font-size: 15px;
-        box-sizing: border-box;
-    }
-
-    button {
-        width: 100%;
-        padding: 12px;
-        margin-top: 15px;
-        border: none;
-        border-radius: 8px;
-        background: #2563eb;
-        color: white;
-        font-size: 17px;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-
-    button:hover {
-        background: #1d4ed8;
-    }
-
-    #msg {
-        margin-top: 15px;
-        color: red;
-        font-weight: bold;
-    }
-
-    @media (max-width: 500px){
-        .card {
-            padding: 20px 15px 30px 15px;
-        }
-        .logo {
-            width: 80px;
-            height: 80px;
-        }
-    }
+body {
+  font-family:"Tajawal",sans-serif;
+  background:#f1f5f9;
+  margin:0; padding:0;
+  display:flex;
+  height:100vh;
+  align-items:center;
+  justify-content:center;
+}
+.card {
+  width:100%; max-width:400px;
+  background:white;
+  padding:30px 20px 40px 20px;
+  border-radius:15px;
+  box-shadow:0 4px 15px #0001;
+  text-align:center;
+  box-sizing:border-box;
+}
+.logo { width:100px; height:100px; margin:0 auto 20px auto; display:block; object-fit:contain; }
+h2 { margin-bottom:20px; color:#0f172a; }
+input { width:100%; padding:12px; margin-top:10px; border-radius:8px; border:1px solid #d1d5db; font-size:15px; box-sizing:border-box; }
+button { width:100%; padding:12px; margin-top:15px; border:none; border-radius:8px; background:#2563eb; color:white; font-size:17px; cursor:pointer; transition:0.3s; }
+button:hover { background:#1d4ed8; }
+#msg { margin-top:15px; color:red; font-weight:bold; }
+@media(max-width:500px){ .card { padding:20px 15px 30px 15px; } .logo{width:80px;height:80px;} }
 </style>
 </head>
 
 <body>
-
-<!-- =======================  HTML  ======================= -->
 <div class="card">
-
-    <!-- شعار -->
-    <img src="https://app.wallet.metamango.org/img/login_logo.f7859e79.png" 
-         alt="Yemen Mango" class="logo">
-
-    <h2>تسجيل دخول الموزع</h2>
-
-    <form onsubmit="login(); return false;">
-        <input id="mobile" placeholder="رقم الجوال">
-        <input id="password" type="password" placeholder="كلمة المرور">
-        <button type="submit">دخول</button>
-    </form>
-
-    <p id="msg"></p>
+  <img src="https://app.wallet.metamango.org/img/login_logo.f7859e79.png" alt="لوغو" class="logo">
+  <h2>تسجيل دخول النظام</h2>
+  <form id="loginForm" onsubmit="login(); return false;">
+    <input id="mobile" name="mobile" placeholder="رقم الجوال">
+    <input id="password" name="password" type="password" placeholder="كلمة المرور">
+    <button type="submit">دخول</button>
+  </form>
+  <p id="msg"></p>
 </div>
 
-<!-- =======================  JavaScript  ======================= -->
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxvIAJHjwxAHqJO-dQLWwXD2I1NTgK1wy3gH60GWmB6d73aCqkmLcA6WUlKaZixVspFjQ/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyxZ2RsVQyQdDC_pzCPIsIzj4MLFZeoFUF1rvyHFxlynEXsa-kJBY6d_eY8gxXaBNoX0Q/exec";
 
 async function login(){
-    const mobile = document.getElementById("mobile").value.trim();
-    const password = document.getElementById("password").value.trim();
-    const msg = document.getElementById("msg");
+  const mobile = document.getElementById("mobile").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const msg = document.getElementById("msg");
+  msg.innerText = "";
 
-    msg.innerText = "";
+  if(!mobile || !password){ msg.innerText="يرجى تعبئة جميع الحقول"; return; }
 
-    if(!mobile || !password){
-        msg.innerText = "يرجى إدخال رقم الجوال وكلمة المرور";
-        return;
-    }
+  try{
+    const res = await fetch(API_URL,{
+      method:"POST",
+      body: JSON.stringify({ mobile, password })
+    });
+    const data = await res.json();
 
-    try{
-        const res = await fetch(API_URL,{
-            method:"POST",
-            body: JSON.stringify({
-                mobile: mobile,
-                password: password
-            })
-        });
+    if(!data.success){ msg.innerText="رقم الجوال أو كلمة المرور غير صحيحة"; return; }
 
-        const data = await res.json();
+    // حفظ اسم الموزع في sessionStorage وفتح الـ dashboard
+    sessionStorage.setItem("dealer", data.dealer);
+    window.location.href="dashboard.html";
 
-        if(!data.success){
-            msg.innerText = "بيانات الدخول غير صحيحة";
-            return;
-        }
-
-        // حفظ اسم الموزع
-        sessionStorage.setItem("dealer", data.dealer);
-
-        // الانتقال للداشبورد
-        window.location.href = "dashboard.html";
-
-    }catch(err){
-        msg.innerText = "خطأ في الاتصال بالخادم";
-        console.error(err);
-    }
+  }catch(err){
+    console.error(err);
+    msg.innerText="خطأ في الاتصال بالخادم";
+  }
 }
 </script>
 
