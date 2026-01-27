@@ -13,7 +13,14 @@ h2 { color:#0f172a; margin:5px 0; }
 .logout-btn:hover { background:#dc2626; }
 
 .summary { background:#fff; padding:15px; border-radius:12px; margin-bottom:15px; box-shadow:0 4px 10px #0001; font-size:14px; }
-
+.summary1{
+  background:#e9f5ff;
+  padding:12px;
+  border:1px solid #0d6efd;
+  border-radius:6px;
+  margin:10px 0;
+  font-weight:bold;
+}
 .progress-container { background:#e5e7eb; border-radius:10px; height:25px; margin-bottom:15px; overflow:hidden; }
 #progressBar { height:100%; width:0%; background:#2563eb; text-align:center; color:white; line-height:25px; font-weight:bold; }
 
@@ -45,7 +52,13 @@ h2 { color:#0f172a; margin:5px 0; }
   <h2 id="welcomeMsg">مرحبا، <span id="dealerName"></span></h2>
   <button class="logout-btn" onclick="logout()">خروج</button>
 </div>
-
+  <div class="summary1">
+  🎯 اجمالي ارباح الفريق: <span id="targetProfit">0</span> ريال<br>
+  📈 نسبة تحقيق الهدف: <span id="targetPercent">0</span> %ريال
+  </div>
+  <div class="progress-container">
+  <div id="progressBar">0%</div>
+</div>
 <div class="summary">
   💰 إجمالي الربح: <span id="totalProfit">0</span> ريال<br>
   🛒 إجمالي المبيعات: <span id="totalAmount">0</span> ريال<br>
