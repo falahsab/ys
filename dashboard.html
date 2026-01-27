@@ -5,130 +5,44 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>لوحة الموزع | يمن ستلايت</title>
 
-<!-- ======================= CSS ======================= -->
 <style>
-body {
-  font-family: "Tajawal", sans-serif;
-  background: #f1f5f9;
-  margin: 0;
-  padding: 20px;
-  box-sizing: border-box;
-}
+body { font-family:"Tajawal",sans-serif; background:#f1f5f9; margin:0; padding:20px; box-sizing:border-box; }
+.header { display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; }
+h2 { color:#0f172a; }
+.logout-btn { background:#ef4444; color:white; border:none; border-radius:8px; padding:8px 12px; cursor:pointer; transition:0.3s; }
+.logout-btn:hover { background:#dc2626; }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
+.summary { background:#fff; padding:15px; border-radius:12px; margin-bottom:15px; box-shadow:0 4px 10px #0001; }
 
-h2 {
-  color: #0f172a;
-}
+.progress-container { background:#e5e7eb; border-radius:10px; height:25px; margin-bottom:15px; overflow:hidden; }
+#progressBar { height:100%; width:0%; background:#2563eb; text-align:center; color:white; line-height:25px; font-weight:bold; }
 
-.logout-btn {
-  background: #ef4444;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 12px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-.logout-btn:hover { background: #dc2626; }
+.filters { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:15px; }
+.filters input, .filters select { padding:10px; border-radius:8px; border:1px solid #d1d5db; flex:1; min-width:150px; }
+.filters button { padding:10px 20px; border-radius:8px; border:none; background:#2563eb; color:white; cursor:pointer; transition:0.3s; }
+.filters button:hover { background:#1d4ed8; }
 
-.summary {
-  background: #fff;
-  padding: 15px;
-  border-radius: 12px;
-  margin-bottom: 15px;
-  box-shadow: 0 4px 10px #0001;
-}
+#dataTable { width:100%; border-collapse:collapse; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 4px 10px #0001; }
+#dataTable th, #dataTable td { padding:8px 12px; border-bottom:1px solid #e5e7eb; text-align:center; }
+#dataTable th { background:#2563eb; color:white; }
 
-.progress-container {
-  background: #e5e7eb;
-  border-radius: 10px;
-  height: 25px;
-  margin-bottom: 15px;
-  overflow: hidden;
-}
+.status-Refund { color:red; font-weight:bold; }
+.status-Completed { color:green; }
+.status-Pending { color:orange; }
 
-#progressBar {
-  height: 100%;
-  width: 0%;
-  background: #2563eb;
-  text-align: center;
-  color: white;
-  line-height: 25px;
-  font-weight: bold;
-}
-
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.filters input,
-.filters select {
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  flex: 1;
-  min-width: 150px;
-}
-
-.filters button {
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  background: #2563eb;
-  color: white;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.filters button:hover { background: #1d4ed8; }
-
-#dataTable {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 10px #0001;
-}
-
-#dataTable th,
-#dataTable td {
-  padding: 8px 12px;
-  border-bottom: 1px solid #e5e7eb;
-  text-align: center;
-}
-
-#dataTable th { background: #2563eb; color: white; }
-
-.status-Refund { color: red; font-weight: bold; }
-.status-Completed { color: green; }
-.status-Pending { color: orange; }
-
-@media (max-width: 600px){
-  .filters { flex-direction: column; }
-  #dataTable th, #dataTable td { font-size: 12px; padding: 6px; }
-}
+@media(max-width:600px){ .filters { flex-direction:column; } #dataTable th,#dataTable td{ font-size:12px; padding:6px; } }
 </style>
 </head>
 
 <body>
 
-<!-- ======================= Header ======================= -->
+<!-- Header -->
 <div class="header">
   <h2 id="welcomeMsg">مرحبا، <span id="dealerName"></span></h2>
   <button class="logout-btn" onclick="logout()">خروج</button>
 </div>
 
-<!-- ======================= الإجماليات ======================= -->
+<!-- Summary -->
 <div class="summary">
   💰 إجمالي الربح: <span id="totalProfit">0</span> ريال<br>
   🛒 إجمالي المبالغ: <span id="totalAmount">0</span> ريال<br>
@@ -139,23 +53,22 @@ h2 {
   📈 نسبة تحقيق الهدف: <span id="targetPercent">0</span> %
 </div>
 
-<!-- ======================= Progress Bar ======================= -->
+<!-- Progress Bar -->
 <div class="progress-container">
   <div id="progressBar">0%</div>
 </div>
 
-<!-- ======================= الفلاتر ======================= -->
+<!-- Filters -->
 <div class="filters">
-  <input type="date" id="filterDate">
-  <select id="filterUser">
-    <option value="">اختر المستخدم</option>
-  </select>
+  <input type="date" id="startDate" placeholder="من">
+  <input type="date" id="endDate" placeholder="إلى">
+  <select id="filterUser"><option value="">اختر المستخدم</option></select>
   <button onclick="applyFilters()">تطبيق الفلترة</button>
   <button onclick="resetFilters()">إلغاء الفلترة</button>
   <button onclick="exportExcel()">تصدير Excel</button>
 </div>
 
-<!-- ======================= الجدول ======================= -->
+<!-- Table -->
 <table id="dataTable">
   <thead>
     <tr>
@@ -171,93 +84,105 @@ h2 {
   <tbody></tbody>
 </table>
 
-<!-- ======================= JS ======================= -->
+<!-- JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbyxZ2RsVQyQdDC_pzCPIsIzj4MLFZeoFUF1rvyHFxlynEXsa-kJBY6d_eY8gxXaBNoX0Q/exec"; 
+const API_URL = "https://script.google.com/macros/s/AKfycbyxZ2RsVQyQdDC_pzCPIsIzj4MLFZeoFUF1rvyHFxlynEXsa-kJBY6d_eY8gxXaBNoX0Q/exec";
 let allData = [];
 let filteredData = [];
-const dealer = sessionStorage.getItem("dealer");
+let dealer = sessionStorage.getItem("dealer");
+let fixedTarget = 0; // Target ثابت لكل الموزعين
 
-function loadData(){
+// Load data
+async function loadData(){
   if(!dealer){ alert("يرجى تسجيل الدخول"); window.location.href="login.html"; return; }
-
   document.getElementById("dealerName").innerText = dealer;
 
-  fetch(API_URL,{
-    method:"POST",
-    body: JSON.stringify({ dealer })
-  })
-  .then(res => res.json())
-  .then(data => {
+  try{
+    const res = await fetch(API_URL, {
+      method:"POST",
+      body: JSON.stringify({ dealer })
+    });
+    const data = await res.json();
     if(!data.success){ alert("خطأ في جلب البيانات"); return; }
+
     allData = data.data || [];
     filteredData = [...allData];
+
+    fixedTarget = data.target || 200; // Target ثابت
+    document.getElementById("targetProfit").innerText = fixedTarget.toLocaleString();
+
+    // Progress Bar ثابت لا يتغير
+    const totalProfitAll = allData.reduce((a,r)=> a + (Number(r[5])||0), 0);
+    const percent = fixedTarget>0 ? ((totalProfitAll/fixedTarget)*100).toFixed(2) : 0;
+    document.getElementById("targetPercent").innerText = percent;
+    document.getElementById("progressBar").style.width = percent+"%";
+    document.getElementById("progressBar").innerText = percent+"%";
+
     fillUserFilter(allData);
-    renderTable(filteredData, data.target);
-  })
-  .catch(err => { console.error(err); alert("خطأ في الاتصال بالخادم"); });
+    renderTable(filteredData);
+
+  }catch(err){ console.error(err); alert("خطأ في الاتصال بالخادم"); }
 }
 
+// Fill users
 function fillUserFilter(data){
   const select = document.getElementById("filterUser");
   select.innerHTML = '<option value="">اختر المستخدم</option>';
   const users = [...new Set(data.map(r=>r[3]))];
-  users.forEach(u=>{
-    if(u){
-      const option = document.createElement("option");
-      option.value = u; option.innerText = u;
-      select.appendChild(option);
-    }
-  });
+  users.forEach(u=>{ if(u){ const opt = document.createElement("option"); opt.value=u; opt.innerText=u; select.appendChild(opt); }});
 }
 
+// Apply filters
 function applyFilters(){
-  const date = document.getElementById("filterDate").value;
+  const start = document.getElementById("startDate").value;
+  const end = document.getElementById("endDate").value;
   const user = document.getElementById("filterUser").value;
+
   filteredData = allData.filter(r=>{
     let ok = true;
-    if(date) ok = ok && r[0].split("T")[0] === date;
+    const d = r[0].split("T")[0];
+    if(start) ok = ok && d >= start;
+    if(end) ok = ok && d <= end;
     if(user) ok = ok && r[3] === user;
     return ok;
   });
   renderTable(filteredData);
 }
 
+// Reset filters
 function resetFilters(){
-  document.getElementById("filterDate").value = "";
+  document.getElementById("startDate").value = "";
+  document.getElementById("endDate").value = "";
   document.getElementById("filterUser").value = "";
   filteredData = [...allData];
   renderTable(filteredData);
 }
 
+// Export Excel
 function exportExcel(){
   const table = document.getElementById("dataTable");
   const wb = XLSX.utils.table_to_book(table, { sheet:"Sheet1" });
-  XLSX.writeFile(wb, (dealer || "dealer") + "_report.xlsx");
+  XLSX.writeFile(wb, (dealer||"dealer")+"_report.xlsx");
 }
 
-function logout(){
-  sessionStorage.clear();
-  window.location.href = "login.html";
-}
+// Logout
+function logout(){ sessionStorage.clear(); window.location.href="login.html"; }
 
-function renderTable(data, targetProfit){
+// Render table
+function renderTable(data){
   const tbody = document.querySelector("#dataTable tbody");
   tbody.innerHTML = "";
 
-  let totalProfit = 0, totalAmount = 0, totalCodes = data.length, cancelledCodes = 0;
+  let totalProfit=0, totalAmount=0, totalCodes=data.length, cancelledCodes=0;
 
   data.forEach(r=>{
-    const profit = Number(r[5]) || 0;
+    const profit = Number(r[5])||0;
     totalProfit += profit;
-    totalAmount += Number(r[2]) || 0;
-    if(profit < 0) cancelledCodes += 1;
+    totalAmount += Number(r[2])||0;
+    if(profit<0) cancelledCodes++;
 
-    const statusClass =
-      r[6]==="Refund" ? "status-Refund" :
-      r[6]==="Completed" ? "status-Completed" :
-      r[6]==="Pending" ? "status-Pending" : "";
+    const statusClass = r[6]==="Refund"?"status-Refund":r[6]==="Completed"?"status-Completed":r[6]==="Pending"?"status-Pending":"";
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
@@ -279,16 +204,6 @@ function renderTable(data, targetProfit){
   document.getElementById("totalCodes").innerText = totalCodes;
   document.getElementById("cancelledCodes").innerText = cancelledCodes;
   document.getElementById("netCodes").innerText = netCodes;
-
-  targetProfit = targetProfit || 200;
-  document.getElementById("targetProfit").innerText = targetProfit.toLocaleString();
-
-  const percent = targetProfit>0 ? ((totalProfit/targetProfit)*100).toFixed(2) : 0;
-  document.getElementById("targetPercent").innerText = percent;
-
-  const progressBar = document.getElementById("progressBar");
-  progressBar.style.width = percent + "%";
-  progressBar.innerText = percent + "%";
 }
 
 window.addEventListener("DOMContentLoaded", loadData);
