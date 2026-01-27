@@ -27,10 +27,53 @@ button { width:100%; padding:12px; margin-top:15px; border:none; border-radius:8
 .progress-container { background:#e5e7eb; border-radius:10px; height:25px; margin-bottom:15px; overflow:hidden; }
 #progressBar { height:100%; width:0%; background:#2563eb; text-align:center; color:white; line-height:25px; font-weight:bold; }
 
-.filters { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:15px; }
-.filters input, .filters select { padding:10px; border-radius:8px; border:1px solid #d1d5db; flex:1; min-width:120px; }
-.filters button { padding:10px 20px; border-radius:8px; border:none; background:#2563eb; color:white; cursor:pointer; transition:0.3s; }
-.filters button:hover { background:#1d4ed8; }
+.filters{
+  display:flex;
+  gap:8px;
+  align-items:flex-end;
+  flex-wrap:nowrap;       /* يبقون في صف واحد دائمًا */
+  background:#fff;
+  padding:12px;
+  border-radius:10px;
+  box-shadow:0 4px 10px #0001;
+}
+
+/* الحقول */
+.filters .field{
+  display:flex;
+  flex-direction:column;
+  flex:1 1 0;
+  min-width:0;            /* مهم للجوال */
+}
+
+.filters label{
+  font-size:12px;
+  margin-bottom:4px;
+  white-space:nowrap;
+}
+
+.filters input{
+  padding:8px;
+  border-radius:8px;
+  border:1px solid #d1d5db;
+  width:100%;
+  box-sizing:border-box;
+}
+
+/* زر البحث */
+.filters button{
+  padding:8px 14px;
+  border-radius:8px;
+  border:none;
+  background:#2563eb;
+  color:white;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.filters button:hover{
+  background:#1d4ed8;
+}
 
 .table-container { overflow-x:auto; background:#fff; border-radius:12px; box-shadow:0 4px 10px #0001; }
 #dataTable { width:100%; border-collapse:collapse; min-width:600px; }
@@ -71,12 +114,12 @@ button { width:100%; padding:12px; margin-top:15px; border:none; border-radius:8
 </div>
 
 <div class="filters">
- <div>
+  <div class="field">
     <label for="startDate">من تاريخ</label>
     <input type="date" id="startDate">
   </div>
 
-  <div>
+  <div class="field">
     <label for="endDate">إلى تاريخ</label>
     <input type="date" id="endDate">
   </div>
