@@ -220,6 +220,20 @@ input, select {
 const API_URL="https://script.google.com/macros/s/AKfycbyxZ2RsVQyQdDC_pzCPIsIzj4MLFZeoFUF1rvyHFxlynEXsa-kJBY6d_eY8gxXaBNoX0Q/exec";
 let allData=[],filteredData=[];
 let dealer=sessionStorage.getItem("dealer");
+/* ✅ التحقق من تسجيل الدخول */
+if(!dealer){
+  window.location.href="login.html";
+}
+
+async function loadData(){
+  dealerName.innerText=dealer;
+  const res=await fetch(API_URL,{method:"POST",body:JSON.stringify({dealer})});
+  const json=await res.json();
+  allData=json.data||[];
+  filteredData=[...allData];
+  fillUserFilter(allData);
+  renderTable(filteredData);
+}
 
 const level1ProfitEl = document.getElementById("level1Profit");
 const level2ProfitEl = document.getElementById("level2Profit");
