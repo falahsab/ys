@@ -18,7 +18,7 @@ body { font-family:"Tajawal",sans-serif; background:#f1f5f9; margin:0; padding:2
 .summary1 { background:#e9f5ff; border:1px solid #0d6efd; }
 
 .progress-container {
-  background:#e5e7eb; border-radius:10px; height:25px; overflow:hidden; margin-bottom:15px;
+  background:#e5e7eb; border-radius:10px; height:25px; overflow:hidden; margin-bottom:10px;
 }
 
 #progressBar1,#progressBar2{
@@ -26,6 +26,15 @@ body { font-family:"Tajawal",sans-serif; background:#f1f5f9; margin:0; padding:2
 }
 #progressBar1{ background:#2563eb }
 #progressBar2{ background:#16a34a }
+
+.level-profit{
+  background:#f8fafc;
+  border:1px dashed #94a3b8;
+  border-radius:8px;
+  padding:10px;
+  margin-bottom:15px;
+  font-size:14px;
+}
 
 input,select{ width:100%; padding:10px; margin-top:8px; border-radius:8px; border:1px solid #ccc }
 
@@ -52,17 +61,24 @@ th{ background:#2563eb; color:white }
 
 <!-- المستوى الأول -->
 <div class="summary1">
-🎯 الهدف المستوى الأول: 40 ريال<br>
+🎯 الهدف المستوى الأول: 200 ريال<br>
 📈 نسبة التحقيق: <span id="percent1">0</span> %
 </div>
 <div class="progress-container"><div id="progressBar1">0%</div></div>
 
 <!-- المستوى الثاني -->
 <div class="summary1">
-🎯 الهدف المستوى الثاني: 70 ريال<br>
+🎯 الهدف المستوى الثاني: 100 ريال<br>
 📈 نسبة التحقيق: <span id="percent2">0</span> %
 </div>
 <div class="progress-container"><div id="progressBar2">0%</div></div>
+
+<!-- أرباح المستويات -->
+<div class="level-profit">
+💰 ربح المستوى الأول: <span id="level1Profit">0</span> ريال<br>
+💰 ربح المستوى الثاني: <span id="level2Profit">0</span> ريال<br>
+🏆 إجمالي أرباح المستويات: <span id="levelsTotalProfit">0</span> ريال
+</div>
 
 <div class="summary">
 💰 إجمالي الربح: <span id="totalProfit">0</span> ريال<br>
@@ -159,9 +175,9 @@ function renderTable(data){
   cancelledCodes.innerText=cancelled;
   netCodes.innerText=data.length-(cancelled*2);
 
-  /* ===== التحديث المطلوب فقط ===== */
-  const raw1 = (profit / 40) * 100;
-  const raw2 = (profit / 70) * 100;
+  /* ===== نسب المستويات ===== */
+  const raw1 = (profit / 200) * 100;
+  const raw2 = (profit / 100) * 100;
 
   const bar1 = Math.min(raw1, 100);
   const bar2 = Math.min(raw2, 100);
@@ -173,10 +189,22 @@ function renderTable(data){
   progressBar2.style.width = bar2 + "%";
   progressBar1.innerText = raw1.toFixed(1) + "%";
   progressBar2.innerText = raw2.toFixed(1) + "%";
+
+  /* ===== أرباح المستويات (الإضافة المطلوبة) ===== */
+  const level1Profit = raw1 >= 100 ? profit : 0;
+  const level2Profit = raw2 >= 100 ? profit * 0.7 : 0;
+  const levelsTotal = level1Profit + level2Profit;
+
+  level1ProfitEl = document.getElementById("level1Profit");
+  level2ProfitEl = document.getElementById("level2Profit");
+  levelsTotalProfitEl = document.getElementById("levelsTotalProfit");
+
+  level1ProfitEl.innerText = level1Profit.toLocaleString();
+  level2ProfitEl.innerText = level2Profit.toLocaleString();
+  levelsTotalProfitEl.innerText = levelsTotal.toLocaleString();
 }
 
 function logout(){ sessionStorage.clear(); }
-
 window.onload=loadData;
 </script>
 
