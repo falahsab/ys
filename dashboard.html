@@ -10,19 +10,18 @@ body { font-family:"Tajawal",sans-serif; background:#f1f5f9; margin:0; padding:2
 .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; }
 .logout-btn { background:#ef4444; color:white; border:none; border-radius:8px; padding:8px 12px; cursor:pointer; }
 
-.summary, .summary1 {
+.summary,.summary1{
   background:#fff; padding:12px; border-radius:10px; margin-bottom:10px;
   box-shadow:0 4px 10px #0001; font-size:14px; font-weight:bold;
 }
+.summary1{ background:#e9f5ff; border:1px solid #0d6efd }
 
-.summary1 { background:#e9f5ff; border:1px solid #0d6efd; }
-
-.progress-container {
+.progress-container{
   background:#e5e7eb; border-radius:10px; height:25px; overflow:hidden; margin-bottom:10px;
 }
 
 #progressBar1,#progressBar2{
-  height:100%; width:0%; color:white; font-weight:bold; line-height:25px; text-align:center;
+  height:100%; width:0%; color:white; line-height:25px; text-align:center; font-weight:bold;
 }
 #progressBar1{ background:#2563eb }
 #progressBar2{ background:#16a34a }
@@ -33,11 +32,9 @@ body { font-family:"Tajawal",sans-serif; background:#f1f5f9; margin:0; padding:2
   border-radius:8px;
   padding:10px;
   margin-bottom:15px;
-  font-size:14px;
 }
 
 input,select{ width:100%; padding:10px; margin-top:8px; border-radius:8px; border:1px solid #ccc }
-
 .filters{ display:flex; flex-direction:column; gap:8px; margin-bottom:15px }
 .filters button{ padding:10px; border:none; border-radius:8px; background:#2563eb; color:white }
 
@@ -59,21 +56,18 @@ th{ background:#2563eb; color:white }
   <button class="logout-btn" onclick="logout()">خروج</button>
 </div>
 
-<!-- المستوى الأول -->
 <div class="summary1">
 🎯 الهدف المستوى الأول: 200 ريال<br>
 📈 نسبة التحقيق: <span id="percent1">0</span> %
 </div>
 <div class="progress-container"><div id="progressBar1">0%</div></div>
 
-<!-- المستوى الثاني -->
 <div class="summary1">
 🎯 الهدف المستوى الثاني: 100 ريال<br>
 📈 نسبة التحقيق: <span id="percent2">0</span> %
 </div>
 <div class="progress-container"><div id="progressBar2">0%</div></div>
 
-<!-- أرباح المستويات -->
 <div class="level-profit">
 💰 ربح المستوى الأول: <span id="level1Profit">0</span> ريال<br>
 💰 ربح المستوى الثاني: <span id="level2Profit">0</span> ريال<br>
@@ -112,6 +106,10 @@ th{ background:#2563eb; color:white }
 const API_URL="https://script.google.com/macros/s/AKfycbyxZ2RsVQyQdDC_pzCPIsIzj4MLFZeoFUF1rvyHFxlynEXsa-kJBY6d_eY8gxXaBNoX0Q/exec";
 let allData=[],filteredData=[];
 let dealer=sessionStorage.getItem("dealer");
+
+const level1ProfitEl = document.getElementById("level1Profit");
+const level2ProfitEl = document.getElementById("level2Profit");
+const levelsTotalProfitEl = document.getElementById("levelsTotalProfit");
 
 async function loadData(){
   if(!dealer){ alert("يرجى تسجيل الدخول"); return; }
@@ -175,33 +173,23 @@ function renderTable(data){
   cancelledCodes.innerText=cancelled;
   netCodes.innerText=data.length-(cancelled*2);
 
-  /* ===== نسب المستويات ===== */
   const raw1 = (profit / 200) * 100;
   const raw2 = (profit / 100) * 100;
-
-  const bar1 = Math.min(raw1, 100);
-  const bar2 = Math.min(raw2, 100);
 
   percent1.innerText = raw1.toFixed(1);
   percent2.innerText = raw2.toFixed(1);
 
-  progressBar1.style.width = bar1 + "%";
-  progressBar2.style.width = bar2 + "%";
-  progressBar1.innerText = raw1.toFixed(1) + "%";
-  progressBar2.innerText = raw2.toFixed(1) + "%";
+  progressBar1.style.width = Math.min(raw1,100)+"%";
+  progressBar2.style.width = Math.min(raw2,100)+"%";
+  progressBar1.innerText = raw1.toFixed(1)+"%";
+  progressBar2.innerText = raw2.toFixed(1)+"%";
 
-  /* ===== أرباح المستويات (الإضافة المطلوبة) ===== */
   const level1Profit = raw1 >= 100 ? profit : 0;
   const level2Profit = raw2 >= 100 ? profit * 0.7 : 0;
-  const levelsTotal = level1Profit + level2Profit;
-
-  level1ProfitEl = document.getElementById("level1Profit");
-  level2ProfitEl = document.getElementById("level2Profit");
-  levelsTotalProfitEl = document.getElementById("levelsTotalProfit");
 
   level1ProfitEl.innerText = level1Profit.toLocaleString();
   level2ProfitEl.innerText = level2Profit.toLocaleString();
-  levelsTotalProfitEl.innerText = levelsTotal.toLocaleString();
+  levelsTotalProfitEl.innerText = (level1Profit + level2Profit).toLocaleString();
 }
 
 function logout(){ sessionStorage.clear(); }
