@@ -68,7 +68,7 @@ th{ background:#2563eb; color:white }
 💰 إجمالي الربح: <span id="totalProfit">0</span> ريال<br>
 🛒 إجمالي المبيعات: <span id="totalAmount">0</span> ريال<br>
 🔢 إجمالي العمليات: <span id="totalCodes">0</span><br>
-❌ الأكواد الملغية: <span id="cancelledCodes">0</span><br>
+❌ عدد الأكواد الملغية: <span id="cancelledCodes">0</span><br>
 ✅ صافي الأكواد المباعة: <span id="netCodes">0</span>
 </div>
 
@@ -143,8 +143,12 @@ function renderTable(data){
 
     dataTable.querySelector("tbody").innerHTML+=`
     <tr>
-      <td>${r[0].split("T")[0]}</td><td>${r[1]}</td><td>${r[2]}</td>
-      <td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td>
+      <td>${r[0].split("T")[0]}</td>
+      <td>${r[1]}</td>
+      <td>${r[2]}</td>
+      <td>${r[3]}</td>
+      <td>${r[4]}</td>
+      <td>${r[5]}</td>
       <td class="status-${r[6]}">${r[6]}</td>
     </tr>`;
   });
@@ -155,15 +159,20 @@ function renderTable(data){
   cancelledCodes.innerText=cancelled;
   netCodes.innerText=data.length-(cancelled*2);
 
-  const p1=Math.min((profit/40)*100,100).toFixed(1);
-  const p2=Math.min((profit/70)*100,100).toFixed(1);
+  /* ===== التحديث المطلوب فقط ===== */
+  const raw1 = (profit / 200) * 100;
+  const raw2 = (profit / 100) * 100;
 
-  percent1.innerText=p1;
-  percent2.innerText=p2;
-  progressBar1.style.width=p1+"%";
-  progressBar2.style.width=p2+"%";
-  progressBar1.innerText=p1+"%";
-  progressBar2.innerText=p2+"%";
+  const bar1 = Math.min(raw1, 100);
+  const bar2 = Math.min(raw2, 100);
+
+  percent1.innerText = raw1.toFixed(1);
+  percent2.innerText = raw2.toFixed(1);
+
+  progressBar1.style.width = bar1 + "%";
+  progressBar2.style.width = bar2 + "%";
+  progressBar1.innerText = raw1.toFixed(1) + "%";
+  progressBar2.innerText = raw2.toFixed(1) + "%";
 }
 
 function logout(){ sessionStorage.clear(); }
