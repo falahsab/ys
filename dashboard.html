@@ -52,14 +52,14 @@ th{ background:#2563eb; color:white }
 
 <!-- المستوى الأول -->
 <div class="summary1">
-🎯 الهدف المستوى الأول: 200 ريال<br>
+🎯 الهدف المستوى الأول: 40 ريال<br>
 📈 نسبة التحقيق: <span id="percent1">0</span> %
 </div>
 <div class="progress-container"><div id="progressBar1">0%</div></div>
 
 <!-- المستوى الثاني -->
 <div class="summary1">
-🎯 الهدف المستوى الثاني: 100 ريال<br>
+🎯 الهدف المستوى الثاني: 70 ريال<br>
 📈 نسبة التحقيق: <span id="percent2">0</span> %
 </div>
 <div class="progress-container"><div id="progressBar2">0%</div></div>
@@ -160,8 +160,8 @@ function renderTable(data){
   netCodes.innerText=data.length-(cancelled*2);
 
   /* ===== التحديث المطلوب فقط ===== */
-  const raw1 = (profit / 200) * 100;
-  const raw2 = (profit / 100) * 100;
+  const raw1 = (profit / 40) * 100;
+  const raw2 = (profit / 70) * 100;
 
   const bar1 = Math.min(raw1, 100);
   const bar2 = Math.min(raw2, 100);
