@@ -307,7 +307,10 @@ netCodes.innerText = data.length - (cancelled*2);
   levelsTotalProfitEl.innerText = (level1Profit + level2Profit).toLocaleString();
 }
 
-function logout(){ sessionStorage.clear(); }
+function logout() {
+  sessionStorage.clear();          // مسح بيانات الجلسة
+  window.location.href = "login.html"; // الانتقال لصفحة تسجيل الدخول
+}
 window.onload=loadData;
 </script>
 
