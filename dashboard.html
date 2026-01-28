@@ -5,17 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>لوحة الموزع</title>
 
-    <link rel="stylesheet" href="styledash.css">
+    <link rel="stylesheet" href="css/styledash.css">
 </head>
-
 <body>
-
 <div class="header">
   <h2>مرحبا، <span id="dealerName"></span></h2>
   <button class="logout-btn" onclick="logout()">خروج</button>
 </div>
-
-
 
 <div class="summary1">
 💰 إجمالي الربح: <span id="totalProfit">0</span> مانجو<br>
@@ -24,7 +20,6 @@
 ❌ عدد الأكواد الملغية: <span id="cancelledCodes">0</span><br>
 ✅ صافي الأكواد المباعة: <span id="netCodes">0</span>
 </div>
-
 <div class="filters">
   <input type="date" id="startDate">
   <input type="date" id="endDate">
@@ -32,7 +27,6 @@
   <button onclick="applyFilters()">تطبيق الفلترة</button>
   <button onclick="resetFilters()">إلغاء الفلترة</button>
 </div>
-
 <div class="table-container">
 <table id="dataTable">
 <thead>
@@ -44,8 +38,6 @@
 <tbody></tbody>
 </table>
 </div>
-
-<script src="styledash.js"></script>
-
+<script src="js/styledash.js"></script>
 </body>
 </html>
