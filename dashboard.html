@@ -146,13 +146,14 @@ function resetFilters(){
 }
 
 function renderTable(data){
-  let totalProfit=0, totalAmount=0, cancelledCodes=0;
+  // حساب الإجماليات من المصدر مباشرة
+  let totalProfit = 0, totalAmount = 0, cancelledCodes = 0;
   dataTable.querySelector("tbody").innerHTML="";
 
   data.forEach(r=>{
-    const p=Number(r[5])||0;
-    totalProfit+=p;
-    totalAmount+=Number(r[2])||0;
+    const p = Number(r[5]) || 0;
+    totalProfit += p;
+    totalAmount += Number(r[2]) || 0;
     if(p<0) cancelledCodes++;
 
     dataTable.querySelector("tbody").innerHTML+=`
@@ -173,15 +174,16 @@ function renderTable(data){
   cancelledCodesEl = document.getElementById("cancelledCodes");
   netCodesEl = document.getElementById("netCodes");
 
+  // عرض القيم مباشرة كما في المصدر
   totalProfitEl.innerText = totalProfit;
   totalAmountEl.innerText = totalAmount;
   totalCodesEl.innerText = data.length;
   cancelledCodesEl.innerText = cancelledCodes;
-  netCodesEl.innerText = data.length-(cancelledCodes*2);
+  netCodesEl.innerText = data.length - (cancelledCodes*2);
 
-  // حساب النسب للمستويين
-  const raw1 = (totalProfit / 20) * 100;
-  const raw2 = (totalProfit / 10) * 100;
+  // حساب النسب
+  const raw1 = (totalProfit / 200) * 100;
+  const raw2 = (totalProfit / 100) * 100;
 
   percent1.innerText = raw1;
   percent2.innerText = raw2;
@@ -191,10 +193,11 @@ function renderTable(data){
   progressBar1.innerText = raw1+"%";
   progressBar2.innerText = raw2+"%";
 
-  // حساب أرباح المستويين بناء على تحقق النسبة
+  // حساب أرباح المستويين
   const level1Profit = raw1 >= 100 ? totalProfit : 0;
   const level2Profit = raw2 >= 100 ? totalProfit * 0.7 : 0;
 
+  // عرض القيم كما هي بدون تعديل الدقة
   level1ProfitEl.innerText = level1Profit;
   level2ProfitEl.innerText = level2Profit;
   levelsTotalProfitEl.innerText = level1Profit + level2Profit;
