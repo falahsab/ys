@@ -166,6 +166,7 @@ function renderTable(data){
       <td class="status-${r[6]}">${r[6]}</td>
     </tr>`;
   });
+profit = Number(profit) || 0;
 
   totalProfit.innerText=profit;
   totalAmount.innerText=amount;
@@ -184,12 +185,13 @@ function renderTable(data){
   progressBar1.innerText = raw1.toFixed(1)+"%";
   progressBar2.innerText = raw2.toFixed(1)+"%";
 
-  const level1Profit = raw1 >= 100 ? profit : 0;
-  const level2Profit = raw2 >= 100 ? profit * 0.7 : 0;
+const level1Profit = raw1 >= 100 ? profit : 0;
+const level2Profit = raw2 >= 100 ? profit * 0.7 : 0;
 
-  level1ProfitEl.innerText = level1Profit.toLocaleString();
-  level2ProfitEl.innerText = level2Profit.toLocaleString();
-  levelsTotalProfitEl.innerText = (level1Profit + level2Profit).toLocaleString();
+level1ProfitEl.innerText = level1Profit.toFixed(0);
+level2ProfitEl.innerText = level2Profit.toFixed(0);
+levelsTotalProfitEl.innerText = (level1Profit + level2Profit).toFixed(0);
+
 }
 
 function logout(){ sessionStorage.clear(); }
