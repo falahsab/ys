@@ -1,42 +1,43 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>استعلام حالة الطلب | الفؤاد للهدايا</title>
+<title>لوحة الموزع</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/styledash.css">
 </head>
 <body>
-
-<div class="logo">
-  <img src="img/الفؤاد-1.png" alt="شعار المتجر">
-</div>
-<div>متجر الفؤاد | للتحف والهدايا</div>
-
-<div class="container">
-  <h2>استعلام حالة الطلب</h2>
-  <div class="input-box">
-    <input type="number" id="orderID" placeholder="أدخل رقم الطلب"
-           oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-  </div>
-  <button id="checkBtn">استعلام</button>
-  <div id="loading" class="loading">🔍 جاري الاستعلام ...</div>
-  <div id="result" class="result"></div>
+<div class="header">
+  <h2>مرحبا، <span id="dealerName"></span></h2>
+  <button class="logout-btn" onclick="logout()">خروج</button>
 </div>
 
-<footer>
-  <div>📍 ذمار - خط المغرب - جوار مدرسة الميثاق للبنات</div>
-  <div>📞 772259877 | ☎️ 06-426445</div>
-  <div>💬 <a href="https://wa.me/967772259877" target="_blank">تواصل عبر واتساب</a></div>
-</footer>
-<script src="script.js"></script>
-
+<div class="summary1">
+💰 إجمالي الربح: <span id="totalProfit">0</span> مانجو<br>
+🛒 إجمالي المبيعات: <span id="totalAmount">0</span> مانجو<br>
+🔢 إجمالي العمليات: <span id="totalCodes">0</span><br>
+❌ عدد الأكواد الملغية: <span id="cancelledCodes">0</span><br>
+✅ صافي الأكواد المباعة: <span id="netCodes">0</span>
+</div>
+<div class="filters">
+  <input type="date" id="startDate">
+  <input type="date" id="endDate">
+  <select id="filterUser"><option value="">اختر المستخدم</option></select>
+  <button onclick="applyFilters()">تطبيق الفلترة</button>
+  <button onclick="resetFilters()">إلغاء الفلترة</button>
+</div>
+<div class="table-container">
+<table id="dataTable">
+<thead>
+<tr>
+<th>التاريخ</th><th>المنتج</th><th>المبلغ</th>
+<th>المستخدم</th><th>SN</th><th>Profit</th><th>Status</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+<script src="js/jsdash.js"></script>
 </body>
 </html>
-
-
-
-
-
-
