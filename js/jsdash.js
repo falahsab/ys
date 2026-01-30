@@ -3,7 +3,7 @@ let allData=[],filteredData=[];
 let dealer=sessionStorage.getItem("dealer");
 /* ✅ التحقق من تسجيل الدخول */
 if(!dealer){
-  window.location.href="login.html";
+  window.location.href="index.html";
 }
 
 async function loadData(){
