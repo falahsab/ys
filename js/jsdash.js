@@ -115,4 +115,5 @@ function logout() {
   sessionStorage.clear();          // مسح بيانات الجلسة
   window.location.href = "login.html"; // الانتقال لصفحة تسجيل الدخول
 }
+filterUser.addEventListener("change", applyFilters);
 window.onload=loadData;
