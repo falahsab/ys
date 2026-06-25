@@ -20,17 +20,7 @@ const level1ProfitEl = document.getElementById("level1Profit");
 const level2ProfitEl = document.getElementById("level2Profit");
 const levelsTotalProfitEl = document.getElementById("levelsTotalProfit");
 
-async function loadData(){
-  if(!dealer){ alert("يرجى تسجيل الدخول"); return; }
-  dealerName.innerText=dealer;
 
-  const res=await fetch(API_URL,{method:"POST",body:JSON.stringify({dealer})});
-  const json=await res.json();
-  allData=json.data||[];
-  filteredData=[...allData];
-  fillUserFilter(allData);
-  renderTable(filteredData);
-}
 
 function fillUserFilter(data){
   filterUser.innerHTML='<option value="">اختر المستخدم</option>';
@@ -55,16 +45,22 @@ function resetFilters(){
 }
 
 function renderTable(data){
-  let profit=0,amount=0,cancelled=0;
-  dataTable.querySelector("tbody").innerHTML="";
+  let profit = 0;
+  let amount = 0;
+  let cancelled = 0;
+
+  const tbody = dataTable.querySelector("tbody");
+  let html = "";
 
   data.forEach(r=>{
-    const p=Number(r[5])||0;
-    profit+=p;
-    amount+=Number(r[2])||0;
-    if(p<0) cancelled++;
+    const p = Number(r[5]) || 0;
 
-    dataTable.querySelector("tbody").innerHTML+=`
+    profit += p;
+    amount += Number(r[2]) || 0;
+
+    if(p < 0) cancelled++;
+
+    html += `
     <tr>
       <td>${r[0].split("T")[0]}</td>
       <td>${r[1]}</td>
@@ -76,30 +72,35 @@ function renderTable(data){
     </tr>`;
   });
 
-totalProfit.innerText = Number(profit.toFixed(3));
-totalAmount.innerText = Number(amount.toFixed(3));
-totalCodes.innerText = data.length;
-cancelledCodes.innerText = cancelled;
-netCodes.innerText = data.length - (cancelled*2);
+  tbody.innerHTML = html;
 
+  totalProfit.innerText = Number(profit.toFixed(3));
+  totalAmount.innerText = Number(amount.toFixed(3));
+  totalCodes.innerText = data.length;
+  cancelledCodes.innerText = cancelled;
+  netCodes.innerText = data.length - (cancelled * 2);
 
-  const raw1 = (profit / 40) * 100;
-  const raw2 = (profit / 70) * 100;
+  if(typeof percent1 !== "undefined"){
+    const raw1 = (profit / 40) * 100;
+    const raw2 = (profit / 70) * 100;
 
-  percent1.innerText = raw1.toFixed(1);
-  percent2.innerText = raw2.toFixed(1);
+    percent1.innerText = raw1.toFixed(1);
+    percent2.innerText = raw2.toFixed(1);
 
-  progressBar1.style.width = Math.min(raw1,100)+"%";
-  progressBar2.style.width = Math.min(raw2,100)+"%";
-  progressBar1.innerText = raw1.toFixed(1)+"%";
-  progressBar2.innerText = raw2.toFixed(1)+"%";
+    progressBar1.style.width = Math.min(raw1,100)+"%";
+    progressBar2.style.width = Math.min(raw2,100)+"%";
 
-  const level1Profit = raw1 >= 100 ? profit : 0;
-  const level2Profit = raw2 >= 100 ? profit * 0.7 : 0;
+    progressBar1.innerText = raw1.toFixed(1)+"%";
+    progressBar2.innerText = raw2.toFixed(1)+"%";
 
-  level1ProfitEl.innerText = level1Profit.toLocaleString();
-  level2ProfitEl.innerText = level2Profit.toLocaleString();
-  levelsTotalProfitEl.innerText = (level1Profit + level2Profit).toLocaleString();
+    const level1Profit = raw1 >= 100 ? profit : 0;
+    const level2Profit = raw2 >= 100 ? profit * 0.7 : 0;
+
+    level1ProfitEl.innerText = level1Profit.toLocaleString();
+    level2ProfitEl.innerText = level2Profit.toLocaleString();
+    levelsTotalProfitEl.innerText =
+      (level1Profit + level2Profit).toLocaleString();
+  }
 }
 
 function logout() {
