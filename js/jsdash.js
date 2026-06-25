@@ -45,35 +45,33 @@ function resetFilters(){
 }
 
 function renderTable(data){
-// جمع SN الخاصة بالأكواد الملغية
-const cancelledSNs = new Set();
 
-data.forEach(r => {
-  const profit = Number(r[5]) || 0;
+  const tbody = dataTable.querySelector("tbody");
 
-  if (profit < 0) {
-    cancelledSNs.add(r[4]); // r[4] = SN
-  }
-});
-  
+  // الأكواد الملغية
+  const cancelledSNs = new Set();
+
+  data.forEach(r=>{
+    const p = Number(r[5]) || 0;
+
+    if(p < 0){
+      cancelledSNs.add(r[4]); // SN
+    }
+  });
+
   let profit = 0;
-let amount = 0;
-let cancelled = 0;
+  let amount = 0;
+  let cancelled = 0;
+  let validCodes = 0;
+  let html = "";
 
-data.forEach(r => {
-  const p = Number(r[5]) || 0;
-  const a = Number(r[2]) || 0;
-  const sn = r[4];
+  data.forEach(r=>{
 
-  if (p < 0) cancelled++;
+    const p = Number(r[5]) || 0;
+    const a = Number(r[2]) || 0;
+    const sn = r[4];
 
-  // تجاهل أي عملية مرتبطة بكود تم إلغاؤه
-  if (cancelledSNs.has(sn)) return;
-
-  profit += p;
-  amount += a;
-});
-
+    // عرض جميع العمليات في الجدول
     html += `
     <tr>
       <td>${r[0].split("T")[0]}</td>
@@ -84,28 +82,42 @@ data.forEach(r => {
       <td>${r[5]}</td>
       <td class="status-${r[6]}">${r[6]}</td>
     </tr>`;
+
+    if(p < 0){
+      cancelled++;
+    }
+
+    // إذا كان SN ملغياً نتجاهله بالكامل من الإحصائيات
+    if(cancelledSNs.has(sn)){
+      return;
+    }
+
+    profit += p;
+    amount += a;
+    validCodes++;
   });
 
   tbody.innerHTML = html;
 
   totalProfit.innerText = Number(profit.toFixed(3));
   totalAmount.innerText = Number(amount.toFixed(3));
-  totalCodes.innerText = data.length;
+  totalCodes.innerText = validCodes;
   cancelledCodes.innerText = cancelled;
-  netCodes.innerText = data.length - (cancelled * 2);
+  netCodes.innerText = validCodes;
 
   if(typeof percent1 !== "undefined"){
+
     const raw1 = (profit / 40) * 100;
     const raw2 = (profit / 70) * 100;
 
     percent1.innerText = raw1.toFixed(1);
     percent2.innerText = raw2.toFixed(1);
 
-    progressBar1.style.width = Math.min(raw1,100)+"%";
-    progressBar2.style.width = Math.min(raw2,100)+"%";
+    progressBar1.style.width = Math.min(raw1,100) + "%";
+    progressBar2.style.width = Math.min(raw2,100) + "%";
 
-    progressBar1.innerText = raw1.toFixed(1)+"%";
-    progressBar2.innerText = raw2.toFixed(1)+"%";
+    progressBar1.innerText = raw1.toFixed(1) + "%";
+    progressBar2.innerText = raw2.toFixed(1) + "%";
 
     const level1Profit = raw1 >= 100 ? profit : 0;
     const level2Profit = raw2 >= 100 ? profit * 0.7 : 0;
