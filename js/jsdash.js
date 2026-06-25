@@ -45,24 +45,34 @@ function resetFilters(){
 }
 
 function renderTable(data){
+// جمع SN الخاصة بالأكواد الملغية
+const cancelledSNs = new Set();
+
+data.forEach(r => {
+  const profit = Number(r[5]) || 0;
+
+  if (profit < 0) {
+    cancelledSNs.add(r[4]); // r[4] = SN
+  }
+});
+  
   let profit = 0;
-  let amount = 0;
-  let cancelled = 0;
+let amount = 0;
+let cancelled = 0;
 
-  const tbody = dataTable.querySelector("tbody");
-  let html = "";
+data.forEach(r => {
+  const p = Number(r[5]) || 0;
+  const a = Number(r[2]) || 0;
+  const sn = r[4];
 
-  data.forEach(r=>{
-const p = Number(r[5]) || 0;
-const a = Number(r[2]) || 0;
+  if (p < 0) cancelled++;
 
-profit += p;
+  // تجاهل أي عملية مرتبطة بكود تم إلغاؤه
+  if (cancelledSNs.has(sn)) return;
 
-if (p < 0) {
-    cancelled++;
-} else {
-    amount += a;
-}
+  profit += p;
+  amount += a;
+});
 
     html += `
     <tr>
