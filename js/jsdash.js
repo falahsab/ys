@@ -48,33 +48,28 @@ function renderTable(data){
 
   const tbody = dataTable.querySelector("tbody");
 
-  // الأكواد الملغية
-  const cancelledSNs = new Set();
-
-  data.forEach(r=>{
-    const p = Number(r[5]) || 0;
-
-    if(p < 0){
-      cancelledSNs.add(r[4]); // SN
-    }
-  });
-
   let profit = 0;
   let amount = 0;
   let cancelled = 0;
-  let validCodes = 0;
   let html = "";
 
-  data.forEach(r=>{
+  data.forEach(r => {
 
     const p = Number(r[5]) || 0;
     const a = Number(r[2]) || 0;
-    const sn = r[4];
 
-    // عرض جميع العمليات في الجدول
+    profit += p;
+
+    if (p < 0) {
+      amount -= a;
+      cancelled++;
+    } else {
+      amount += a;
+    }
+
     html += `
     <tr>
-      <td>${r[0].split("T")[0]}</td>
+      <td>${String(r[0]).split("T")[0]}</td>
       <td>${r[1]}</td>
       <td>${r[2]}</td>
       <td>${r[3]}</td>
@@ -82,32 +77,17 @@ function renderTable(data){
       <td>${r[5]}</td>
       <td class="status-${r[6]}">${r[6]}</td>
     </tr>`;
-
-    if(p < 0){
-      cancelled++;
-    }
-
-// الربح يحسب كما هو
-profit += p;
-
-// استبعاد الأكواد الملغية من المبيعات والعدد فقط
-if(cancelledSNs.has(sn)){
-  return;
-}
-
-amount += a;
-validCodes++;
   });
 
   tbody.innerHTML = html;
 
   totalProfit.innerText = Number(profit.toFixed(3));
   totalAmount.innerText = Number(amount.toFixed(3));
-  totalCodes.innerText = validCodes;
+  totalCodes.innerText = data.length;
   cancelledCodes.innerText = cancelled;
-  netCodes.innerText = validCodes;
+  netCodes.innerText = data.length - (cancelled * 2);
 
-  if(typeof percent1 !== "undefined"){
+  if (typeof percent1 !== "undefined") {
 
     const raw1 = (profit / 40) * 100;
     const raw2 = (profit / 70) * 100;
@@ -115,8 +95,8 @@ validCodes++;
     percent1.innerText = raw1.toFixed(1);
     percent2.innerText = raw2.toFixed(1);
 
-    progressBar1.style.width = Math.min(raw1,100) + "%";
-    progressBar2.style.width = Math.min(raw2,100) + "%";
+    progressBar1.style.width = Math.min(raw1, 100) + "%";
+    progressBar2.style.width = Math.min(raw2, 100) + "%";
 
     progressBar1.innerText = raw1.toFixed(1) + "%";
     progressBar2.innerText = raw2.toFixed(1) + "%";
