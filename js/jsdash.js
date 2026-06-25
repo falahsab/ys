@@ -87,14 +87,16 @@ function renderTable(data){
       cancelled++;
     }
 
-    // إذا كان SN ملغياً نتجاهله بالكامل من الإحصائيات
-    if(cancelledSNs.has(sn)){
-      return;
-    }
+// الربح يحسب كما هو
+profit += p;
 
-    profit += p;
-    amount += a;
-    validCodes++;
+// استبعاد الأكواد الملغية من المبيعات والعدد فقط
+if(cancelledSNs.has(sn)){
+  return;
+}
+
+amount += a;
+validCodes++;
   });
 
   tbody.innerHTML = html;
