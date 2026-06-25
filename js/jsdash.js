@@ -53,12 +53,16 @@ function renderTable(data){
   let html = "";
 
   data.forEach(r=>{
-    const p = Number(r[5]) || 0;
+const p = Number(r[5]) || 0;
+const a = Number(r[2]) || 0;
 
-    profit += p;
-    amount += Number(r[2]) || 0;
+profit += p;
 
-    if(p < 0) cancelled++;
+if (p < 0) {
+    cancelled++;
+} else {
+    amount += a;
+}
 
     html += `
     <tr>
