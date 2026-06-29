@@ -5,197 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>لوحة الموزع</title>
 
-<style>
-body {
-  font-family: "Tajawal", sans-serif;
-  background: #f1f5f9;
-  margin: 0;
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-bottom: 15px;
-}
-
-h2 {
-  color: #0f172a;
-  margin: 5px 0;
-}
-
-.logout-btn {
-  background: #ef4444;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 12px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.logout-btn:hover {
-  background: #dc2626;
-}
-
-input, select {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  font-size: 15px;
-  box-sizing: border-box;
-}
-
-.summary {
-  background: #fff;
-  padding: 15px;
-  border-radius: 12px;
-  margin-bottom: 15px;
-  box-shadow: 0 4px 10px #0001;
-  font-size: 14px;
-}
-
-.summary1 {
-  background: #e9f5ff;
-  padding: 12px;
-  border: 1px solid #0d6efd;
-  border-radius: 6px;
-  margin: 10px 0;
-  font-weight: bold;
-}
-
-.progress-container {
-  background: #e5e7eb;
-  border-radius: 10px;
-  height: 25px;
-  margin-bottom: 15px;
-  overflow: hidden;
-}
-
-#progressBar1, #progressBar2 {
-  height: 100%;
-  width: 0%;
-  text-align: center;
-  color: white;
-  line-height: 25px;
-  font-weight: bold;
-}
-
-#progressBar1 { background: #2563eb; }
-#progressBar2 { background: #16a34a; }
-
-.level-profit {
-  background: #f8fafc;
-  border: 1px dashed #94a3b8;
-  border-radius: 8px;
-  padding: 10px;
-  margin-bottom: 15px;
-}
-
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 15px;
-  flex-direction: column;
-}
-
-.filters input, .filters select {
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  flex: 1;
-  min-width: 120px;
-}
-
-.filters button {
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  background: #2563eb;
-  color: white;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.filters button:hover { background: #1d4ed8; }
-
-.table-container {
-  overflow-x: auto;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px #0001;
-}
-
-#dataTable {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 600px;
-}
-
-#dataTable th, #dataTable td {
-  padding: 8px 12px;
-  border-bottom: 1px solid #e5e7eb;
-  text-align: center;
-  white-space: nowrap;
-}
-
-#dataTable th {
-  background: #2563eb;
-  color: white;
-}
-
-.status-Refund { color: red; font-weight: bold; }
-.status-Completed { color: green; }
-.status-Pending { color: orange; }
-
-@media(max-width:600px){
-  .filters { flex-direction: column; }
-  .summary { font-size: 13px; }
-  #dataTable th, #dataTable td { font-size: 12px; padding: 6px; }
-}
-</style>
-
+    <link rel="stylesheet" href="css/styledash.css">
 </head>
-
 <body>
-
 <div class="header">
   <h2>مرحبا، <span id="dealerName"></span></h2>
   <button class="logout-btn" onclick="logout()">خروج</button>
 </div>
 
 <div class="summary1">
-🎯 الهدف المستوى الأول: 40 مانجو<br>
-📈 نسبة التحقيق: <span id="percent1">0</span> %
-</div>
-<div class="progress-container"><div id="progressBar1">0%</div></div>
-
-<div class="summary1">
-🎯 الهدف المستوى الثاني: 70 مانجو<br>
-📈 نسبة التحقيق: <span id="percent2">0</span> %
-</div>
-<div class="progress-container"><div id="progressBar2">0%</div></div>
-
-<div class="level-profit">
-💰 ربح المستوى الأول: <span id="level1Profit">0</span> مانجو<br>
-💰 ربح المستوى الثاني: <span id="level2Profit">0</span> مانجو<br>
-🏆 إجمالي أرباح المستويات: <span id="levelsTotalProfit">0</span> مانجو
-</div>
-
-<div class="summary">
 💰 إجمالي الربح: <span id="totalProfit">0</span> مانجو<br>
 🛒 إجمالي المبيعات: <span id="totalAmount">0</span> مانجو<br>
 🔢 إجمالي العمليات: <span id="totalCodes">0</span><br>
 ❌ عدد الأكواد الملغية: <span id="cancelledCodes">0</span><br>
 ✅ صافي الأكواد المباعة: <span id="netCodes">0</span>
+👤 عمولة الوكيل الفرعي: <span id="subDealerPercent">25</span>%<br>
+👑 عمولة الوكيل الرئيسي: <span id="mainDealerPercent">0</span>%<br>
+💰 إجمالي العمولتين: <span id="totalCommissionPercent">0</span>%
 </div>
-
 <div class="filters">
   <input type="date" id="startDate">
   <input type="date" id="endDate">
@@ -203,7 +30,6 @@ input, select {
   <button onclick="applyFilters()">تطبيق الفلترة</button>
   <button onclick="resetFilters()">إلغاء الفلترة</button>
 </div>
-
 <div class="table-container">
 <table id="dataTable">
 <thead>
@@ -215,14 +41,13 @@ input, select {
 <tbody></tbody>
 </table>
 </div>
-
 <script>
 const API_URL="https://script.google.com/macros/s/AKfycbyxZ2RsVQyQdDC_pzCPIsIzj4MLFZeoFUF1rvyHFxlynEXsa-kJBY6d_eY8gxXaBNoX0Q/exec";
 let allData=[],filteredData=[];
 let dealer=sessionStorage.getItem("dealer");
 /* ✅ التحقق من تسجيل الدخول */
 if(!dealer){
-  window.location.href="login.html";
+  window.location.href="index.html";
 }
 
 async function loadData(){
@@ -239,17 +64,7 @@ const level1ProfitEl = document.getElementById("level1Profit");
 const level2ProfitEl = document.getElementById("level2Profit");
 const levelsTotalProfitEl = document.getElementById("levelsTotalProfit");
 
-async function loadData(){
-  if(!dealer){ alert("يرجى تسجيل الدخول"); return; }
-  dealerName.innerText=dealer;
 
-  const res=await fetch(API_URL,{method:"POST",body:JSON.stringify({dealer})});
-  const json=await res.json();
-  allData=json.data||[];
-  filteredData=[...allData];
-  fillUserFilter(allData);
-  renderTable(filteredData);
-}
 
 function fillUserFilter(data){
   filterUser.innerHTML='<option value="">اختر المستخدم</option>';
@@ -274,18 +89,31 @@ function resetFilters(){
 }
 
 function renderTable(data){
-  let profit=0,amount=0,cancelled=0;
-  dataTable.querySelector("tbody").innerHTML="";
 
-  data.forEach(r=>{
-    const p=Number(r[5])||0;
-    profit+=p;
-    amount+=Number(r[2])||0;
-    if(p<0) cancelled++;
+  const tbody = dataTable.querySelector("tbody");
 
-    dataTable.querySelector("tbody").innerHTML+=`
+  let profit = 0;
+  let amount = 0;
+  let cancelled = 0;
+  let html = "";
+
+  data.forEach(r => {
+
+    const p = Number(r[5]) || 0;
+    const a = Number(r[2]) || 0;
+
+    profit += p;
+
+    if (p < 0) {
+      amount -= a;
+      cancelled++;
+    } else {
+      amount += a;
+    }
+
+    html += `
     <tr>
-      <td>${r[0].split("T")[0]}</td>
+      <td>${String(r[0]).split("T")[0]}</td>
       <td>${r[1]}</td>
       <td>${r[2]}</td>
       <td>${r[3]}</td>
@@ -295,38 +123,57 @@ function renderTable(data){
     </tr>`;
   });
 
-totalProfit.innerText = Number(profit.toFixed(3));
-totalAmount.innerText = Number(amount.toFixed(3));
-totalCodes.innerText = data.length;
-cancelledCodes.innerText = cancelled;
-netCodes.innerText = data.length - (cancelled*2);
+  tbody.innerHTML = html;
 
+  totalProfit.innerText = Number(profit.toFixed(3));
+  totalAmount.innerText = Number(amount.toFixed(3));
+  totalCodes.innerText = data.length;
+  cancelledCodes.innerText = cancelled;
+  netCodes.innerText = data.length - (cancelled * 2);
+  // عمولة الوكيل الفرعي ثابتة
+const subDealerPercent = 25;
 
-  const raw1 = (profit / 40) * 100;
-  const raw2 = (profit / 70) * 100;
+// عمولة الوكيل الرئيسي = 25 - عدد الأكواد الملغية
+const mainDealerPercent = Math.max(0, 25 - cancelled);
 
-  percent1.innerText = raw1.toFixed(1);
-  percent2.innerText = raw2.toFixed(1);
+// إجمالي العمولتين
+const totalCommissionPercent =
+    subDealerPercent + mainDealerPercent;
 
-  progressBar1.style.width = Math.min(raw1,100)+"%";
-  progressBar2.style.width = Math.min(raw2,100)+"%";
-  progressBar1.innerText = raw1.toFixed(1)+"%";
-  progressBar2.innerText = raw2.toFixed(1)+"%";
+document.getElementById("subDealerPercent").innerText = subDealerPercent;
+document.getElementById("mainDealerPercent").innerText = mainDealerPercent;
+document.getElementById("totalCommissionPercent").innerText = totalCommissionPercent;
+  
+  if (typeof percent1 !== "undefined") {
 
-  const level1Profit = raw1 >= 100 ? profit : 0;
-  const level2Profit = raw2 >= 100 ? profit * 0.7 : 0;
+    const raw1 = (profit / 40) * 100;
+    const raw2 = (profit / 70) * 100;
 
-  level1ProfitEl.innerText = level1Profit.toLocaleString();
-  level2ProfitEl.innerText = level2Profit.toLocaleString();
-  levelsTotalProfitEl.innerText = (level1Profit + level2Profit).toLocaleString();
+    percent1.innerText = raw1.toFixed(1);
+    percent2.innerText = raw2.toFixed(1);
+
+    progressBar1.style.width = Math.min(raw1, 100) + "%";
+    progressBar2.style.width = Math.min(raw2, 100) + "%";
+
+    progressBar1.innerText = raw1.toFixed(1) + "%";
+    progressBar2.innerText = raw2.toFixed(1) + "%";
+
+    const level1Profit = raw1 >= 100 ? profit : 0;
+    const level2Profit = raw2 >= 100 ? profit * 0.7 : 0;
+
+    level1ProfitEl.innerText = level1Profit.toLocaleString();
+    level2ProfitEl.innerText = level2Profit.toLocaleString();
+    levelsTotalProfitEl.innerText =
+      (level1Profit + level2Profit).toLocaleString();
+  }
 }
 
 function logout() {
   sessionStorage.clear();          // مسح بيانات الجلسة
   window.location.href = "login.html"; // الانتقال لصفحة تسجيل الدخول
 }
+filterUser.addEventListener("change", applyFilters);
 window.onload=loadData;
 </script>
-
 </body>
 </html>
