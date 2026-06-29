@@ -26,35 +26,50 @@
 <span id="lblUser">👤 المستخدم:</span>
 <span id="selectedUser">All</span><br>
 
+   
 <span id="lblProfit">💰 إجمالي الربح:</span>
 <span id="totalProfit">0</span>
 <span class="currency">مانجو</span><br>
 
+<div id="salesRow">    
 <span id="lblSales">🛒 إجمالي المبيعات:</span>
 <span id="totalAmount">0</span>
 <span class="currency">مانجو</span><br>
+</div>
 
+<div id="salesRow">
 <span id="lblOperations">🔢 إجمالي العمليات:</span>
 <span id="totalCodes">0</span><br>
-
+</div>
+    
+  
 <span id="lblCancelled">❌ عدد الأكواد الملغية:</span>
 <span id="cancelledCodes">0</span><br>
 
+    
+<div id="salesRow">
 <span id="lblNet">✅ صافي الأكواد المباعة:</span>
 <span id="netCodes">0</span><br>
-
+</div>
+         
+<div id="salesRow">
 <span id="lblSubDealer">👤 عمولة الوكيل الفرعي (25%):</span>
 <span id="subDealerCommission">0</span>
 <span class="currency">مانجو</span><br>
+</div>
+    
 
 <span id="lblMainDealer">👑 عمولة الوكيل الرئيسي (</span><span id="mainDealerRate">0</span>%):
 <span id="mainDealerCommission">0</span>
 <span class="currency">مانجو</span><br>
 
+      
+<div id="salesRow">        
 <span id="lblTotalCommission">💰 إجمالي العمولتين:</span>
 <span id="totalCommission">0</span>
 <span class="currency">مانجو</span>
-
+</div>
+    
 </div>
 
 <button id="langBtn" onclick="toggleLanguage()">English</button>
@@ -246,18 +261,18 @@ function toggleLanguage() {
 
         document.getElementById("lblUser").textContent = "👤 User:";
         document.getElementById("lblProfit").textContent = "💰 Total Profit:";
-        //document.getElementById("lblSales").textContent = "🛒 Total Sales:";
-       // document.getElementById("lblOperations").textContent = "🔢 Total Transactions:";
+        document.getElementById("lblSales").textContent = "🛒 Total Sales:";
+        document.getElementById("lblOperations").textContent = "🔢 Total Transactions:";
         document.getElementById("lblCancelled").textContent = "❌ Cancelled Codes:";
-       // document.getElementById("lblNet").textContent = "✅ Net Sold Codes:";
-      // document.getElementById("lblSubDealer").textContent = "👤 Sub Dealer Commission (25%):";
-        document.getElementById("lblMainDealer").textContent = "👑 Main Dealer Commission (";
-       // document.getElementById("lblTotalCommission").textContent = "💰 Total Commissions:";
+       document.getElementById("lblNet").textContent = "✅ Net Sold Codes:";
+       document.getElementById("lblSubDealer").textContent = "👤 Sub Dealer Commission (25%):";
+       document.getElementById("lblMainDealer").textContent = "👑 Main Dealer Commission (";
+       document.getElementById("lblTotalCommission").textContent = "💰 Total Commissions:";
 
         currencies.forEach(el => el.textContent = "Mango");
 
         document.getElementById("langBtn").textContent = "العربية";
-
+        document.getElementById("salesRow").style.display = "";
         currentLang = "en";
 
     } else {
@@ -267,18 +282,18 @@ function toggleLanguage() {
 
         document.getElementById("lblUser").textContent = "👤 المستخدم:";
         document.getElementById("lblProfit").textContent = "💰 إجمالي الربح:";
-        //document.getElementById("lblSales").textContent = "🛒 إجمالي المبيعات:";
-       // document.getElementById("lblOperations").textContent = "🔢 إجمالي العمليات:";
+        document.getElementById("lblSales").textContent = "🛒 إجمالي المبيعات:";
+        document.getElementById("lblOperations").textContent = "🔢 إجمالي العمليات:";
         document.getElementById("lblCancelled").textContent = "❌ عدد الأكواد الملغية:";
-        //document.getElementById("lblNet").textContent = "✅ صافي الأكواد المباعة:";
-       // document.getElementById("lblSubDealer").textContent = "👤 عمولة الوكيل الفرعي (25%):";
+        document.getElementById("lblNet").textContent = "✅ صافي الأكواد المباعة:";
+        document.getElementById("lblSubDealer").textContent = "👤 عمولة الوكيل الفرعي (25%):";
         document.getElementById("lblMainDealer").textContent = "👑 عمولة الوكيل الرئيسي (";
-        //document.getElementById("lblTotalCommission").textContent = "💰 إجمالي العمولتين:";
+        document.getElementById("lblTotalCommission").textContent = "💰 إجمالي العمولتين:";
 
         currencies.forEach(el => el.textContent = "مانجو");
 
         document.getElementById("langBtn").textContent = "English";
-
+        document.getElementById("salesRow").style.display = "none";
         currentLang = "ar";
     }
 }
