@@ -130,16 +130,18 @@ function renderTable(data){
   totalCodes.innerText = data.length;
   cancelledCodes.innerText = cancelled;
   netCodes.innerText = data.length - (cancelled * 2);
+    
   // عمولة الوكيل الفرعي ثابتة
-const subDealerPercent = 25;
+const subDealerRate = 25;
+// عمولة الوكيل الرئيسي = 25 - عدد الأكواد الملغية    
+const mainDealerRate = Math.max(0, 25 - cancelled);
 
-// عمولة الوكيل الرئيسي = 25 - عدد الأكواد الملغية
-const mainDealerPercent = Math.max(0, 25 - cancelled);
-
+const subDealerCommission = profit * subDealerRate / 100;
+const mainDealerCommission = profit * mainDealerRate / 100;
 // إجمالي العمولتين
-const totalCommissionPercent = subDealerPercent + mainDealerPercent;
 
-
+const totalCommission = subDealerCommission + mainDealerCommission;
+    
 document.getElementById("mainDealerRate").innerText = mainDealerRate;
 document.getElementById("subDealerCommission").innerText = subDealerCommission.toFixed(3);
 document.getElementById("mainDealerCommission").innerText = mainDealerCommission.toFixed(3);
