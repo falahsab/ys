@@ -160,7 +160,7 @@ function toggleLanguage() {
 
         document.documentElement.lang = "en";
         document.documentElement.dir = "ltr";
-
+        document.getElementById("dealerName1").textContent = "Hi, ";
         document.getElementById("lblUser").textContent = "👤 User:";
         document.getElementById("lblProfit").textContent = "💰 Total Profit:";
         document.getElementById("lblSales").textContent = "🛒 Total Sales:";
@@ -185,7 +185,7 @@ function toggleLanguage() {
 
         document.documentElement.lang = "ar";
         document.documentElement.dir = "rtl";
-
+        document.getElementById("dealerName1").textContent = "مرحبا, ";
         document.getElementById("lblUser").textContent = "👤 المستخدم:";
         document.getElementById("lblProfit").textContent = "💰 إجمالي الربح:";
         document.getElementById("lblSales").textContent = "🛒 إجمالي المبيعات:";
