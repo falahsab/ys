@@ -79,7 +79,7 @@
 <div class="filters">
   <input type="date" id="startDate">
   <input type="date" id="endDate">
-  <select id="filterUser"><option value="">اختر المستخدم</option></select>
+  <select id="filterUser"><option value=""><span id="filterUser1">اختر مستخدم</span></option></select>
   <button onclick="applyFilters()">تطبيق الفلترة</button>
   <button onclick="resetFilters()">إلغاء الفلترة</button>
 </div>
@@ -257,7 +257,7 @@ function toggleLanguage() {
 
         document.documentElement.lang = "en";
         document.documentElement.dir = "ltr";
-        document.getElementById("filterUser").textContent = "Select a user";
+        document.getElementById("filterUser1").textContent = "Select a user";
         document.getElementById("dealerName1").textContent = "Hi, ";
         document.getElementById("lblUser").textContent = "👤 User:";
         document.getElementById("lblProfit").textContent = "💰 Total Profit:";
@@ -284,7 +284,7 @@ function toggleLanguage() {
         document.documentElement.lang = "ar";
         document.documentElement.dir = "rtl";
         document.getElementById("dealerName1").textContent = "مرحبا, ";
-         document.getElementById("filterUser").textContent = "اختر مستخدم";
+         document.getElementById("filterUser1").textContent = "اختر مستخدم";
         document.getElementById("lblUser").textContent = "👤 المستخدم:";
         document.getElementById("lblProfit").textContent = "💰 إجمالي الربح:";
         document.getElementById("lblSales").textContent = "🛒 إجمالي المبيعات:";
