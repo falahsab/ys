@@ -254,10 +254,11 @@ let currentLang = "ar";
 
 function toggleLanguage() {
 
+    const isArabic = currentLang === "ar";
     const currencies = document.querySelectorAll(".currency");
     const salesRows = document.querySelectorAll(".salesRow");
 
-    if (currentLang === "ar") {
+    if (isArabic) {
 
         currentLang = "en";
 
@@ -279,9 +280,7 @@ function toggleLanguage() {
 
         currencies.forEach(el => el.textContent = "Mango");
 
-        salesRows.forEach(row => {
-            row.style.display = "none";
-        });
+        salesRows.forEach(row => row.style.display = "none");
 
         document.getElementById("langBtn").textContent = "العربية";
 
@@ -307,9 +306,7 @@ function toggleLanguage() {
 
         currencies.forEach(el => el.textContent = "مانجو");
 
-        salesRows.forEach(row => {
-            row.style.display = "";
-        });
+        salesRows.forEach(row => row.style.display = "");
 
         document.getElementById("langBtn").textContent = "English";
     }
