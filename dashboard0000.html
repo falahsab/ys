@@ -6,13 +6,21 @@
 <title>لوحة الموزع</title>
 
     <link rel="stylesheet" href="css/styledash.css">
+    <style>
+        #langBtn{
+    padding:8px 15px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    margin-bottom:10px;
+}</style>
 </head>
 <body>
 <div class="header">
   <h2>مرحبا، <span id="dealerName"></span></h2>
   <button class="logout-btn" onclick="logout()">خروج</button>
 </div>
-//-------------
+
  <div class="summary1">
 <span id="lblUser">👤 المستخدم:</span> <span id="selectedUser">All</span><br>
 
@@ -37,18 +45,8 @@
 </div>
 
 <button id="langBtn" onclick="toggleLanguage()">English</button>   
-//------------
-<div class="summary1">
-👤 المستخدم: <span id="selectedUser">All</span><br>
-💰 إجمالي الربح: <span id="totalProfit">0</span> مانجو<br>
-🛒 إجمالي المبيعات: <span id="totalAmount">0</span> مانجو<br>
-🔢 إجمالي العمليات: <span id="totalCodes">0</span><br>
-❌ عدد الأكواد الملغية: <span id="cancelledCodes">0</span><br>
-✅ صافي الأكواد المباعة: <span id="netCodes">0</span><br>
-👤 عمولة الوكيل الفرعي (25%): <span id="subDealerCommission">0</span> مانجو<br>
-👑 عمولة الوكيل الرئيسي (<span id="mainDealerRate">0</span>%): <span id="mainDealerCommission">0</span> مانجو<br>
-💰 إجمالي العمولتين: <span id="totalCommission">0</span> مانجو
-</div>
+
+
 <div class="filters">
   <input type="date" id="startDate">
   <input type="date" id="endDate">
