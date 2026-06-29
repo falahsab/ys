@@ -12,7 +12,32 @@
   <h2>مرحبا، <span id="dealerName"></span></h2>
   <button class="logout-btn" onclick="logout()">خروج</button>
 </div>
+//-------------
+ <div class="summary1">
+<span id="lblUser">👤 المستخدم:</span> <span id="selectedUser">All</span><br>
 
+<span id="lblProfit">💰 إجمالي الربح:</span> <span id="totalProfit">0</span> مانجو<br>
+
+<span id="lblSales">🛒 إجمالي المبيعات:</span> <span id="totalAmount">0</span> مانجو<br>
+
+<span id="lblOperations">🔢 إجمالي العمليات:</span> <span id="totalCodes">0</span><br>
+
+<span id="lblCancelled">❌ عدد الأكواد الملغية:</span> <span id="cancelledCodes">0</span><br>
+
+<span id="lblNet">✅ صافي الأكواد المباعة:</span> <span id="netCodes">0</span><br>
+
+<span id="lblSubDealer">👤 عمولة الوكيل الفرعي (25%):</span>
+<span id="subDealerCommission">0</span> مانجو<br>
+
+<span id="lblMainDealer">👑 عمولة الوكيل الرئيسي (</span><span id="mainDealerRate">0</span>%):
+<span id="mainDealerCommission">0</span> مانجو<br>
+
+<span id="lblTotalCommission">💰 إجمالي العمولتين:</span>
+<span id="totalCommission">0</span> مانجو
+</div>
+
+<button id="langBtn" onclick="toggleLanguage()">English</button>   
+//------------
 <div class="summary1">
 👤 المستخدم: <span id="selectedUser">All</span><br>
 💰 إجمالي الربح: <span id="totalProfit">0</span> مانجو<br>
@@ -194,6 +219,48 @@ function logout() {
 }
 filterUser.addEventListener("change", applyFilters);
 window.onload=loadData;
+    //.......ترجمة
+    let currentLang = "ar";
+
+function toggleLanguage() {
+
+    if (currentLang === "ar") {
+
+        document.documentElement.lang = "en";
+        document.documentElement.dir = "ltr";
+
+        lblUser.textContent = "👤 User:";
+        lblProfit.textContent = "💰 Total Profit:";
+        lblSales.textContent = "🛒 Total Sales:";
+        lblOperations.textContent = "🔢 Total Transactions:";
+        lblCancelled.textContent = "❌ Cancelled Codes:";
+        lblNet.textContent = "✅ Net Sold Codes:";
+        lblSubDealer.textContent = "👤 Sub Dealer Commission (25%):";
+        lblMainDealer.textContent = "👑 Main Dealer Commission (";
+        lblTotalCommission.textContent = "💰 Total Commissions:";
+
+        langBtn.textContent = "العربية";
+        currentLang = "en";
+
+    } else {
+
+        document.documentElement.lang = "ar";
+        document.documentElement.dir = "rtl";
+
+        lblUser.textContent = "👤 المستخدم:";
+        lblProfit.textContent = "💰 إجمالي الربح:";
+        lblSales.textContent = "🛒 إجمالي المبيعات:";
+        lblOperations.textContent = "🔢 إجمالي العمليات:";
+        lblCancelled.textContent = "❌ عدد الأكواد الملغية:";
+        lblNet.textContent = "✅ صافي الأكواد المباعة:";
+        lblSubDealer.textContent = "👤 عمولة الوكيل الفرعي (25%):";
+        lblMainDealer.textContent = "👑 عمولة الوكيل الرئيسي (";
+        lblTotalCommission.textContent = "💰 إجمالي العمولتين:";
+
+        langBtn.textContent = "English";
+        currentLang = "ar";
+    }
+}
 </script>
 </body>
 </html>
