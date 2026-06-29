@@ -31,13 +31,13 @@
 <span id="totalProfit">0</span>
 <span class="currency">مانجو</span><br>
 
-<div id="salesRow">    
+<div class="salesRow">    
 <span id="lblSales">🛒 إجمالي المبيعات:</span>
 <span id="totalAmount">0</span>
 <span class="currency">مانجو</span><br>
 </div>
 
-<div id="salesRow">
+<div class="salesRow">
 <span id="lblOperations">🔢 إجمالي العمليات:</span>
 <span id="totalCodes">0</span><br>
 </div>
@@ -52,7 +52,7 @@
 <span id="netCodes">0</span><br>
 </div>
          
-<div id="salesRow">
+<div class="salesRow">
 <span id="lblSubDealer">👤 عمولة الوكيل الفرعي (25%):</span>
 <span id="subDealerCommission">0</span>
 <span class="currency">مانجو</span><br>
@@ -64,7 +64,7 @@
 <span class="currency">مانجو</span><br>
 
       
-<div id="salesRow">        
+<div class="salesRow">        
 <span id="lblTotalCommission">💰 إجمالي العمولتين:</span>
 <span id="totalCommission">0</span>
 <span class="currency">مانجو</span>
@@ -271,7 +271,9 @@ function toggleLanguage() {
 
         currencies.forEach(el => el.textContent = "Mango");
 
-        if (salesRow) salesRow.style.display = "none";
+       document.querySelectorAll(".salesRow").forEach(row => {
+    row.style.display = "none";
+});
 
         document.getElementById("langBtn").textContent = "العربية";
 
@@ -294,7 +296,9 @@ function toggleLanguage() {
 
         currencies.forEach(el => el.textContent = "مانجو");
 
-        if (salesRow) salesRow.style.display = "";
+       document.querySelectorAll(".salesRow").forEach(row => {
+    row.style.display = "";
+});
 
         document.getElementById("langBtn").textContent = "English";
 
