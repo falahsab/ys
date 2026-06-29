@@ -227,64 +227,68 @@ function renderTable(data){
 
 function toggleLanguage() {
 
-  const isArabic = document.documentElement.lang === "ar";
+    // نحدد اللغة الحالية من الزر نفسه (أكثر استقرارًا)
+    const btn = document.getElementById("langBtn");
 
-  const currencies = document.querySelectorAll(".currency");
-  const salesRows = document.querySelectorAll(".salesRow");
+    const isArabic = btn.dataset.lang !== "en";
 
-  if (isArabic) {
+    const currencies = document.querySelectorAll(".currency");
+    const salesRows = document.querySelectorAll(".salesRow");
 
-    document.documentElement.lang = "en";
-    document.documentElement.dir = "ltr";
+    if (isArabic) {
 
-    updateFilterText();
+        // إلى English
+        document.documentElement.lang = "en";
+        document.documentElement.dir = "ltr";
 
-    document.getElementById("filterUser1").textContent = "Select a user";
-    document.getElementById("dealerName1").textContent = "Hi, ";
+        btn.dataset.lang = "en";
+        btn.textContent = "العربية";
 
-    document.getElementById("lblUser").textContent = "👤 User:";
-    document.getElementById("lblProfit").textContent = "💰 Total Profit:";
-    document.getElementById("lblSales").textContent = "🛒 Total Sales:";
-    document.getElementById("lblOperations").textContent = "🔢 Total Transactions:";
-    document.getElementById("lblCancelled").textContent = "❌ Cancelled Codes:";
-    document.getElementById("lblNet").textContent = "✅ Net Sold Codes:";
-    document.getElementById("lblSubDealer").textContent = "👤 Sub Dealer Commission (25%):";
-    document.getElementById("lblMainDealer").textContent = "👑 Main Dealer Commission (";
-    document.getElementById("lblTotalCommission").textContent = "💰 Total Commissions:";
+        updateFilterText();
 
-    currencies.forEach(el => el.textContent = "Mango");
+        document.getElementById("filterUser1").textContent = "Select a user";
+        document.getElementById("dealerName1").textContent = "Hi, ";
 
-    salesRows.forEach(row => row.style.display = "none");
+        document.getElementById("lblUser").textContent = "👤 User:";
+        document.getElementById("lblProfit").textContent = "💰 Total Profit:";
+        document.getElementById("lblSales").textContent = "🛒 Total Sales:";
+        document.getElementById("lblOperations").textContent = "🔢 Total Transactions:";
+        document.getElementById("lblCancelled").textContent = "❌ Cancelled Codes:";
+        document.getElementById("lblNet").textContent = "✅ Net Sold Codes:";
+        document.getElementById("lblSubDealer").textContent = "👤 Sub Dealer Commission (25%):";
+        document.getElementById("lblMainDealer").textContent = "👑 Main Dealer Commission (";
+        document.getElementById("lblTotalCommission").textContent = "💰 Total Commissions:";
 
-    document.getElementById("langBtn").textContent = "العربية";
+        currencies.forEach(el => el.textContent = "Mango");
+        salesRows.forEach(row => row.style.display = "none");
 
-  } else {
+    } else {
 
-    document.documentElement.lang = "ar";
-    document.documentElement.dir = "rtl";
+        // إلى Arabic
+        document.documentElement.lang = "ar";
+        document.documentElement.dir = "rtl";
 
-    updateFilterText();
+        btn.dataset.lang = "ar";
+        btn.textContent = "English";
 
-    document.getElementById("filterUser1").textContent = "اختر مستخدم";
-    document.getElementById("dealerName1").textContent = "مرحبا, ";
+        updateFilterText();
 
-    document.getElementById("lblUser").textContent = "👤 المستخدم:";
-    document.getElementById("lblProfit").textContent = "💰 إجمالي الربح:";
-    document.getElementById("lblSales").textContent = "🛒 إجمالي المبيعات:";
-    document.getElementById("lblOperations").textContent = "🔢 إجمالي العمليات:";
-    document.getElementById("lblCancelled").textContent = "❌ عدد الأكواد الملغية:";
-    document.getElementById("lblNet").textContent = "✅ صافي الأكواد المباعة:";
-    document.getElementById("lblSubDealer").textContent = "👤 عمولة الوكيل الفرعي (25%):";
-    document.getElementById("lblMainDealer").textContent = "👑 عمولة الوكيل الرئيسي (";
-    document.getElementById("lblTotalCommission").textContent = "💰 إجمالي العمولتين:";
+        document.getElementById("filterUser1").textContent = "اختر مستخدم";
+        document.getElementById("dealerName1").textContent = "مرحبا, ";
 
-    currencies.forEach(el => el.textContent = "مانجو");
+        document.getElementById("lblUser").textContent = "👤 المستخدم:";
+        document.getElementById("lblProfit").textContent = "💰 إجمالي الربح:";
+        document.getElementById("lblSales").textContent = "🛒 إجمالي المبيعات:";
+        document.getElementById("lblOperations").textContent = "🔢 إجمالي العمليات:";
+        document.getElementById("lblCancelled").textContent = "❌ عدد الأكواد الملغية:";
+        document.getElementById("lblNet").textContent = "✅ صافي الأكواد المباعة:";
+        document.getElementById("lblSubDealer").textContent = "👤 عمولة الوكيل الفرعي (25%):";
+        document.getElementById("lblMainDealer").textContent = "👑 عمولة الوكيل الرئيسي (";
+        document.getElementById("lblTotalCommission").textContent = "💰 إجمالي العمولتين:";
 
-    salesRows.forEach(row => row.style.display = "");
-  }
-
-  document.getElementById("langBtn").textContent =
-    isArabic ? "English" : "العربية";
+        currencies.forEach(el => el.textContent = "مانجو");
+        salesRows.forEach(row => row.style.display = "");
+    }
 }
 
 function updateFilterText() {
