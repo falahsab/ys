@@ -119,11 +119,12 @@ const levelsTotalProfitEl = document.getElementById("levelsTotalProfit");
 
 
 
-function fillUserFilter(data){
-  filterUser.innerHTML =
-    currentLang === "ar"
-        ? '<option value="">اختر المستخدم</option>'
-        : '<option value="">Select User</option>';
+function updateFilterText() {
+    filterUser.innerHTML =
+        document.documentElement.lang === "ar"
+            ? '<option value="">اختر المستخدم</option>'
+            : '<option value="">Select User</option>';
+}
   [...new Set(data.map(r=>r[3]))].forEach(u=>{
     if(u){ filterUser.innerHTML+=`<option>${u}</option>` }
   });
@@ -262,7 +263,8 @@ function toggleLanguage() {
         // تحويل إلى English
         document.documentElement.lang = "en";
         document.documentElement.dir = "ltr";
-
+        updateFilterText();
+        
         document.getElementById("filterUser1").textContent = "Select a user";
         document.getElementById("dealerName1").textContent = "Hi, ";
 
