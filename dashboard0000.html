@@ -252,28 +252,29 @@ let currentLang = "ar";
 function toggleLanguage() {
 
     const currencies = document.querySelectorAll(".currency");
+    const salesRow = document.getElementById("salesRow");
 
     if (currentLang === "ar") {
 
         document.documentElement.lang = "en";
         document.documentElement.dir = "ltr";
-        const salesRow = document.getElementById("salesRow");
 
         document.getElementById("lblUser").textContent = "👤 User:";
         document.getElementById("lblProfit").textContent = "💰 Total Profit:";
         document.getElementById("lblSales").textContent = "🛒 Total Sales:";
         document.getElementById("lblOperations").textContent = "🔢 Total Transactions:";
         document.getElementById("lblCancelled").textContent = "❌ Cancelled Codes:";
-       document.getElementById("lblNet").textContent = "✅ Net Sold Codes:";
-       document.getElementById("lblSubDealer").textContent = "👤 Sub Dealer Commission (25%):";
-       document.getElementById("lblMainDealer").textContent = "👑 Main Dealer Commission (";
-       document.getElementById("lblTotalCommission").textContent = "💰 Total Commissions:";
+        document.getElementById("lblNet").textContent = "✅ Net Sold Codes:";
+        document.getElementById("lblSubDealer").textContent = "👤 Sub Dealer Commission (25%):";
+        document.getElementById("lblMainDealer").textContent = "👑 Main Dealer Commission (";
+        document.getElementById("lblTotalCommission").textContent = "💰 Total Commissions:";
 
         currencies.forEach(el => el.textContent = "Mango");
 
-           if (salesRow) salesRow.style.display = "none";
+        if (salesRow) salesRow.style.display = "none";
+
         document.getElementById("langBtn").textContent = "العربية";
-        document.getElementById("salesRow").style.display = "";
+
         currentLang = "en";
 
     } else {
@@ -291,11 +292,12 @@ function toggleLanguage() {
         document.getElementById("lblMainDealer").textContent = "👑 عمولة الوكيل الرئيسي (";
         document.getElementById("lblTotalCommission").textContent = "💰 إجمالي العمولتين:";
 
-           if (salesRow) salesRow.style.display = "";
         currencies.forEach(el => el.textContent = "مانجو");
 
+        if (salesRow) salesRow.style.display = "";
+
         document.getElementById("langBtn").textContent = "English";
-       
+
         currentLang = "ar";
     }
 }
