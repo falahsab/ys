@@ -21,28 +21,43 @@
   <button class="logout-btn" onclick="logout()">خروج</button>
 </div>
 
- <div class="summary1">
-<span id="lblUser">👤 المستخدم:</span> <span id="selectedUser">All</span><br>
+<div class="summary1">
 
-<span id="lblProfit">💰 إجمالي الربح:</span> <span id="totalProfit">0</span> مانجو<br>
+<span id="lblUser">👤 المستخدم:</span>
+<span id="selectedUser">All</span><br>
 
-<span id="lblSales">🛒 إجمالي المبيعات:</span> <span id="totalAmount">0</span> مانجو<br>
+<span id="lblProfit">💰 إجمالي الربح:</span>
+<span id="totalProfit">0</span>
+<span class="currency">مانجو</span><br>
 
-<span id="lblOperations">🔢 إجمالي العمليات:</span> <span id="totalCodes">0</span><br>
+<span id="lblSales">🛒 إجمالي المبيعات:</span>
+<span id="totalAmount">0</span>
+<span class="currency">مانجو</span><br>
 
-<span id="lblCancelled">❌ عدد الأكواد الملغية:</span> <span id="cancelledCodes">0</span><br>
+<span id="lblOperations">🔢 إجمالي العمليات:</span>
+<span id="totalCodes">0</span><br>
 
-<span id="lblNet">✅ صافي الأكواد المباعة:</span> <span id="netCodes">0</span><br>
+<span id="lblCancelled">❌ عدد الأكواد الملغية:</span>
+<span id="cancelledCodes">0</span><br>
+
+<span id="lblNet">✅ صافي الأكواد المباعة:</span>
+<span id="netCodes">0</span><br>
 
 <span id="lblSubDealer">👤 عمولة الوكيل الفرعي (25%):</span>
-<span id="subDealerCommission">0</span> مانجو<br>
+<span id="subDealerCommission">0</span>
+<span class="currency">مانجو</span><br>
 
 <span id="lblMainDealer">👑 عمولة الوكيل الرئيسي (</span><span id="mainDealerRate">0</span>%):
-<span id="mainDealerCommission">0</span> مانجو<br>
+<span id="mainDealerCommission">0</span>
+<span class="currency">مانجو</span><br>
 
 <span id="lblTotalCommission">💰 إجمالي العمولتين:</span>
-<span id="totalCommission">0</span> مانجو
+<span id="totalCommission">0</span>
+<span class="currency">مانجو</span>
+
 </div>
+
+<button id="langBtn" onclick="toggleLanguage()">English</button>
 
 <button id="langBtn" onclick="toggleLanguage()">English</button>   
 
@@ -216,28 +231,33 @@ function logout() {
   window.location.href = "login.html"; // الانتقال لصفحة تسجيل الدخول
 }
 filterUser.addEventListener("change", applyFilters);
-window.onload=loadData;
-    //.......ترجمة
-    let currentLang = "ar";
+        //.......ترجمة
+
+let currentLang = "ar";
 
 function toggleLanguage() {
+
+    const currencies = document.querySelectorAll(".currency");
 
     if (currentLang === "ar") {
 
         document.documentElement.lang = "en";
         document.documentElement.dir = "ltr";
 
-        lblUser.textContent = "👤 User:";
-        lblProfit.textContent = "💰 Total Profit:";
-        lblSales.textContent = "🛒 Total Sales:";
-        lblOperations.textContent = "🔢 Total Transactions:";
-        lblCancelled.textContent = "❌ Cancelled Codes:";
-        lblNet.textContent = "✅ Net Sold Codes:";
-        lblSubDealer.textContent = "👤 Sub Dealer Commission (25%):";
-        lblMainDealer.textContent = "👑 Main Dealer Commission (";
-        lblTotalCommission.textContent = "💰 Total Commissions:";
+        document.getElementById("lblUser").textContent = "👤 User:";
+        document.getElementById("lblProfit").textContent = "💰 Total Profit:";
+        document.getElementById("lblSales").textContent = "🛒 Total Sales:";
+        document.getElementById("lblOperations").textContent = "🔢 Total Transactions:";
+        document.getElementById("lblCancelled").textContent = "❌ Cancelled Codes:";
+        document.getElementById("lblNet").textContent = "✅ Net Sold Codes:";
+        document.getElementById("lblSubDealer").textContent = "👤 Sub Dealer Commission (25%):";
+        document.getElementById("lblMainDealer").textContent = "👑 Main Dealer Commission (";
+        document.getElementById("lblTotalCommission").textContent = "💰 Total Commissions:";
 
-        langBtn.textContent = "العربية";
+        currencies.forEach(el => el.textContent = "Mango");
+
+        document.getElementById("langBtn").textContent = "العربية";
+
         currentLang = "en";
 
     } else {
@@ -245,20 +265,26 @@ function toggleLanguage() {
         document.documentElement.lang = "ar";
         document.documentElement.dir = "rtl";
 
-        lblUser.textContent = "👤 المستخدم:";
-        lblProfit.textContent = "💰 إجمالي الربح:";
-        lblSales.textContent = "🛒 إجمالي المبيعات:";
-        lblOperations.textContent = "🔢 إجمالي العمليات:";
-        lblCancelled.textContent = "❌ عدد الأكواد الملغية:";
-        lblNet.textContent = "✅ صافي الأكواد المباعة:";
-        lblSubDealer.textContent = "👤 عمولة الوكيل الفرعي (25%):";
-        lblMainDealer.textContent = "👑 عمولة الوكيل الرئيسي (";
-        lblTotalCommission.textContent = "💰 إجمالي العمولتين:";
+        document.getElementById("lblUser").textContent = "👤 المستخدم:";
+        document.getElementById("lblProfit").textContent = "💰 إجمالي الربح:";
+        document.getElementById("lblSales").textContent = "🛒 إجمالي المبيعات:";
+        document.getElementById("lblOperations").textContent = "🔢 إجمالي العمليات:";
+        document.getElementById("lblCancelled").textContent = "❌ عدد الأكواد الملغية:";
+        document.getElementById("lblNet").textContent = "✅ صافي الأكواد المباعة:";
+        document.getElementById("lblSubDealer").textContent = "👤 عمولة الوكيل الفرعي (25%):";
+        document.getElementById("lblMainDealer").textContent = "👑 عمولة الوكيل الرئيسي (";
+        document.getElementById("lblTotalCommission").textContent = "💰 إجمالي العمولتين:";
 
-        langBtn.textContent = "English";
+        currencies.forEach(el => el.textContent = "مانجو");
+
+        document.getElementById("langBtn").textContent = "English";
+
         currentLang = "ar";
     }
 }
+window.onload=loadData;
+    //.......ترجمة
+
 </script>
 </body>
 </html>
