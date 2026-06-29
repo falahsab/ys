@@ -125,16 +125,18 @@ async function loadData(){
 
 function fillUserFilter(data){
 
-  filterUser.innerHTML =
-    document.documentElement.lang === "ar"
-        ? '<option value="">اختر المستخدم</option>'
-        : '<option value="">Select User</option>';
+    const filterUser = document.getElementById("filterUser");
 
-  [...new Set(data.map(r=>r[3]))].forEach(u=>{
-    if(u){
-      filterUser.innerHTML += `<option>${u}</option>`;
-    }
-  });
+    filterUser.innerHTML =
+        document.documentElement.lang === "ar"
+            ? '<option value="">اختر المستخدم</option>'
+            : '<option value="">Select User</option>';
+
+    [...new Set(data.map(r => r[3]))].forEach(u => {
+        if (u) {
+            filterUser.innerHTML += `<option value="${u}">${u}</option>`;
+        }
+    });
 }
 
 function applyFilters(){
