@@ -130,22 +130,35 @@ function renderTable(data){
   totalCodes.innerText = data.length;
   cancelledCodes.innerText = cancelled;
   netCodes.innerText = data.length - (cancelled * 2);
-    
-  // عمولة الوكيل الفرعي ثابتة
-const subDealerRate = 25;
-// عمولة الوكيل الرئيسي = 25 - عدد الأكواد الملغية    
-const mainDealerRate = Math.max(0, 25 - cancelled);
+    if (filterUser.value) {
 
-const subDealerCommission = profit * subDealerRate / 100;
-const mainDealerCommission = profit * mainDealerRate / 100;
-// إجمالي العمولتين
+    const subDealerRate = 25;
+    const mainDealerRate = Math.max(0, 25 - cancelled);
 
-const totalCommission = subDealerCommission + mainDealerCommission;
-    
-document.getElementById("mainDealerRate").innerText = mainDealerRate;
-document.getElementById("subDealerCommission").innerText = subDealerCommission.toFixed(3);
-document.getElementById("mainDealerCommission").innerText = mainDealerCommission.toFixed(3);
-document.getElementById("totalCommission").innerText = totalCommission.toFixed(3);    
+    const subDealerCommission = profit * subDealerRate / 100;
+    const mainDealerCommission = profit * mainDealerRate / 100;
+
+    const totalCommission =
+        subDealerCommission + mainDealerCommission;
+
+    document.getElementById("mainDealerRate").innerText = mainDealerRate;
+    document.getElementById("subDealerCommission").innerText =
+        subDealerCommission.toFixed(3);
+
+    document.getElementById("mainDealerCommission").innerText =
+        mainDealerCommission.toFixed(3);
+
+    document.getElementById("totalCommission").innerText =
+        totalCommission.toFixed(3);
+
+} else {
+
+    document.getElementById("mainDealerRate").innerText = "-";
+    document.getElementById("subDealerCommission").innerText = "-";
+    document.getElementById("mainDealerCommission").innerText = "-";
+    document.getElementById("totalCommission").innerText = "-";
+
+} 
   
   if (typeof percent1 !== "undefined") {
 
