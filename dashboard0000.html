@@ -18,10 +18,10 @@
 🛒 إجمالي المبيعات: <span id="totalAmount">0</span> مانجو<br>
 🔢 إجمالي العمليات: <span id="totalCodes">0</span><br>
 ❌ عدد الأكواد الملغية: <span id="cancelledCodes">0</span><br>
-✅ صافي الأكواد المباعة: <span id="netCodes">0</span>
-👤 عمولة الوكيل الفرعي: <span id="subDealerPercent">25</span>%<br>
-👑 عمولة الوكيل الرئيسي: <span id="mainDealerPercent">0</span>%<br>
-💰 إجمالي العمولتين: <span id="totalCommissionPercent">0</span>%
+✅ صافي الأكواد المباعة: <span id="netCodes">0</span><br>
+👤 عمولة الوكيل الفرعي (25%): <span id="subDealerCommission">0</span> مانجو<br>
+👑 عمولة الوكيل الرئيسي (<span id="mainDealerRate">0</span>%): <span id="mainDealerCommission">0</span> مانجو<br>
+💰 إجمالي العمولتين: <span id="totalCommission">0</span> مانجو
 </div>
 <div class="filters">
   <input type="date" id="startDate">
@@ -137,12 +137,13 @@ const subDealerPercent = 25;
 const mainDealerPercent = Math.max(0, 25 - cancelled);
 
 // إجمالي العمولتين
-const totalCommissionPercent =
-    subDealerPercent + mainDealerPercent;
+const totalCommissionPercent = subDealerPercent + mainDealerPercent;
 
-document.getElementById("subDealerPercent").innerText = subDealerPercent;
-document.getElementById("mainDealerPercent").innerText = mainDealerPercent;
-document.getElementById("totalCommissionPercent").innerText = totalCommissionPercent;
+
+document.getElementById("mainDealerRate").innerText = mainDealerRate;
+document.getElementById("subDealerCommission").innerText = subDealerCommission.toFixed(3);
+document.getElementById("mainDealerCommission").innerText = mainDealerCommission.toFixed(3);
+document.getElementById("totalCommission").innerText = totalCommission.toFixed(3);    
   
   if (typeof percent1 !== "undefined") {
 
