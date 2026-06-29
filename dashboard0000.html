@@ -14,6 +14,7 @@
 </div>
 
 <div class="summary1">
+👤 المستخدم: <span id="selectedUser">All</span><br>
 💰 إجمالي الربح: <span id="totalProfit">0</span> مانجو<br>
 🛒 إجمالي المبيعات: <span id="totalAmount">0</span> مانجو<br>
 🔢 إجمالي العمليات: <span id="totalCodes">0</span><br>
@@ -130,6 +131,9 @@ function renderTable(data){
   totalCodes.innerText = data.length;
   cancelledCodes.innerText = cancelled;
   netCodes.innerText = data.length - (cancelled * 2);
+ document.getElementById("selectedUser").innerText =
+    filterUser.value || "All";
+    
     if (filterUser.value) {
 
     const subDealerRate = 25;
