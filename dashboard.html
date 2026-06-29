@@ -14,12 +14,57 @@
 </div>
 
 <div class="summary1">
-💰 إجمالي الربح: <span id="totalProfit">0</span> مانجو<br>
-🛒 إجمالي المبيعات: <span id="totalAmount">0</span> مانجو<br>
-🔢 إجمالي العمليات: <span id="totalCodes">0</span><br>
-❌ عدد الأكواد الملغية: <span id="cancelledCodes">0</span><br>
-✅ صافي الأكواد المباعة: <span id="netCodes">0</span>
+
+<span id="lblUser">👤 المستخدم:</span>
+<span id="selectedUser">All</span><br>
+
+   
+<span id="lblProfit">💰 إجمالي الربح:</span>
+<span id="totalProfit">0</span>
+<span class="currency">مانجو</span><br>
+
+<div class="salesRow">    
+<span id="lblSales">🛒 إجمالي المبيعات:</span>
+<span id="totalAmount">0</span>
+<span class="currency">مانجو</span><br>
 </div>
+
+<div class="salesRow">
+<span id="lblOperations">🔢 إجمالي العمليات:</span>
+<span id="totalCodes">0</span><br>
+</div>
+    
+  
+<span id="lblCancelled">❌ عدد الأكواد الملغية:</span>
+<span id="cancelledCodes">0</span><br>
+
+    
+<div class="salesRow">
+<span id="lblNet">✅ صافي الأكواد المباعة:</span>
+<span id="netCodes">0</span><br>
+</div>
+         
+<div class="salesRow">
+<span id="lblSubDealer">👤 عمولة الوكيل الفرعي (25%):</span>
+<span id="subDealerCommission">0</span>
+<span class="currency">مانجو</span><br>
+</div>
+    
+
+<span id="lblMainDealer">👑 عمولة الوكيل الرئيسي (</span><span id="mainDealerRate">0</span>%):
+<span id="mainDealerCommission">0</span>
+<span class="currency">مانجو</span><br>
+
+      
+<div class="salesRow">        
+<span id="lblTotalCommission">💰 إجمالي العمولتين:</span>
+<span id="totalCommission">0</span>
+<span class="currency">مانجو</span>
+</div>
+    
+</div>
+
+<button id="langBtn" onclick="toggleLanguage()">English</button>
 <div class="filters">
   <input type="date" id="startDate">
   <input type="date" id="endDate">
