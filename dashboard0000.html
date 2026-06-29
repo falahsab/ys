@@ -250,18 +250,16 @@ function logout() {
 filterUser.addEventListener("change", applyFilters);
         //.......ترجمة
 
-let currentLang = "ar";
-
 function toggleLanguage() {
 
-    const isArabic = currentLang === "ar";
+    const isArabic = document.documentElement.lang === "ar";
+
     const currencies = document.querySelectorAll(".currency");
     const salesRows = document.querySelectorAll(".salesRow");
 
     if (isArabic) {
 
-        currentLang = "en";
-
+        // تحويل إلى English
         document.documentElement.lang = "en";
         document.documentElement.dir = "ltr";
 
@@ -286,8 +284,7 @@ function toggleLanguage() {
 
     } else {
 
-        currentLang = "ar";
-
+        // تحويل إلى Arabic
         document.documentElement.lang = "ar";
         document.documentElement.dir = "rtl";
 
