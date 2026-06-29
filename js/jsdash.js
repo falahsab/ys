@@ -86,7 +86,39 @@ function renderTable(data){
   totalCodes.innerText = data.length;
   cancelledCodes.innerText = cancelled;
   netCodes.innerText = data.length - (cancelled * 2);
+ document.getElementById("selectedUser").innerText =
+    filterUser.value || "All";
+    
+    if (filterUser.value) {
 
+    const subDealerRate = 25;
+    const mainDealerRate = Math.max(0, 25 - cancelled);
+
+    const subDealerCommission = profit * subDealerRate / 100;
+    const mainDealerCommission = profit * mainDealerRate / 100;
+
+    const totalCommission =
+        subDealerCommission + mainDealerCommission;
+
+    document.getElementById("mainDealerRate").innerText = mainDealerRate;
+    document.getElementById("subDealerCommission").innerText =
+        subDealerCommission.toFixed(3);
+
+    document.getElementById("mainDealerCommission").innerText =
+        mainDealerCommission.toFixed(3);
+
+    document.getElementById("totalCommission").innerText =
+        totalCommission.toFixed(3);
+
+} else {
+
+    document.getElementById("mainDealerRate").innerText = "-";
+    document.getElementById("subDealerCommission").innerText = "-";
+    document.getElementById("mainDealerCommission").innerText = "-";
+    document.getElementById("totalCommission").innerText = "-";
+
+} 
+  
   if (typeof percent1 !== "undefined") {
 
     const raw1 = (profit / 40) * 100;
@@ -116,4 +148,63 @@ function logout() {
   window.location.href = "login.html"; // الانتقال لصفحة تسجيل الدخول
 }
 filterUser.addEventListener("change", applyFilters);
+        //.......ترجمة
+
+let currentLang = "ar";
+
+function toggleLanguage() {
+
+    const currencies = document.querySelectorAll(".currency");
+
+    if (currentLang === "ar") {
+
+        document.documentElement.lang = "en";
+        document.documentElement.dir = "ltr";
+
+        document.getElementById("lblUser").textContent = "👤 User:";
+        document.getElementById("lblProfit").textContent = "💰 Total Profit:";
+        document.getElementById("lblSales").textContent = "🛒 Total Sales:";
+        document.getElementById("lblOperations").textContent = "🔢 Total Transactions:";
+        document.getElementById("lblCancelled").textContent = "❌ Cancelled Codes:";
+        document.getElementById("lblNet").textContent = "✅ Net Sold Codes:";
+        document.getElementById("lblSubDealer").textContent = "👤 Sub Dealer Commission (25%):";
+        document.getElementById("lblMainDealer").textContent = "👑 Main Dealer Commission (";
+        document.getElementById("lblTotalCommission").textContent = "💰 Total Commissions:";
+
+        currencies.forEach(el => el.textContent = "Mango");
+
+       document.querySelectorAll(".salesRow").forEach(row => {
+    row.style.display = "none";
+});
+
+        document.getElementById("langBtn").textContent = "العربية";
+
+        currentLang = "en";
+
+    } else {
+
+        document.documentElement.lang = "ar";
+        document.documentElement.dir = "rtl";
+
+        document.getElementById("lblUser").textContent = "👤 المستخدم:";
+        document.getElementById("lblProfit").textContent = "💰 إجمالي الربح:";
+        document.getElementById("lblSales").textContent = "🛒 إجمالي المبيعات:";
+        document.getElementById("lblOperations").textContent = "🔢 إجمالي العمليات:";
+        document.getElementById("lblCancelled").textContent = "❌ عدد الأكواد الملغية:";
+        document.getElementById("lblNet").textContent = "✅ صافي الأكواد المباعة:";
+        document.getElementById("lblSubDealer").textContent = "👤 عمولة الوكيل الفرعي (25%):";
+        document.getElementById("lblMainDealer").textContent = "👑 عمولة الوكيل الرئيسي (";
+        document.getElementById("lblTotalCommission").textContent = "💰 إجمالي العمولتين:";
+
+        currencies.forEach(el => el.textContent = "مانجو");
+
+       document.querySelectorAll(".salesRow").forEach(row => {
+    row.style.display = "";
+});
+
+        document.getElementById("langBtn").textContent = "English";
+
+        currentLang = "ar";
+    }
+}
 window.onload=loadData;
