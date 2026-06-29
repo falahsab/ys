@@ -255,7 +255,7 @@ let currentLang = "ar";
 function toggleLanguage() {
 
     const currencies = document.querySelectorAll(".currency");
-
+    const newLang = currentLang === "ar" ? "en" : "ar";
     if (currentLang === "ar") {
 
         document.documentElement.lang = "en";
@@ -306,7 +306,7 @@ function toggleLanguage() {
 
         document.getElementById("langBtn").textContent = "English";
 
-        currentLang = "ar";
+        currentLang = newLang;
     }
 }
 window.onload=loadData;
