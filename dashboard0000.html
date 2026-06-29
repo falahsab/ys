@@ -255,14 +255,18 @@ let currentLang = "ar";
 function toggleLanguage() {
 
     const currencies = document.querySelectorAll(".currency");
-    const newLang = currentLang === "ar" ? "en" : "ar";
-    currentLang = newLang;
+    const salesRows = document.querySelectorAll(".salesRow");
+
     if (currentLang === "ar") {
+
+        currentLang = "en";
 
         document.documentElement.lang = "en";
         document.documentElement.dir = "ltr";
+
         document.getElementById("filterUser1").textContent = "Select a user";
         document.getElementById("dealerName1").textContent = "Hi, ";
+
         document.getElementById("lblUser").textContent = "👤 User:";
         document.getElementById("lblProfit").textContent = "💰 Total Profit:";
         document.getElementById("lblSales").textContent = "🛒 Total Sales:";
@@ -275,20 +279,22 @@ function toggleLanguage() {
 
         currencies.forEach(el => el.textContent = "Mango");
 
-       document.querySelectorAll(".salesRow").forEach(row => {
-    row.style.display = "none";
-});
+        salesRows.forEach(row => {
+            row.style.display = "none";
+        });
 
         document.getElementById("langBtn").textContent = "العربية";
 
-        currentLang = "en";
-
     } else {
+
+        currentLang = "ar";
 
         document.documentElement.lang = "ar";
         document.documentElement.dir = "rtl";
+
+        document.getElementById("filterUser1").textContent = "اختر مستخدم";
         document.getElementById("dealerName1").textContent = "مرحبا, ";
-         document.getElementById("filterUser1").textContent = "اختر مستخدم";
+
         document.getElementById("lblUser").textContent = "👤 المستخدم:";
         document.getElementById("lblProfit").textContent = "💰 إجمالي الربح:";
         document.getElementById("lblSales").textContent = "🛒 إجمالي المبيعات:";
@@ -301,13 +307,11 @@ function toggleLanguage() {
 
         currencies.forEach(el => el.textContent = "مانجو");
 
-       document.querySelectorAll(".salesRow").forEach(row => {
-    row.style.display = "";
-});
+        salesRows.forEach(row => {
+            row.style.display = "";
+        });
 
         document.getElementById("langBtn").textContent = "English";
-
-        
     }
 }
 window.onload=loadData;
