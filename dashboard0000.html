@@ -17,7 +17,7 @@
 </head>
 <body>
 <div class="header">
-  <h2><span id="dealerName1">مرحبا ، </span> <span id="dealerName"></span></h2>
+  <h2><span id="dealerName1">مرحبا، </span> <span id="dealerName"></span></h2>
   <button class="logout-btn" onclick="logout()">خروج</button>
 </div>
 
@@ -257,7 +257,8 @@ function toggleLanguage() {
 
         document.documentElement.lang = "en";
         document.documentElement.dir = "ltr";
-document.getElementById("dealerName1").textContent = "Hi ";
+        document.getElementById("filterUser").textContent = "Select a user";
+        document.getElementById("dealerName1").textContent = "Hi, ";
         document.getElementById("lblUser").textContent = "👤 User:";
         document.getElementById("lblProfit").textContent = "💰 Total Profit:";
         document.getElementById("lblSales").textContent = "🛒 Total Sales:";
@@ -282,7 +283,8 @@ document.getElementById("dealerName1").textContent = "Hi ";
 
         document.documentElement.lang = "ar";
         document.documentElement.dir = "rtl";
-
+        document.getElementById("dealerName1").textContent = "مرحبا, ";
+         document.getElementById("filterUser").textContent = "اختر مستخدم";
         document.getElementById("lblUser").textContent = "👤 المستخدم:";
         document.getElementById("lblProfit").textContent = "💰 إجمالي الربح:";
         document.getElementById("lblSales").textContent = "🛒 إجمالي المبيعات:";
