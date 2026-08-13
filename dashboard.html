@@ -89,8 +89,10 @@
 <button id="langBtn" onclick="toggleLanguage()" style="display: none;">English</button>
 <div class="filters">
 
-    <input type="date" id="startDate">
-    <input type="date" id="endDate">
+    <div class="date-filters">
+        <input type="date" id="startDate">
+        <input type="date" id="endDate">
+    </div>
 
     <div class="filter-buttons">
         <button onclick="applyFilters()">تطبيق الفلترة</button>
@@ -98,6 +100,7 @@
     </div>
 
 </div>
+    
 <div class="table-container">
 <table id="dataTable">
 <thead>
