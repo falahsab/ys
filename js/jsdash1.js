@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbwy8vTQVJTHhJAH_t7H_tHGXNgkUS2R0jKd50_MLzbXxQxsrMlAqtQiZtExKSICyke-/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxpeDYcW_paPqoDR-Zikaapv4nGFDCbnp5vJebIJ5Y6X-nsrh1alvPXu4RHR-jmcjxc/exec";
 
 let allData = [];
 let filteredData = [];
@@ -189,32 +189,6 @@ async function changeMonth() {
 
 async function loadData() {
 
-    const dealerName =
-        document.getElementById("dealerName");
-
-    if (dealerName) {
-        dealerName.innerText = dealer;
-    }
-
-
-    /*
-     * التأكد من وجود شهر
-     */
-
-    if (!selectedMonthSheet) {
-
-        setupMonthSelector();
-
-    }
-
-
-    console.log(
-        "إرسال الطلب:",
-        dealer,
-        selectedMonthSheet
-    );
-
-
     try {
 
         const res = await fetch(API_URL, {
@@ -223,57 +197,66 @@ async function loadData() {
 
             body: JSON.stringify({
 
-                dealer: dealer,
-
-                monthSheet:
-                    selectedMonthSheet
+                monthSheet: selectedMonthSheet
 
             })
 
         });
 
 
-        const json =
-            await res.json();
-
-
-        console.log(
-            "رد Apps Script:",
-            json
-        );
+        const json = await res.json();
 
 
         if (!json.success) {
 
-            allData = [];
+            console.error(json);
 
+            allData = [];
             filteredData = [];
 
             renderTable([]);
-
-            alert(
-                json.message ||
-                "لا توجد بيانات لهذا الشهر"
-            );
 
             return;
         }
 
 
-        allData =
-            json.data || [];
+        /* =========================
+           بيانات الشهر المختار
+           ========================= */
 
-        filteredData =
-            [...allData];
+        allData = json.data || [];
+
+        filteredData = [...allData];
 
 
-        fillUserFilter(
-            allData
+        /* =========================
+           المستخدمون الموجودون
+           في هذا الشهر فقط
+           ========================= */
+
+        fillUserFilter(allData);
+
+
+        /* =========================
+           عرض البيانات
+           ========================= */
+
+        renderTable(filteredData);
+
+
+        console.log(
+            "الشهر:",
+            json.monthSheet
         );
 
+        console.log(
+            "عدد العمليات:",
+            allData.length
+        );
 
-        renderTable(
-            filteredData
+        console.log(
+            "Target:",
+            json.target
         );
 
 
@@ -284,19 +267,17 @@ async function loadData() {
             error
         );
 
-
         allData = [];
-
         filteredData = [];
 
-
         renderTable([]);
-
 
         alert(
             "حدث خطأ أثناء تحميل بيانات الشهر"
         );
+
     }
+
 }
 
 
