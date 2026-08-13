@@ -88,10 +88,13 @@
     
 <button id="langBtn" onclick="toggleLanguage()" style="display: none;">English</button>
 <div class="filters">
-  <input type="date" id="startDate">
-  <input type="date" id="endDate">
-  <button onclick="applyFilters()" style="display: none;">تطبيق الفلترة</button>
-  <button onclick="resetFilters()">إلغاء الفلترة</button>
+    <input type="date" id="startDate">
+    <input type="date" id="endDate">
+
+    <div class="filter-buttons">
+        <button onclick="applyFilters()">تطبيق الفلترة</button>
+        <button onclick="resetFilters()">إلغاء الفلترة</button>
+    </div>
 </div>
 <div class="table-container">
 <table id="dataTable">
