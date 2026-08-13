@@ -88,25 +88,84 @@ input, select {
   padding: 10px;
   margin-bottom: 15px;
 }
+
 .filters {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 15px;
-  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
 }
 
- .filters select {
-  padding: 10px;
+.filters input,
+.filters select {
+  padding: 8px 10px;
   border-radius: 8px;
   border: 1px solid #d1d5db;
   flex: 1;
   min-width: 120px;
+  height: 40px;
+  box-sizing: border-box;
+  font-size: 14px;
 }
 
+.filters button {
+  padding: 8px 15px;
+  border-radius: 8px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+  height: 40px;
+  font-size: 14px;
+  white-space: nowrap;
+}
 
+.filters button:hover {
+  background: #1d4ed8;
+}
 
-.filters button:hover { background: #1d4ed8; }
+/* الزرين بجانب بعض */
+.filter-buttons {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  min-width: 220px;
+}
+
+.filter-buttons button {
+  flex: 1;
+}
+
+/* الهاتف */
+@media (max-width: 600px) {
+
+  .filters {
+    gap: 8px;
+  }
+
+  .filters input,
+  .filters select {
+    min-width: 0;
+    font-size: 13px;
+    height: 38px;
+  }
+
+  .filter-buttons {
+    width: 100%;
+    min-width: 0;
+    flex: 1 1 100%;
+  }
+
+  .filter-buttons button {
+    height: 38px;
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+}
 
 
 
