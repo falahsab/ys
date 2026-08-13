@@ -217,7 +217,7 @@ function renderProductSummary(data) {
   data.forEach(r => {
 
     const product = String(r[1] || "غير محدد").trim();
-    const status = String(r[6] || "").trim().toLowerCase();
+    const profit = Number(r[5]) || 0;
 
     if (!productStats[product]) {
       productStats[product] = {
@@ -226,13 +226,8 @@ function renderProductSummary(data) {
       };
     }
 
-    // إذا كانت العملية ملغية
-    if (
-      status === "cancelled" ||
-      status === "cancel" ||
-      status === "ملغي" ||
-      status === "ملغى"
-    ) {
+    // Profit سالب = عملية ملغية
+    if (profit < 0) {
       productStats[product].cancelled++;
     } else {
       productStats[product].sales++;
