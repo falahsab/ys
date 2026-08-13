@@ -1,0 +1,448 @@
+const API_URL="https://script.google.com/macros/s/AKfycbyxZ2RsVQyQdDC_pzCPIsIzj4MLFZeoFUF1rvyHFxlynEXsa-kJBY6d_eY8gxXaBNoX0Q/exec";
+
+let allData = [];
+let filteredData = [];
+
+let dealer = sessionStorage.getItem("dealer");
+
+/* ==========================================
+   اختيار الشهر
+   ========================================== */
+
+const arabicMonths = [
+    "يناير",
+    "فبراير",
+    "مارس",
+    "أبريل",
+    "مايو",
+    "يونيو",
+    "يوليو",
+    "أغسطس",
+    "سبتمبر",
+    "أكتوبر",
+    "نوفمبر",
+    "ديسمبر"
+];
+
+let selectedMonthSheet = "";
+
+
+/* ==========================================
+   التحقق من تسجيل الدخول
+   ========================================== */
+
+if (!dealer) {
+    window.location.href = "index.html";
+}
+
+
+/* ==========================================
+   إنشاء قائمة الأشهر
+   ========================================== */
+
+function setupMonthSelector() {
+
+    const select = document.getElementById("monthSelect");
+
+    if (!select) return;
+
+    const now = new Date();
+
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+
+    select.innerHTML = "";
+
+    /*
+     * آخر 12 شهرًا
+     */
+
+    for (let i = 0; i < 12; i++) {
+
+        const date = new Date(
+            currentYear,
+            currentMonth - i,
+            1
+        );
+
+        const year = date.getFullYear();
+        const monthIndex = date.getMonth();
+        const monthNumber = monthIndex + 1;
+
+        /*
+         * اسم الشيت:
+         *
+         * أغسطس 2026 = 82026
+         * سبتمبر 2026 = 92026
+         * أكتوبر 2026 = 102026
+         */
+
+        const sheetName =
+            String(monthNumber) + String(year);
+
+        const option = document.createElement("option");
+
+        option.value = sheetName;
+
+        option.textContent =
+            arabicMonths[monthIndex] + " " + year;
+
+        if (i === 0) {
+
+            option.selected = true;
+
+            selectedMonthSheet = sheetName;
+        }
+
+        select.appendChild(option);
+    }
+}
+
+
+/* ==========================================
+   تغيير الشهر
+   ========================================== */
+
+async function changeMonth() {
+
+    selectedMonthSheet =
+        document.getElementById("monthSelect").value;
+
+    /* تصفير فلاتر التاريخ */
+
+    startDate.value = "";
+    endDate.value = "";
+
+    /* إعادة المستخدم إلى جميع المستخدمين */
+
+    filterUser.value = "";
+
+    /* رسالة تحميل */
+
+    const tbody =
+        dataTable.querySelector("tbody");
+
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="7">
+                جاري تحميل بيانات الشهر...
+            </td>
+        </tr>
+    `;
+
+    await loadData();
+}
+
+
+/* ==========================================
+   جلب البيانات
+   ========================================== */
+
+async function loadData() {
+
+    dealerName.innerText = dealer;
+
+    try {
+
+        const res = await fetch(API_URL, {
+            method: "POST",
+            body: JSON.stringify({
+                dealer: dealer,
+                monthSheet: selectedMonthSheet
+            })
+        });
+
+        const json = await res.json();
+
+        if (!json.success) {
+
+            allData = [];
+            filteredData = [];
+
+            renderTable([]);
+
+            return;
+        }
+
+        allData = json.data || [];
+
+        filteredData = [...allData];
+
+        fillUserFilter(allData);
+
+        renderTable(filteredData);
+
+    } catch (error) {
+
+        console.error("Load Data Error:", error);
+
+        allData = [];
+        filteredData = [];
+
+        renderTable([]);
+
+        alert("حدث خطأ أثناء تحميل بيانات الشهر");
+    }
+}
+const level1ProfitEl = document.getElementById("level1Profit");
+const level2ProfitEl = document.getElementById("level2Profit");
+const levelsTotalProfitEl = document.getElementById("levelsTotalProfit");
+
+
+
+function fillUserFilter(data){
+  filterUser.innerHTML='<option value="">اختر المستخدم</option>';
+  [...new Set(data.map(r=>r[3]))].forEach(u=>{
+    if(u){ filterUser.innerHTML+=`<option>${u}</option>` }
+  });
+}
+
+function applyFilters(){
+  filteredData=allData.filter(r=>{
+    const d=r[0].split("T")[0];
+    return (!startDate.value||d>=startDate.value)
+      &&(!endDate.value||d<=endDate.value)
+      &&(!filterUser.value||r[3]==filterUser.value);
+  });
+  renderTable(filteredData);
+}
+
+function resetFilters(){
+  startDate.value=endDate.value=filterUser.value="";
+  renderTable(allData);
+}
+
+function renderTable(data){
+
+  const tbody = dataTable.querySelector("tbody");
+
+  let profit = 0;
+  let amount = 0;
+  let cancelled = 0;
+  let html = "";
+
+  data.forEach(r => {
+
+    const p = Number(r[5]) || 0;
+    const a = Number(r[2]) || 0;
+
+    profit += p;
+
+    if (p < 0) {
+      amount -= a;
+      cancelled++;
+    } else {
+      amount += a;
+    }
+
+    html += `
+    <tr>
+      <td>${String(r[0]).split("T")[0]}</td>
+      <td>${r[1]}</td>
+      <td>${r[2]}</td>
+      <td>${r[3]}</td>
+      <td>${r[4]}</td>
+      <td>${r[5]}</td>
+      <td class="status-${r[6]}">${r[6]}</td>
+    </tr>`;
+  });
+
+  tbody.innerHTML = html;
+
+  totalProfit.innerText = Number(profit.toFixed(3));
+  totalAmount.innerText = Number(amount.toFixed(3));
+  totalCodes.innerText = data.length;
+  cancelledCodes.innerText = cancelled;
+  netCodes.innerText = data.length - (cancelled * 2);
+ document.getElementById("selectedUser").innerText =
+    filterUser.value || "All";
+    
+    if (filterUser.value) {
+
+    const subDealerRate = 25;
+    const mainDealerRate = Math.max(0, 25 - cancelled);
+
+    const subDealerCommission = profit * subDealerRate / 100;
+    const mainDealerCommission = profit * mainDealerRate / 100;
+
+    const totalCommission =
+        subDealerCommission + mainDealerCommission;
+
+    document.getElementById("mainDealerRate").innerText = mainDealerRate;
+    document.getElementById("subDealerCommission").innerText =
+        subDealerCommission.toFixed(3);
+
+    document.getElementById("mainDealerCommission").innerText =
+        mainDealerCommission.toFixed(3);
+
+    document.getElementById("totalCommission").innerText =
+        totalCommission.toFixed(3);
+
+} else {
+
+    document.getElementById("mainDealerRate").innerText = "-";
+    document.getElementById("subDealerCommission").innerText = "-";
+    document.getElementById("mainDealerCommission").innerText = "-";
+    document.getElementById("totalCommission").innerText = "-";
+
+} 
+  
+  if (typeof percent1 !== "undefined") {
+
+    const raw1 = (profit / 40) * 100;
+    const raw2 = (profit / 70) * 100;
+
+    percent1.innerText = raw1.toFixed(1);
+    percent2.innerText = raw2.toFixed(1);
+
+    progressBar1.style.width = Math.min(raw1, 100) + "%";
+    progressBar2.style.width = Math.min(raw2, 100) + "%";
+
+    progressBar1.innerText = raw1.toFixed(1) + "%";
+    progressBar2.innerText = raw2.toFixed(1) + "%";
+
+    const level1Profit = raw1 >= 100 ? profit : 0;
+    const level2Profit = raw2 >= 100 ? profit * 0.7 : 0;
+
+    level1ProfitEl.innerText = level1Profit.toLocaleString();
+    level2ProfitEl.innerText = level2Profit.toLocaleString();
+    levelsTotalProfitEl.innerText =
+      (level1Profit + level2Profit).toLocaleString();
+  }
+   renderProductSummary(data);
+}
+
+function logout() {
+  sessionStorage.clear();          // مسح بيانات الجلسة
+  window.location.href = "login.html"; // الانتقال لصفحة تسجيل الدخول
+}
+filterUser.addEventListener("change", applyFilters);
+        //.......ترجمة
+
+let currentLang = "ar";
+
+function toggleLanguage() {
+
+    const currencies = document.querySelectorAll(".currency");
+
+    if (currentLang === "ar") {
+
+        document.documentElement.lang = "en";
+        document.documentElement.dir = "ltr";
+        document.getElementById("dealerName1").textContent = "Hi, ";
+        document.getElementById("lblUser").textContent = "👤 User:";
+        document.getElementById("lblProfit").textContent = "💰 Total Profit:";
+        document.getElementById("lblSales").textContent = "🛒 Total Sales:";
+        document.getElementById("lblOperations").textContent = "🔢 Total Transactions:";
+        document.getElementById("lblCancelled").textContent = "❌ Cancelled Codes:";
+        document.getElementById("lblNet").textContent = "✅ Net Sold Codes:";
+        document.getElementById("lblSubDealer").textContent = "👤 Sub Dealer Commission (25%):";
+        document.getElementById("lblMainDealer").textContent = "👑 Main Dealer Commission (";
+        document.getElementById("lblTotalCommission").textContent = "💰 Total Commissions:";
+
+        currencies.forEach(el => el.textContent = "Mango");
+
+       document.querySelectorAll(".salesRow").forEach(row => {
+    row.style.display = "none";
+});
+
+        document.getElementById("langBtn").textContent = "العربية";
+
+        currentLang = "en";
+
+    } else {
+
+        document.documentElement.lang = "ar";
+        document.documentElement.dir = "rtl";
+        document.getElementById("dealerName1").textContent = "مرحبا, ";
+        document.getElementById("lblUser").textContent = "👤 المستخدم:";
+        document.getElementById("lblProfit").textContent = "💰 إجمالي الربح:";
+        document.getElementById("lblSales").textContent = "🛒 إجمالي المبيعات:";
+        document.getElementById("lblOperations").textContent = "🔢 إجمالي العمليات:";
+        document.getElementById("lblCancelled").textContent = "❌ عدد الأكواد الملغية:";
+        document.getElementById("lblNet").textContent = "✅ صافي الأكواد المباعة:";
+        document.getElementById("lblSubDealer").textContent = "👤 عمولة الوكيل الفرعي (25%):";
+        document.getElementById("lblMainDealer").textContent = "👑 عمولة الوكيل الرئيسي (";
+        document.getElementById("lblTotalCommission").textContent = "💰 إجمالي العمولتين:";
+
+        currencies.forEach(el => el.textContent = "مانجو");
+
+       document.querySelectorAll(".salesRow").forEach(row => {
+    row.style.display = "";
+});
+
+        document.getElementById("langBtn").textContent = "English";
+
+        currentLang = "ar";
+    }
+}
+window.onload = function () {
+
+    setupMonthSelector();
+
+    loadData();
+
+};
+/* جدول الاجماليت */
+
+function renderProductSummary(data) {
+
+  const productStats = {};
+
+  let totalSales = 0;
+  let totalCancelled = 0;
+
+  data.forEach(r => {
+
+    const product = String(r[1] || "غير محدد").trim();
+    const profit = Number(r[5]) || 0;
+
+    if (!productStats[product]) {
+      productStats[product] = {
+        sales: 0,
+        cancelled: 0
+      };
+    }
+
+    // Profit سالب = عملية ملغية
+    if (profit < 0) {
+      productStats[product].cancelled++;
+      totalCancelled++;
+    } else {
+      productStats[product].sales++;
+      totalSales++;
+    }
+  });
+
+  const totalNet = totalSales - totalCancelled;
+
+  const tbody = document.querySelector("#productSummaryTable tbody");
+
+  let html = "";
+
+  Object.entries(productStats).forEach(([product, stats]) => {
+
+    const net = stats.sales - stats.cancelled;
+
+    html += `
+      <tr>
+        <td>${product}</td>
+        <td>${stats.sales}</td>
+        <td>${stats.cancelled}</td>
+        <td>${net}</td>
+      </tr>
+    `;
+  });
+
+  // صف الإجمالي
+  html += `
+    <tr class="product-total-row">
+      <td><strong>الإجمالي</strong></td>
+      <td><strong>${totalSales}</strong></td>
+      <td><strong>${totalCancelled}</strong></td>
+      <td><strong>${totalNet}</strong></td>
+    </tr>
+  `;
+
+  tbody.innerHTML = html;
+}
