@@ -89,6 +89,33 @@ input, select {
   margin-bottom: 15px;
 }
 
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 15px;
+  flex-direction: column;
+}
+
+.filters input, .filters select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  flex: 1;
+  min-width: 120px;
+}
+
+.filters button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.filters button:hover { background: #1d4ed8; }
 
 .table-container {
   overflow-x: auto;
@@ -268,68 +295,5 @@ input, select {
         padding: 6px 2px;
     }
 }
-.filters {
-    width: 100%;
-    box-sizing: border-box;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: center;
-}
 
-.filters input {
-    flex: 1 1 180px;
-    min-width: 0;
-    box-sizing: border-box;
-}
 
-.filter-buttons {
-    width: 100%;
-    display: flex;
-    gap: 10px;
-}
-
-.filter-buttons button {
-    flex: 1;
-    min-width: 0;
-    box-sizing: border-box;
-    padding: 10px 12px;
-    white-space: nowrap;
-}
-.filters {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.filters input[type="date"] {
-    flex: 1 1 0;
-    width: auto;
-    min-width: 0;
-    height: 40px;
-    padding: 6px 10px;
-    box-sizing: border-box;
-    font-size: 14px;
-}
-
-.filter-buttons {
-    display: flex;
-    flex-direction: row;
-    gap: 8px;
-    width: auto;
-    flex: 1 1 0;
-}
-
-.filter-buttons button {
-    flex: 1;
-    width: auto;
-    height: 40px;
-    padding: 6px 10px;
-    margin: 0;
-    box-sizing: border-box;
-    font-size: 14px;
-    white-space: nowrap;
-}
