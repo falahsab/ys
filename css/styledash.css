@@ -90,32 +90,109 @@ input, select {
 }
 
 .filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 15px;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 15px;
+    box-sizing: border-box;
 }
 
-.filters input, .filters select {
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  flex: 1;
-  min-width: 120px;
+/* صف التواريخ */
+.date-filters {
+    display: flex;
+    gap: 10px;
+    width: 100%;
 }
 
-.filters button {
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  background: #2563eb;
-  color: white;
-  cursor: pointer;
-  transition: 0.3s;
+/* حقول التاريخ */
+.date-filters input {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    padding: 10px;
+    margin: 0;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 15px;
+    box-sizing: border-box;
 }
 
-.filters button:hover { background: #1d4ed8; }
+/* صف الأزرار */
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+/* الأزرار */
+.filter-buttons button {
+    flex: 1;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-family: "Tajawal", sans-serif;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+/* تطبيق الفلترة */
+.filter-buttons button:first-child {
+    background: #2563eb;
+}
+
+.filter-buttons button:first-child:hover {
+    background: #1d4ed8;
+}
+
+/* إلغاء الفلترة */
+.filter-buttons button:last-child {
+    background: #64748b;
+}
+
+.filter-buttons button:last-child:hover {
+    background: #475569;
+}
+
+/* الهاتف */
+@media (max-width: 600px) {
+
+    .date-filters,
+    .filter-buttons {
+        gap: 8px;
+    }
+
+    .date-filters input {
+        font-size: 13px;
+        padding: 9px 6px;
+    }
+
+    .filter-buttons button {
+        font-size: 13px;
+        padding: 9px 8px;
+    }
+}
+
+/* الشاشات الصغيرة جدًا */
+@media (max-width: 380px) {
+
+    .date-filters,
+    .filter-buttons {
+        gap: 6px;
+    }
+
+    .date-filters input {
+        font-size: 12px;
+        padding: 8px 4px;
+    }
+
+    .filter-buttons button {
+        font-size: 12px;
+        padding: 8px 5px;
+    }
+}
 
 .table-container {
   overflow-x: auto;
