@@ -695,15 +695,11 @@ window.onload = function () {
 
     setupMonthSelector();
 
-    /*
-     * نقل event listener إلى onload
-     * حتى نتأكد أن عناصر الصفحة موجودة
-     */
+    const userFilter = document.getElementById("filterUser");
 
-    filterUser.addEventListener(
-        "change",
-        applyFilters
-    );
+    if (userFilter) {
+        userFilter.addEventListener("change", applyFilters);
+    }
 
     loadData();
 };
