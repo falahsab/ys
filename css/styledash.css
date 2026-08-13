@@ -151,3 +151,57 @@ input, select {
   .summary { font-size: 13px; }
   #dataTable th, #dataTable td { font-size: 12px; padding: 6px; }
 }
+/* ==============================
+   جدول ملخص المنتجات
+   ============================== */
+
+.product-summary {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.product-summary h3 {
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+#productSummaryTable {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    direction: rtl;
+}
+
+#productSummaryTable th,
+#productSummaryTable td {
+    padding: 10px 8px;
+    border: 1px solid #ddd;
+}
+
+#productSummaryTable th {
+    font-weight: bold;
+}
+
+#productSummaryTable tbody tr:nth-child(even) {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+#productSummaryTable tbody tr:hover {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+/* عمود الصافي */
+#productSummaryTable td:last-child {
+    font-weight: bold;
+}
+
+/* الملغي */
+#productSummaryTable td:nth-child(3) {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+/* المبيعات */
+#productSummaryTable td:nth-child(2) {
+    font-weight: bold;
+}
