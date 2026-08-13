@@ -213,3 +213,59 @@ input, select {
 .product-total-row td {
     font-weight: bold;
 }
+/* صف عناوين جدول المنتجات */
+#productSummaryTable thead th {
+    background: #3498db;
+    color: #fff;
+    font-weight: bold;
+    padding: 12px 8px;
+    border: 1px solid #2980b9;
+}
+
+/* صف الإجمالي */
+#productSummaryTable .product-total-row {
+    background: #2c3e50;
+    color: #fff;
+    font-weight: bold;
+    border-top: 3px solid #3498db;
+}
+
+#productSummaryTable .product-total-row td {
+    color: #fff;
+    font-weight: bold;
+    padding: 12px 8px;
+}
+
+/* تحسين شكل الجدول */
+#productSummaryTable {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+#productSummaryTable td {
+    padding: 10px 8px;
+    border: 1px solid #ddd;
+}
+
+/* لون عدد الملغي */
+#productSummaryTable tbody td:nth-child(3) {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+/* عدم تطبيق لون الملغي على صف الإجمالي */
+#productSummaryTable .product-total-row td:nth-child(3) {
+    color: #fff;
+}
+
+/* لون الصافي */
+#productSummaryTable tbody td:nth-child(4) {
+    color: #27ae60;
+    font-weight: bold;
+}
+
+/* عدم تطبيق لون الصافي على صف الإجمالي */
+#productSummaryTable .product-total-row td:nth-child(4) {
+    color: #fff;
+}
