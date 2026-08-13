@@ -141,6 +141,7 @@ function renderTable(data){
     levelsTotalProfitEl.innerText =
       (level1Profit + level2Profit).toLocaleString();
   }
+   renderProductSummary(data);
 }
 
 function logout() {
