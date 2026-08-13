@@ -210,9 +210,14 @@ function toggleLanguage() {
 }
 window.onload=loadData;
 
+/* جدول الاجماليت */
+
 function renderProductSummary(data) {
 
   const productStats = {};
+
+  let totalSales = 0;
+  let totalCancelled = 0;
 
   data.forEach(r => {
 
@@ -229,10 +234,14 @@ function renderProductSummary(data) {
     // Profit سالب = عملية ملغية
     if (profit < 0) {
       productStats[product].cancelled++;
+      totalCancelled++;
     } else {
       productStats[product].sales++;
+      totalSales++;
     }
   });
+
+  const totalNet = totalSales - totalCancelled;
 
   const tbody = document.querySelector("#productSummaryTable tbody");
 
@@ -251,6 +260,16 @@ function renderProductSummary(data) {
       </tr>
     `;
   });
+
+  // صف الإجمالي
+  html += `
+    <tr class="product-total-row">
+      <td><strong>الإجمالي</strong></td>
+      <td><strong>${totalSales}</strong></td>
+      <td><strong>${totalCancelled}</strong></td>
+      <td><strong>${totalNet}</strong></td>
+    </tr>
+  `;
 
   tbody.innerHTML = html;
 }
