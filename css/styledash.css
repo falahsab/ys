@@ -88,7 +88,25 @@ input, select {
   padding: 10px;
   margin-bottom: 15px;
 }
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 15px;
+  flex-direction: column;
+}
 
+ .filters select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  flex: 1;
+  min-width: 120px;
+}
+
+
+
+.filters button:hover { background: #1d4ed8; }
 
 
 
