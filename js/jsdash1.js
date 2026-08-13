@@ -1,4 +1,4 @@
-const API_URL="https://script.google.com/macros/s/AKfycbyxZ2RsVQyQdDC_pzCPIsIzj4MLFZeoFUF1rvyHFxlynEXsa-kJBY6d_eY8gxXaBNoX0Q/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyxZ2RsVQyQdDC_pzCPIsIzj4MLFZeoFUF1rvyHFxlynEXsa-kJBY6d_eY8gxXaBNoX0Q/exec";
 
 let allData = [];
 let filteredData = [];
@@ -7,7 +7,7 @@ let dealer = sessionStorage.getItem("dealer");
 
 
 /* ==========================================
-   اختيار الشهر
+   الأشهر
    ========================================== */
 
 const arabicMonths = [
@@ -38,6 +38,15 @@ if (!dealer) {
 
 
 /* ==========================================
+   عناصر الصفحة
+   ========================================== */
+
+let level1ProfitEl;
+let level2ProfitEl;
+let levelsTotalProfitEl;
+
+
+/* ==========================================
    إنشاء قائمة الأشهر
    ========================================== */
 
@@ -45,7 +54,10 @@ function setupMonthSelector() {
 
     const select = document.getElementById("monthSelect");
 
-    if (!select) return;
+    if (!select) {
+        console.error("monthSelect غير موجود");
+        return;
+    }
 
     const now = new Date();
 
@@ -55,7 +67,7 @@ function setupMonthSelector() {
     select.innerHTML = "";
 
     /*
-     * عرض آخر 12 شهرًا
+     * آخر 12 شهر
      */
 
     for (let i = 0; i < 12; i++) {
@@ -73,23 +85,25 @@ function setupMonthSelector() {
         /*
          * اسم الشيت:
          *
-         * يناير 2026 = 12026
-         * فبراير 2026 = 22026
-         * يوليو 2026 = 72026
          * أغسطس 2026 = 82026
-         * سبتمبر 2026 = 92026
-         * أكتوبر 2026 = 102026
          */
 
         const sheetName =
             String(monthNumber) + String(year);
 
-        const option = document.createElement("option");
+        const option =
+            document.createElement("option");
 
         option.value = sheetName;
 
         option.textContent =
-            arabicMonths[monthIndex] + " " + year;
+            arabicMonths[monthIndex] +
+            " " +
+            year;
+
+        /*
+         * الشهر الحالي
+         */
 
         if (i === 0) {
 
@@ -100,6 +114,11 @@ function setupMonthSelector() {
 
         select.appendChild(option);
     }
+
+    console.log(
+        "الشهر المحدد:",
+        selectedMonthSheet
+    );
 }
 
 
@@ -109,36 +128,56 @@ function setupMonthSelector() {
 
 async function changeMonth() {
 
+    const monthSelect =
+        document.getElementById("monthSelect");
+
+    if (!monthSelect) return;
+
     selectedMonthSheet =
-        document.getElementById("monthSelect").value;
+        monthSelect.value;
 
     /*
      * تصفير فلاتر التاريخ
      */
 
-    startDate.value = "";
-    endDate.value = "";
+    const start =
+        document.getElementById("startDate");
 
-    /*
-     * إعادة المستخدم إلى جميع المستخدمين
-     */
+    const end =
+        document.getElementById("endDate");
 
-    filterUser.value = "";
+    const user =
+        document.getElementById("filterUser");
+
+    if (start) start.value = "";
+    if (end) end.value = "";
+    if (user) user.value = "";
+
 
     /*
      * رسالة تحميل
      */
 
-    const tbody =
-        dataTable.querySelector("tbody");
+    const table =
+        document.getElementById("dataTable");
 
-    tbody.innerHTML = `
-        <tr>
-            <td colspan="7">
-                جاري تحميل بيانات الشهر...
-            </td>
-        </tr>
-    `;
+    if (table) {
+
+        const tbody =
+            table.querySelector("tbody");
+
+        if (tbody) {
+
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7">
+                        جاري تحميل بيانات الشهر...
+                    </td>
+                </tr>
+            `;
+        }
+    }
+
 
     await loadData();
 }
@@ -150,60 +189,115 @@ async function changeMonth() {
 
 async function loadData() {
 
-    dealerName.innerText = dealer;
+    const dealerName =
+        document.getElementById("dealerName");
+
+    if (dealerName) {
+        dealerName.innerText = dealer;
+    }
+
+
+    /*
+     * التأكد من وجود شهر
+     */
+
+    if (!selectedMonthSheet) {
+
+        setupMonthSelector();
+
+    }
+
+
+    console.log(
+        "إرسال الطلب:",
+        dealer,
+        selectedMonthSheet
+    );
+
 
     try {
 
         const res = await fetch(API_URL, {
+
             method: "POST",
+
             body: JSON.stringify({
+
                 dealer: dealer,
-                monthSheet: selectedMonthSheet
+
+                monthSheet:
+                    selectedMonthSheet
+
             })
+
         });
 
-        const json = await res.json();
+
+        const json =
+            await res.json();
+
+
+        console.log(
+            "رد Apps Script:",
+            json
+        );
+
 
         if (!json.success) {
 
             allData = [];
+
             filteredData = [];
 
             renderTable([]);
 
+            alert(
+                json.message ||
+                "لا توجد بيانات لهذا الشهر"
+            );
+
             return;
         }
 
-        allData = json.data || [];
 
-        filteredData = [...allData];
+        allData =
+            json.data || [];
 
-        fillUserFilter(allData);
+        filteredData =
+            [...allData];
 
-        renderTable(filteredData);
+
+        fillUserFilter(
+            allData
+        );
+
+
+        renderTable(
+            filteredData
+        );
+
 
     } catch (error) {
 
-        console.error("Load Data Error:", error);
+        console.error(
+            "Load Data Error:",
+            error
+        );
+
 
         allData = [];
+
         filteredData = [];
+
 
         renderTable([]);
 
-        alert("حدث خطأ أثناء تحميل بيانات الشهر");
+
+        alert(
+            "حدث خطأ أثناء تحميل بيانات الشهر"
+        );
     }
 }
-
-
-const level1ProfitEl =
-    document.getElementById("level1Profit");
-
-const level2ProfitEl =
-    document.getElementById("level2Profit");
-
-const levelsTotalProfitEl =
-    document.getElementById("levelsTotalProfit");
 
 
 /* ==========================================
@@ -212,16 +306,40 @@ const levelsTotalProfitEl =
 
 function fillUserFilter(data) {
 
-    filterUser.innerHTML =
+    const filter =
+        document.getElementById(
+            "filterUser"
+        );
+
+    if (!filter) return;
+
+
+    filter.innerHTML =
         '<option value="">اختر المستخدم</option>';
 
-    [...new Set(data.map(r => r[3]))].forEach(u => {
+
+    [
+        ...new Set(
+            data.map(
+                r => r[3]
+            )
+        )
+    ].forEach(u => {
 
         if (u) {
 
-            filterUser.innerHTML +=
-                `<option>${u}</option>`;
+            const option =
+                document.createElement(
+                    "option"
+                );
 
+            option.value = u;
+
+            option.textContent = u;
+
+            filter.appendChild(
+                option
+            );
         }
 
     });
@@ -234,19 +352,63 @@ function fillUserFilter(data) {
 
 function applyFilters() {
 
-    filteredData = allData.filter(r => {
-
-        const d = r[0].split("T")[0];
-
-        return (
-            (!startDate.value || d >= startDate.value) &&
-            (!endDate.value || d <= endDate.value) &&
-            (!filterUser.value || r[3] == filterUser.value)
+    const start =
+        document.getElementById(
+            "startDate"
         );
 
-    });
+    const end =
+        document.getElementById(
+            "endDate"
+        );
 
-    renderTable(filteredData);
+    const user =
+        document.getElementById(
+            "filterUser"
+        );
+
+
+    const startValue =
+        start ? start.value : "";
+
+    const endValue =
+        end ? end.value : "";
+
+    const userValue =
+        user ? user.value : "";
+
+
+    filteredData =
+        allData.filter(r => {
+
+            const d =
+                String(r[0])
+                .split("T")[0];
+
+
+            return (
+
+                (!startValue ||
+                    d >= startValue)
+
+                &&
+
+                (!endValue ||
+                    d <= endValue)
+
+                &&
+
+                (!userValue ||
+                    r[3] == userValue)
+
+            );
+
+        });
+
+
+    renderTable(
+        filteredData
+    );
 }
 
 
@@ -256,11 +418,39 @@ function applyFilters() {
 
 function resetFilters() {
 
-    startDate.value =
-        endDate.value =
-        filterUser.value = "";
+    const start =
+        document.getElementById(
+            "startDate"
+        );
 
-    renderTable(allData);
+    const end =
+        document.getElementById(
+            "endDate"
+        );
+
+    const user =
+        document.getElementById(
+            "filterUser"
+        );
+
+
+    if (start)
+        start.value = "";
+
+    if (end)
+        end.value = "";
+
+    if (user)
+        user.value = "";
+
+
+    filteredData =
+        [...allData];
+
+
+    renderTable(
+        allData
+    );
 }
 
 
@@ -270,19 +460,39 @@ function resetFilters() {
 
 function renderTable(data) {
 
+    const table =
+        document.getElementById(
+            "dataTable"
+        );
+
+    if (!table) return;
+
+
     const tbody =
-        dataTable.querySelector("tbody");
+        table.querySelector(
+            "tbody"
+        );
+
+    if (!tbody) return;
+
 
     let profit = 0;
+
     let amount = 0;
+
     let cancelled = 0;
+
     let html = "";
 
 
     data.forEach(r => {
 
-        const p = Number(r[5]) || 0;
-        const a = Number(r[2]) || 0;
+        const p =
+            Number(r[5]) || 0;
+
+        const a =
+            Number(r[2]) || 0;
+
 
         profit += p;
 
@@ -290,6 +500,7 @@ function renderTable(data) {
         if (p < 0) {
 
             amount -= a;
+
             cancelled++;
 
         } else {
@@ -301,87 +512,191 @@ function renderTable(data) {
 
         html += `
         <tr>
-          <td>${String(r[0]).split("T")[0]}</td>
-          <td>${r[1]}</td>
-          <td>${r[2]}</td>
-          <td>${r[3]}</td>
-          <td>${r[4]}</td>
-          <td>${r[5]}</td>
-          <td class="status-${r[6]}">${r[6]}</td>
+            <td>${String(r[0]).split("T")[0]}</td>
+            <td>${r[1]}</td>
+            <td>${r[2]}</td>
+            <td>${r[3]}</td>
+            <td>${r[4]}</td>
+            <td>${r[5]}</td>
+            <td class="status-${r[6]}">${r[6]}</td>
         </tr>`;
     });
 
 
-    tbody.innerHTML = html;
+    tbody.innerHTML =
+        html;
 
 
-    totalProfit.innerText =
-        Number(profit.toFixed(3));
+    /*
+     * الإحصائيات
+     */
 
-    totalAmount.innerText =
-        Number(amount.toFixed(3));
+    const totalProfit =
+        document.getElementById(
+            "totalProfit"
+        );
 
-    totalCodes.innerText =
-        data.length;
+    const totalAmount =
+        document.getElementById(
+            "totalAmount"
+        );
 
-    cancelledCodes.innerText =
-        cancelled;
+    const totalCodes =
+        document.getElementById(
+            "totalCodes"
+        );
 
-    netCodes.innerText =
-        data.length - (cancelled * 2);
+    const cancelledCodes =
+        document.getElementById(
+            "cancelledCodes"
+        );
+
+    const netCodes =
+        document.getElementById(
+            "netCodes"
+        );
 
 
-    document.getElementById("selectedUser").innerText =
-        filterUser.value || "All";
+    if (totalProfit)
+        totalProfit.innerText =
+            Number(
+                profit.toFixed(3)
+            );
+
+
+    if (totalAmount)
+        totalAmount.innerText =
+            Number(
+                amount.toFixed(3)
+            );
+
+
+    if (totalCodes)
+        totalCodes.innerText =
+            data.length;
+
+
+    if (cancelledCodes)
+        cancelledCodes.innerText =
+            cancelled;
+
+
+    if (netCodes)
+        netCodes.innerText =
+            data.length -
+            (cancelled * 2);
+
+
+    /*
+     * المستخدم المحدد
+     */
+
+    const user =
+        document.getElementById(
+            "filterUser"
+        );
+
+    const selectedUser =
+        document.getElementById(
+            "selectedUser"
+        );
+
+
+    if (selectedUser) {
+
+        selectedUser.innerText =
+            (user && user.value)
+                ? user.value
+                : "All";
+    }
 
 
     /* ==========================================
        العمولات
        ========================================== */
 
-    if (filterUser.value) {
+    const mainDealerRate =
+        document.getElementById(
+            "mainDealerRate"
+        );
+
+    const subDealerCommission =
+        document.getElementById(
+            "subDealerCommission"
+        );
+
+    const mainDealerCommission =
+        document.getElementById(
+            "mainDealerCommission"
+        );
+
+    const totalCommission =
+        document.getElementById(
+            "totalCommission"
+        );
+
+
+    if (user && user.value) {
 
         const subDealerRate = 25;
 
-        const mainDealerRate =
-            Math.max(0, 25 - cancelled);
-
-        const subDealerCommission =
-            profit * subDealerRate / 100;
-
-        const mainDealerCommission =
-            profit * mainDealerRate / 100;
-
-        const totalCommission =
-            subDealerCommission +
-            mainDealerCommission;
+        const mainRate =
+            Math.max(
+                0,
+                25 - cancelled
+            );
 
 
-        document.getElementById("mainDealerRate").innerText =
-            mainDealerRate;
+        const subCommission =
+            profit *
+            subDealerRate /
+            100;
 
-        document.getElementById("subDealerCommission").innerText =
-            subDealerCommission.toFixed(3);
 
-        document.getElementById("mainDealerCommission").innerText =
-            mainDealerCommission.toFixed(3);
+        const mainCommission =
+            profit *
+            mainRate /
+            100;
 
-        document.getElementById("totalCommission").innerText =
-            totalCommission.toFixed(3);
+
+        const total =
+            subCommission +
+            mainCommission;
+
+
+        if (mainDealerRate)
+            mainDealerRate.innerText =
+                mainRate;
+
+
+        if (subDealerCommission)
+            subDealerCommission.innerText =
+                subCommission.toFixed(3);
+
+
+        if (mainDealerCommission)
+            mainDealerCommission.innerText =
+                mainCommission.toFixed(3);
+
+
+        if (totalCommission)
+            totalCommission.innerText =
+                total.toFixed(3);
+
 
     } else {
 
-        document.getElementById("mainDealerRate").innerText =
-            "-";
+        if (mainDealerRate)
+            mainDealerRate.innerText = "-";
 
-        document.getElementById("subDealerCommission").innerText =
-            "-";
+        if (subDealerCommission)
+            subDealerCommission.innerText = "-";
 
-        document.getElementById("mainDealerCommission").innerText =
-            "-";
+        if (mainDealerCommission)
+            mainDealerCommission.innerText = "-";
 
-        document.getElementById("totalCommission").innerText =
-            "-";
+        if (totalCommission)
+            totalCommission.innerText = "-";
     }
 
 
@@ -389,7 +704,12 @@ function renderTable(data) {
        مستويات الأرباح
        ========================================== */
 
-    if (typeof percent1 !== "undefined") {
+    if (
+        typeof percent1 !== "undefined" &&
+        typeof percent2 !== "undefined" &&
+        typeof progressBar1 !== "undefined" &&
+        typeof progressBar2 !== "undefined"
+    ) {
 
         const raw1 =
             (profit / 40) * 100;
@@ -406,45 +726,65 @@ function renderTable(data) {
 
 
         progressBar1.style.width =
-            Math.min(raw1, 100) + "%";
+            Math.min(
+                raw1,
+                100
+            ) + "%";
+
 
         progressBar2.style.width =
-            Math.min(raw2, 100) + "%";
+            Math.min(
+                raw2,
+                100
+            ) + "%";
 
 
         progressBar1.innerText =
             raw1.toFixed(1) + "%";
+
 
         progressBar2.innerText =
             raw2.toFixed(1) + "%";
 
 
         const level1Profit =
-            raw1 >= 100 ? profit : 0;
+            raw1 >= 100
+                ? profit
+                : 0;
+
 
         const level2Profit =
-            raw2 >= 100 ? profit * 0.7 : 0;
+            raw2 >= 100
+                ? profit * 0.7
+                : 0;
 
 
-        level1ProfitEl.innerText =
-            level1Profit.toLocaleString();
+        if (level1ProfitEl)
+            level1ProfitEl.innerText =
+                level1Profit.toLocaleString();
 
-        level2ProfitEl.innerText =
-            level2Profit.toLocaleString();
 
-        levelsTotalProfitEl.innerText =
-            (
-                level1Profit +
-                level2Profit
-            ).toLocaleString();
+        if (level2ProfitEl)
+            level2ProfitEl.innerText =
+                level2Profit.toLocaleString();
+
+
+        if (levelsTotalProfitEl)
+            levelsTotalProfitEl.innerText =
+                (
+                    level1Profit +
+                    level2Profit
+                ).toLocaleString();
     }
 
 
-    /* ==========================================
-       جدول ملخص المنتجات
-       ========================================== */
+    /*
+     * ملخص المنتجات
+     */
 
-    renderProductSummary(data);
+    renderProductSummary(
+        data
+    );
 }
 
 
@@ -456,7 +796,8 @@ function logout() {
 
     sessionStorage.clear();
 
-    window.location.href = "login.html";
+    window.location.href =
+        "login.html";
 }
 
 
@@ -470,120 +811,197 @@ let currentLang = "ar";
 function toggleLanguage() {
 
     const currencies =
-        document.querySelectorAll(".currency");
+        document.querySelectorAll(
+            ".currency"
+        );
 
 
     if (currentLang === "ar") {
 
-        document.documentElement.lang = "en";
+        document.documentElement.lang =
+            "en";
 
-        document.documentElement.dir = "ltr";
+        document.documentElement.dir =
+            "ltr";
 
 
-        document.getElementById("dealerName1").textContent =
+        document.getElementById(
+            "dealerName1"
+        ).textContent =
             "Hi, ";
 
-        document.getElementById("lblUser").textContent =
+
+        document.getElementById(
+            "lblUser"
+        ).textContent =
             "👤 User:";
 
-        document.getElementById("lblProfit").textContent =
+
+        document.getElementById(
+            "lblProfit"
+        ).textContent =
             "💰 Total Profit:";
 
-        document.getElementById("lblSales").textContent =
+
+        document.getElementById(
+            "lblSales"
+        ).textContent =
             "🛒 Total Sales:";
 
-        document.getElementById("lblOperations").textContent =
+
+        document.getElementById(
+            "lblOperations"
+        ).textContent =
             "🔢 Total Transactions:";
 
-        document.getElementById("lblCancelled").textContent =
+
+        document.getElementById(
+            "lblCancelled"
+        ).textContent =
             "❌ Cancelled Codes:";
 
-        document.getElementById("lblNet").textContent =
+
+        document.getElementById(
+            "lblNet"
+        ).textContent =
             "✅ Net Sold Codes:";
 
-        document.getElementById("lblSubDealer").textContent =
+
+        document.getElementById(
+            "lblSubDealer"
+        ).textContent =
             "👤 Sub Dealer Commission (25%):";
 
-        document.getElementById("lblMainDealer").textContent =
+
+        document.getElementById(
+            "lblMainDealer"
+        ).textContent =
             "👑 Main Dealer Commission (";
 
-        document.getElementById("lblTotalCommission").textContent =
+
+        document.getElementById(
+            "lblTotalCommission"
+        ).textContent =
             "💰 Total Commissions:";
 
 
-        currencies.forEach(el =>
-            el.textContent = "Mango"
+        currencies.forEach(
+            el =>
+                el.textContent =
+                    "Mango"
         );
 
 
-        document.querySelectorAll(".salesRow")
-            .forEach(row => {
+        document.querySelectorAll(
+            ".salesRow"
+        ).forEach(row => {
 
-                row.style.display = "none";
+            row.style.display =
+                "none";
 
-            });
+        });
 
 
-        document.getElementById("langBtn").textContent =
+        document.getElementById(
+            "langBtn"
+        ).textContent =
             "العربية";
+
 
         currentLang = "en";
 
 
     } else {
 
+        document.documentElement.lang =
+            "ar";
 
-        document.documentElement.lang = "ar";
+        document.documentElement.dir =
+            "rtl";
 
-        document.documentElement.dir = "rtl";
 
-
-        document.getElementById("dealerName1").textContent =
+        document.getElementById(
+            "dealerName1"
+        ).textContent =
             "مرحبا, ";
 
-        document.getElementById("lblUser").textContent =
+
+        document.getElementById(
+            "lblUser"
+        ).textContent =
             "👤 المستخدم:";
 
-        document.getElementById("lblProfit").textContent =
+
+        document.getElementById(
+            "lblProfit"
+        ).textContent =
             "💰 إجمالي الربح:";
 
-        document.getElementById("lblSales").textContent =
+
+        document.getElementById(
+            "lblSales"
+        ).textContent =
             "🛒 إجمالي المبيعات:";
 
-        document.getElementById("lblOperations").textContent =
+
+        document.getElementById(
+            "lblOperations"
+        ).textContent =
             "🔢 إجمالي العمليات:";
 
-        document.getElementById("lblCancelled").textContent =
+
+        document.getElementById(
+            "lblCancelled"
+        ).textContent =
             "❌ عدد الأكواد الملغية:";
 
-        document.getElementById("lblNet").textContent =
+
+        document.getElementById(
+            "lblNet"
+        ).textContent =
             "✅ صافي الأكواد المباعة:";
 
-        document.getElementById("lblSubDealer").textContent =
+
+        document.getElementById(
+            "lblSubDealer"
+        ).textContent =
             "👤 عمولة الوكيل الفرعي (25%):";
 
-        document.getElementById("lblMainDealer").textContent =
+
+        document.getElementById(
+            "lblMainDealer"
+        ).textContent =
             "👑 عمولة الوكيل الرئيسي (";
 
-        document.getElementById("lblTotalCommission").textContent =
+
+        document.getElementById(
+            "lblTotalCommission"
+        ).textContent =
             "💰 إجمالي العمولتين:";
 
 
-        currencies.forEach(el =>
-            el.textContent = "مانجو"
+        currencies.forEach(
+            el =>
+                el.textContent =
+                    "مانجو"
         );
 
 
-        document.querySelectorAll(".salesRow")
-            .forEach(row => {
+        document.querySelectorAll(
+            ".salesRow"
+        ).forEach(row => {
 
-                row.style.display = "";
+            row.style.display =
+                "";
 
-            });
+        });
 
 
-        document.getElementById("langBtn").textContent =
+        document.getElementById(
+            "langBtn"
+        ).textContent =
             "English";
+
 
         currentLang = "ar";
     }
@@ -599,13 +1017,18 @@ function renderProductSummary(data) {
     const productStats = {};
 
     let totalSales = 0;
+
     let totalCancelled = 0;
 
 
     data.forEach(r => {
 
         const product =
-            String(r[1] || "غير محدد").trim();
+            String(
+                r[1] ||
+                "غير محدد"
+            ).trim();
+
 
         const profit =
             Number(r[5]) || 0;
@@ -614,24 +1037,30 @@ function renderProductSummary(data) {
         if (!productStats[product]) {
 
             productStats[product] = {
-                sales: 0,
-                cancelled: 0
-            };
 
+                sales: 0,
+
+                cancelled: 0
+
+            };
         }
 
 
-        // Profit سالب = عملية ملغية
+        /*
+         * Profit سالب = عملية ملغية
+         */
 
         if (profit < 0) {
 
-            productStats[product].cancelled++;
+            productStats[product]
+                .cancelled++;
 
             totalCancelled++;
 
         } else {
 
-            productStats[product].sales++;
+            productStats[product]
+                .sales++;
 
             totalSales++;
         }
@@ -640,7 +1069,8 @@ function renderProductSummary(data) {
 
 
     const totalNet =
-        totalSales - totalCancelled;
+        totalSales -
+        totalCancelled;
 
 
     const tbody =
@@ -649,41 +1079,50 @@ function renderProductSummary(data) {
         );
 
 
+    if (!tbody) return;
+
+
     let html = "";
 
 
-    Object.entries(productStats).forEach(
+    Object.entries(
+        productStats
+    ).forEach(
         ([product, stats]) => {
 
             const net =
-                stats.sales - stats.cancelled;
+                stats.sales -
+                stats.cancelled;
 
 
             html += `
-              <tr>
-                <td>${product}</td>
-                <td>${stats.sales}</td>
-                <td>${stats.cancelled}</td>
-                <td>${net}</td>
-              </tr>
+                <tr>
+                    <td>${product}</td>
+                    <td>${stats.sales}</td>
+                    <td>${stats.cancelled}</td>
+                    <td>${net}</td>
+                </tr>
             `;
         }
     );
 
 
-    /* صف الإجمالي */
+    /*
+     * صف الإجمالي
+     */
 
     html += `
-      <tr class="product-total-row">
-        <td><strong>الإجمالي</strong></td>
-        <td><strong>${totalSales}</strong></td>
-        <td><strong>${totalCancelled}</strong></td>
-        <td><strong>${totalNet}</strong></td>
-      </tr>
+        <tr class="product-total-row">
+            <td><strong>الإجمالي</strong></td>
+            <td><strong>${totalSales}</strong></td>
+            <td><strong>${totalCancelled}</strong></td>
+            <td><strong>${totalNet}</strong></td>
+        </tr>
     `;
 
 
-    tbody.innerHTML = html;
+    tbody.innerHTML =
+        html;
 }
 
 
@@ -693,13 +1132,56 @@ function renderProductSummary(data) {
 
 window.onload = function () {
 
+    /*
+     * تجهيز عناصر الأرباح
+     */
+
+    level1ProfitEl =
+        document.getElementById(
+            "level1Profit"
+        );
+
+    level2ProfitEl =
+        document.getElementById(
+            "level2Profit"
+        );
+
+    levelsTotalProfitEl =
+        document.getElementById(
+            "levelsTotalProfit"
+        );
+
+
+    /*
+     * إنشاء قائمة الأشهر
+     */
+
     setupMonthSelector();
 
-    const userFilter = document.getElementById("filterUser");
 
-    if (userFilter) {
-        userFilter.addEventListener("change", applyFilters);
+    /*
+     * ربط فلتر المستخدم
+     */
+
+    const filterUser =
+        document.getElementById(
+            "filterUser"
+        );
+
+
+    if (filterUser) {
+
+        filterUser.addEventListener(
+            "change",
+            applyFilters
+        );
     }
 
+
+    /*
+     * تحميل الشهر الحالي
+     */
+
     loadData();
+
 };
