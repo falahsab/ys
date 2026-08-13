@@ -208,3 +208,53 @@ function toggleLanguage() {
     }
 }
 window.onload=loadData;
+
+function renderProductSummary(data) {
+
+  const productStats = {};
+
+  data.forEach(r => {
+
+    const product = String(r[1] || "غير محدد").trim();
+    const status = String(r[6] || "").trim().toLowerCase();
+
+    if (!productStats[product]) {
+      productStats[product] = {
+        sales: 0,
+        cancelled: 0
+      };
+    }
+
+    // إذا كانت العملية ملغية
+    if (
+      status === "cancelled" ||
+      status === "cancel" ||
+      status === "ملغي" ||
+      status === "ملغى"
+    ) {
+      productStats[product].cancelled++;
+    } else {
+      productStats[product].sales++;
+    }
+  });
+
+  const tbody = document.querySelector("#productSummaryTable tbody");
+
+  let html = "";
+
+  Object.entries(productStats).forEach(([product, stats]) => {
+
+    const net = stats.sales - stats.cancelled;
+
+    html += `
+      <tr>
+        <td>${product}</td>
+        <td>${stats.sales}</td>
+        <td>${stats.cancelled}</td>
+        <td>${net}</td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = html;
+}
