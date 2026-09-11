@@ -424,7 +424,6 @@
     .pay-partial { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
     .pay-unpaid { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
 
-    /* Order Description & Notes */
     .order-desc-text {
       font-size: 13px;
       color: #e2e8f0;
@@ -445,7 +444,6 @@
       gap: 5px;
     }
 
-    /* Order Details Row */
     .card-meta {
       display: flex;
       flex-wrap: wrap;
@@ -504,7 +502,6 @@
       color: #000;
     }
 
-    /* Actions Layout */
     .card-footer {
       display: flex;
       justify-content: space-between;
@@ -515,7 +512,6 @@
       border-top: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    /* Status Switcher Buttons */
     .status-buttons-group {
       display: flex;
       gap: 4px;
@@ -549,7 +545,6 @@
     .status-btn.active-3 { background: var(--status-3); color: #000; font-weight: 800; }
     .status-btn.active-4 { background: var(--status-4); color: #fff; font-weight: 800; }
 
-    /* Utility action buttons (WhatsApp, Edit, Delete, Link) */
     .card-tools {
       display: flex;
       gap: 6px;
@@ -597,7 +592,6 @@
       color: #fff;
     }
 
-    /* Empty state & Loading */
     .state-box {
       text-align: center;
       padding: 40px 20px;
@@ -612,7 +606,6 @@
       color: var(--txt-dim);
     }
 
-    /* Modal */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -720,7 +713,6 @@
       margin-top: 20px;
     }
 
-    /* Prompt Modal for WhatsApp */
     .whatsapp-prompt-box {
       text-align: center;
       padding: 10px 0;
@@ -730,7 +722,6 @@
       margin-bottom: 8px;
     }
 
-    /* Toast Notification */
     .toast-container {
       position: fixed;
       bottom: 24px;
@@ -1067,23 +1058,26 @@
     let searchQuery = '';
 
     // ==========================================
-    // توليد رقم طلب عشوائي مكون من 6 أرقام
+    // توليد رقم طلب عشوائي مكون من 6 أرقام مع تطبيع الأرقام
     // ==========================================
     function generateRandomOrderId() {
       const existing = new Set(orders.map(o => String(o.OrderID).trim()));
       let id = '';
       let attempts = 0;
       do {
-        // رقم عشوائي بين 100000 و 999999
         id = Math.floor(100000 + Math.random() * 900000).toString();
         attempts++;
       } while (existing.has(id) && attempts < 200);
       return id;
     }
 
+    const orderIDInputEl = document.getElementById('orderIDInput');
     document.getElementById('rerollIdBtn').onclick = () => {
-      document.getElementById('orderIDInput').value = generateRandomOrderId();
+      orderIDInputEl.value = generateRandomOrderId();
     };
+    orderIDInputEl.addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
+    });
 
     // ==========================================
     // حساب المتبقي التلقائي في النموذج
@@ -1171,8 +1165,12 @@
     async function fetchOrders(forceNoCache = false) {
       setSyncState(true, 'جاري جلب البيانات...');
       try {
-        const url = `${API_URL}?token=${encodeURIComponent(API_TOKEN)}${forceNoCache ? '&nocache=1' : ''}`;
-        const res = await fetch(url);
+        // إضافة توقيت لمنع كاش المتصفح على خوادم GitHub Pages
+        const url = `${API_URL}?token=${encodeURIComponent(API_TOKEN)}&_t=${Date.now()}${forceNoCache ? '&nocache=1' : ''}`;
+        const res = await fetch(url, {
+          cache: 'no-store',
+          headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+        });
         const data = await res.json();
 
         if (Array.isArray(data)) {
@@ -1237,7 +1235,10 @@
       const emptyState = document.getElementById('emptyState');
       container.innerHTML = '';
 
-      const q = searchQuery.toLowerCase().trim();
+      // تحويل الأرقام العربية في البحث تلقائياً
+      const rawQ = searchQuery.toLowerCase().trim();
+      const q = rawQ.replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
+
       const filtered = orders.filter(o => {
         const matchesFilter = (currentFilter === 'all') || (String(o.Status) === String(currentFilter));
         const matchesQuery = !q || 
@@ -1262,14 +1263,28 @@
       });
     }
 
+    /**
+     * توليد رابط تتبع دقيق 100% متوافق مع GitHub Pages والاستضافات المختلفة
+     */
     function getTrackingUrl(orderId) {
       if (CUSTOM_TRACKING_URL) {
         return `${CUSTOM_TRACKING_URL}${CUSTOM_TRACKING_URL.includes('?') ? '&' : '?'}order=${orderId}`;
       }
-      let origin = window.location.href;
-      if (origin.includes('/admin/')) {
-        return origin.replace('/admin/index.html', `/customer/index.html?order=${orderId}`).replace('/admin/', `/customer/index.html?order=${orderId}`);
+      
+      let cleanUrl = window.location.href.split('?')[0].split('#')[0];
+      if (cleanUrl.endsWith('/')) cleanUrl = cleanUrl.slice(0, -1);
+      if (cleanUrl.endsWith('/index.html')) cleanUrl = cleanUrl.slice(0, -11);
+
+      // إذا كان الرابط ينتهي بـ /admin
+      if (cleanUrl.endsWith('/admin')) {
+        const rootPath = cleanUrl.slice(0, -6);
+        return `${rootPath}/customer/index.html?order=${orderId}`;
       }
+
+      if (cleanUrl.includes('/admin/')) {
+        return cleanUrl.replace('/admin/', `/customer/index.html?order=${orderId}`);
+      }
+
       return `${window.location.origin}/customer/index.html?order=${orderId}`;
     }
 
@@ -1293,7 +1308,6 @@
         payBadge = '<span class="payment-badge pay-unpaid">غير مدفوع ⚠️</span>';
       }
 
-      // إظهار وصف وملاحظات الطلب إذا كانت موجودة
       let descHtml = '';
       if (order.Order_Description) {
         descHtml = `<div class="order-desc-text">🎁 <strong>الطلب:</strong> ${order.Order_Description}</div>`;
@@ -1303,7 +1317,6 @@
         noteHtml = `<span class="order-note-text">📌 ${order.Order_Notes}</span>`;
       }
 
-      // زر تسوية مصغر إذا كان هناك متبقي
       let settleBtnMini = '';
       if (remainingAmt > 0) {
         settleBtnMini = `<button class="btn-settle-mini" onclick="handleDirectSettlement(${order.row})" title="تسوية المبلغ المتبقي بالكامل">💳 تسوية</button>`;
@@ -1379,7 +1392,6 @@
       const receivedAmt = Number(order.Received) || 0;
       const remainingAmt = (order.Remaining !== undefined) ? Number(order.Remaining) : Math.max(0, totalAmt - receivedAmt);
 
-      // إذا ضغط على "تسليم" وكان هناك متبقي > 0: نسأله عن التسوية المالية
       if (status === 4 && remainingAmt > 0) {
         pendingDeliveryOrder = order;
         document.getElementById('settleOrderID').textContent = `#${order.OrderID}`;
@@ -1399,19 +1411,18 @@
 
     document.getElementById('confirmSettleAndDeliverBtn').onclick = () => {
       if (pendingDeliveryOrder) {
-        handleStatusChange(pendingDeliveryOrder.row, 4, true); // true = settlePayment
+        handleStatusChange(pendingDeliveryOrder.row, 4, true);
       }
       closeSettlementModal();
     };
 
     document.getElementById('confirmDeliverOnlyBtn').onclick = () => {
       if (pendingDeliveryOrder) {
-        handleStatusChange(pendingDeliveryOrder.row, 4, false); // false = deliver only
+        handleStatusChange(pendingDeliveryOrder.row, 4, false);
       }
       closeSettlementModal();
     };
 
-    // تسوية مالية مباشرة بضغطة زر
     async function handleDirectSettlement(row) {
       const order = orders.find(o => o.row === row);
       if (!order) return;
@@ -1423,7 +1434,6 @@
         return;
       }
 
-      // تحديث فوري محلياً (Optimistic UI)
       order.Received = totalAmt;
       order.Remaining = 0;
       render();
@@ -1453,7 +1463,6 @@
       const prevReceived = order.Received;
       const prevRemaining = order.Remaining;
 
-      // تحديث لحظي على الشاشة (Optimistic UI في 0 ثانية!)
       order.Status = newStatus;
       if (settlePayment) {
         const totalAmt = Number(order.Total_Amount !== undefined ? order.Total_Amount : order.Price) || 0;
@@ -1547,7 +1556,6 @@
       document.getElementById('modalTitle').textContent = 'إضافة طلب جديد';
       document.getElementById('editRow').value = '';
       
-      // توليد رقم عشوائي مكون من 6 أرقام
       document.getElementById('orderIDInput').value = generateRandomOrderId();
       document.getElementById('customerNameInput').value = '';
       document.getElementById('phoneInput').value = '';
@@ -1591,7 +1599,6 @@
     document.getElementById('closeModalBtn').onclick = closeModal;
     document.getElementById('cancelModalBtn').onclick = closeModal;
 
-    // نافذة إرسال واتساب بعد الإضافة
     let pendingWhatsAppOrder = null;
     function showWhatsAppPrompt(order) {
       pendingWhatsAppOrder = order;
@@ -1613,7 +1620,7 @@
           pendingWhatsAppOrder.Received,
           pendingWhatsAppOrder.Remaining,
           pendingWhatsAppOrder.Order_Description || '',
-          true // isNewOrder
+          true
         );
       }
       closeWhatsAppPrompt();
@@ -1649,7 +1656,6 @@
       setSyncState(true, 'جاري الحفظ...');
 
       if (!isEdit) {
-        // عند إضافة طلب جديد: تحويل الفلتر تلقائياً للكل لظهوره في تم الاستلام مباشرة
         currentFilter = 'all';
         document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
         document.querySelector('.filter-pill[data-filter="all"]')?.classList.add('active');
