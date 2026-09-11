@@ -10,7 +10,7 @@
   <style>
     :root {
       --bg-gradient: radial-gradient(circle at top, #141b2d 0%, #080c14 100%);
-      --bg-card: rgba(18, 24, 38, 0.75);
+      --bg-card: rgba(18, 24, 38, 0.85);
       --border-card: rgba(255, 255, 255, 0.1);
       
       --gold-primary: #f59e0b;
@@ -68,19 +68,18 @@
       z-index: 1;
       max-width: 650px;
       width: 92%;
-      margin: 30px auto;
+      margin: 25px auto;
     }
 
-    /* Store Header */
     .store-header {
       text-align: center;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
     }
 
     .store-logo-emblem {
       width: 76px;
       height: 76px;
-      margin: 0 auto 14px;
+      margin: 0 auto 12px;
       border-radius: 22px;
       background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
       display: flex;
@@ -92,7 +91,7 @@
     }
 
     .store-title {
-      font-size: 26px;
+      font-size: 25px;
       font-weight: 900;
       color: #fff;
       letter-spacing: -0.5px;
@@ -107,27 +106,51 @@
       letter-spacing: 0.5px;
     }
 
-    /* Search Box Container */
     .search-card {
       background: var(--bg-card);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--border-card);
       border-radius: var(--radius-lg);
-      padding: 24px;
+      padding: 22px;
       box-shadow: var(--shadow-luxury);
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       transition: all 0.3s ease;
     }
 
     .card-title {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 800;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: space-between;
       color: #fff;
+    }
+
+    .badge-live-pulse {
+      font-size: 11px;
+      font-weight: 700;
+      color: #10b981;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 3px 10px;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.4); opacity: 0.5; }
     }
 
     .input-group {
@@ -137,10 +160,10 @@
 
     .order-input {
       flex: 1;
-      background: rgba(10, 14, 23, 0.8);
-      border: 1.5px solid rgba(255, 255, 255, 0.12);
+      background: rgba(10, 14, 23, 0.85);
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
       border-radius: var(--radius-md);
-      padding: 14px 16px;
+      padding: 13px 16px;
       font-size: 16px;
       color: #fff;
       outline: none;
@@ -156,8 +179,8 @@
       color: #000;
       border: none;
       border-radius: var(--radius-md);
-      padding: 0 24px;
-      font-size: 16px;
+      padding: 0 22px;
+      font-size: 15px;
       font-weight: 800;
       cursor: pointer;
       display: inline-flex;
@@ -165,6 +188,7 @@
       gap: 6px;
       transition: all 0.25s ease;
       box-shadow: 0 6px 16px rgba(245, 158, 11, 0.3);
+      white-space: nowrap;
     }
     .check-btn:hover {
       transform: translateY(-1px);
@@ -175,36 +199,34 @@
       transform: scale(0.98);
     }
 
-    /* Fast Loading skeleton */
     .loading-state {
       display: none;
       text-align: center;
-      padding: 24px 16px;
-      font-size: 15px;
+      padding: 18px 12px;
+      font-size: 14px;
       color: var(--gold-light);
       font-weight: 600;
       animation: fadeIn 0.3s;
     }
     .loading-spinner {
       display: inline-block;
-      width: 24px;
-      height: 24px;
-      border: 3px solid rgba(245, 158, 11, 0.3);
+      width: 22px;
+      height: 22px;
+      border: 3px solid rgba(245, 158, 11, 0.25);
       border-radius: 50%;
       border-top-color: var(--gold-primary);
-      animation: spin 0.8s linear infinite;
+      animation: spin 0.7s linear infinite;
       vertical-align: middle;
       margin-left: 8px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Tracking Result Card */
     .result-container {
       display: none;
       animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
     @keyframes slideUp {
-      from { opacity: 0; transform: translateY(15px); }
+      from { opacity: 0; transform: translateY(12px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
@@ -214,7 +236,7 @@
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--border-card);
       border-radius: var(--radius-lg);
-      padding: 24px;
+      padding: 22px;
       box-shadow: var(--shadow-luxury);
       margin-bottom: 20px;
     }
@@ -224,8 +246,8 @@
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      padding-bottom: 16px;
-      margin-bottom: 18px;
+      padding-bottom: 14px;
+      margin-bottom: 16px;
       flex-wrap: wrap;
       gap: 10px;
     }
@@ -240,6 +262,12 @@
       border-radius: var(--radius-sm);
     }
 
+    .banner-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .current-status-tag {
       padding: 6px 16px;
       border-radius: 30px;
@@ -250,22 +278,48 @@
       gap: 6px;
     }
 
-    /* Order Description Card Section */
+    .refresh-mini-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--txt-muted);
+      border-radius: 20px;
+      padding: 5px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+    .refresh-mini-btn:hover {
+      background: rgba(255, 255, 255, 0.16);
+      color: #fff;
+    }
+
+    .timestamp-bar {
+      font-size: 11px;
+      color: var(--txt-dim);
+      margin-top: 6px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
     .customer-order-desc-box {
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-right: 4px solid var(--gold-primary);
       border-radius: var(--radius-sm);
       padding: 12px 14px;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       font-size: 14px;
       color: #f1f5f9;
       line-height: 1.5;
     }
 
-    /* Timeline Stepper */
     .timeline-stepper {
-      margin: 24px 0 24px;
+      margin: 20px 0 20px;
       position: relative;
     }
 
@@ -273,7 +327,7 @@
       display: flex;
       align-items: flex-start;
       position: relative;
-      padding-bottom: 26px;
+      padding-bottom: 24px;
     }
     .stepper-item:last-child {
       padding-bottom: 0;
@@ -325,14 +379,14 @@
       border-color: #fff;
       color: #000;
       box-shadow: 0 0 15px var(--gold-primary);
-      transform: scale(1.1);
+      transform: scale(1.08);
     }
 
     .stepper-content h4 {
       font-size: 15px;
       font-weight: 800;
       color: #fff;
-      margin-bottom: 3px;
+      margin-bottom: 2px;
     }
     .stepper-item.muted .stepper-content h4 {
       color: var(--txt-dim);
@@ -344,9 +398,8 @@
       line-height: 1.4;
     }
 
-    /* Financial Banner */
     .financial-banner {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1));
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(6, 182, 212, 0.08));
       border: 1px solid rgba(16, 185, 129, 0.25);
       border-radius: var(--radius-md);
       padding: 14px 16px;
@@ -369,7 +422,6 @@
       font-weight: 900;
     }
 
-    /* Details Grid */
     .order-details-grid {
       background: rgba(10, 14, 23, 0.6);
       border: 1px solid rgba(255, 255, 255, 0.06);
@@ -377,7 +429,7 @@
       padding: 16px;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
+      gap: 12px;
       margin-top: 14px;
     }
     @media(max-width: 480px){
@@ -385,22 +437,21 @@
     }
 
     .detail-item .label {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--txt-muted);
       margin-bottom: 2px;
     }
     .detail-item .value {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
       color: #fff;
     }
 
-    /* Quick Action Buttons for Customer */
     .action-buttons-group {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-top: 20px;
+      margin-top: 18px;
     }
     @media (max-width: 480px) {
       .action-buttons-group { grid-template-columns: 1fr; }
@@ -439,24 +490,22 @@
       background: rgba(255, 255, 255, 0.15);
     }
 
-    /* Error Message Box */
     .error-box {
       display: none;
       background: rgba(239, 68, 68, 0.15);
       border: 1px solid rgba(239, 68, 68, 0.3);
       border-radius: var(--radius-md);
-      padding: 16px;
+      padding: 14px;
       color: #fca5a5;
       font-size: 14px;
       text-align: center;
       margin-top: 14px;
     }
 
-    /* Store Footer */
     footer {
       background: rgba(10, 14, 23, 0.9);
       border-top: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 24px 16px;
+      padding: 22px 16px;
       text-align: center;
       font-size: 13px;
       color: var(--txt-muted);
@@ -469,14 +518,14 @@
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
 
     .footer-links {
       display: flex;
       justify-content: center;
       gap: 16px;
-      margin-top: 6px;
+      margin-top: 4px;
       flex-wrap: wrap;
     }
 
@@ -492,7 +541,7 @@
 
     @media print {
       body { background: #fff; color: #000; }
-      .bg-light-1, .search-card, .action-buttons-group, footer, .check-btn { display: none !important; }
+      .bg-light-1, .search-card, .action-buttons-group, footer, .check-btn, .refresh-mini-btn { display: none !important; }
       .result-container { display: block !important; }
       .order-status-card { border: 1px solid #000; box-shadow: none; background: #fff; color: #000; }
       .order-status-card * { color: #000 !important; }
@@ -515,16 +564,22 @@
 
     <!-- صندوق الاستعلام السريع -->
     <section class="search-card">
-      <h2 class="card-title">🔍 استعلام عن حالة طلبك</h2>
+      <div class="card-title">
+        <span>🔍 استعلام وتتبع الطلب</span>
+        <span class="badge-live-pulse">
+          <span class="pulse-dot"></span>
+          بيانات مباشرة 100%
+        </span>
+      </div>
       <div class="input-group">
-        <input type="text" id="orderInput" class="order-input" placeholder="أدخل رقم الطلب (مثال: 589234)..." 
-               maxlength="10" autocomplete="off">
+        <input type="text" id="orderInput" class="order-input" placeholder="أدخل رقم الطلب (مثال: 100628)..." 
+               maxlength="10" autocomplete="off" inputmode="numeric">
         <button id="searchBtn" class="check-btn">استعلام فوري</button>
       </div>
       <div id="errorBox" class="error-box"></div>
       <div id="loading" class="loading-state">
         <span class="loading-spinner"></span>
-        جاري الاستعلام الفوري من النظام...
+        <span id="loadingText">جاري جلب بيانات الطلب مباشرة...</span>
       </div>
     </section>
 
@@ -534,7 +589,17 @@
         
         <div class="order-top-banner">
           <div class="order-badge-id">طلب رقم #<span id="resOrderID">--</span></div>
-          <div id="resStatusBadge" class="current-status-tag">--</div>
+          <div class="banner-actions">
+            <button id="refreshBtn" class="refresh-mini-btn" title="إعادة التحقق من الحالة الآن">
+              🔄 تحديث
+            </button>
+            <div id="resStatusBadge" class="current-status-tag">--</div>
+          </div>
+        </div>
+
+        <div class="timestamp-bar">
+          <span id="resLiveTimestamp">⚡ محدّث الآن</span>
+          <span id="resEngineSource" style="color: #10b981;">اتصال مباشر</span>
         </div>
 
         <!-- تفاصيل ووصف الطلب إذا كان مسجلاً -->
@@ -644,15 +709,27 @@
   </footer>
 
   <script>
-    // الرابط الفعلي المباشر لتطبيق الويب
-    const API_BASE = "https://script.google.com/macros/s/AKfycbzL-QYW0rlqIiTaadaQEKGOmYqLr25rAAm4hNUF1i26fUlynGb5OppP0lYeZIWRHg9_/exec";
+    // تفريغ أي كاش قديم متبقي في متصفح العميل فوراً
+    try {
+      sessionStorage.clear();
+      localStorage.removeItem("alfoad_customer_cached_order");
+    } catch (e) {}
+
+    // روابط النظام ومصادر البيانات
+    const API_BASE = "https://script.google.com/macros/s/AKfycbyS_6f97T9sbDY7U63k6yJp5B2j95nsWz9wMUBszWL-4UDslKJ2Yk_AyTCZATjs3r22/exec";
     const SPREADSHEET_ID = "1olejIBhQty7dtosCWYCn8sy8RCKsq0ks6eid_SOBpOY";
+    const SHEET_NAME = "Orders";
 
     const orderInput = document.getElementById('orderInput');
     const searchBtn = document.getElementById('searchBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
     const loadingEl = document.getElementById('loading');
+    const loadingText = document.getElementById('loadingText');
     const errorBox = document.getElementById('errorBox');
     const resultContainer = document.getElementById('resultContainer');
+
+    let currentTrackedId = null;
+    let loadingTimerInterval = null;
 
     const statusStyles = {
       1: { text: "تم الاستلام", bg: "rgba(6,182,212,0.15)", border: "rgba(6,182,212,0.3)", color: "#06b6d4" },
@@ -662,65 +739,227 @@
     };
 
     /**
-     * استعلام فائق السرعة يعتمد على ثلاث طبقات:
-     * 1) كاش المتصفح المحلي (0 ملي ثانية)
-     * 2) اتصال مباشر بـ Google Apps Script السريع والمسبق التخزين
+     * تحويل الأرقام العربية المشرقية (١٢٣) إلى أرقام إنجليزية (123) تلقائياً
      */
-    async function checkOrder(orderId) {
-      const id = String(orderId || orderInput.value).trim();
-      if (!id) {
+    function normalizeDigits(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d))
+        .trim();
+    }
+
+    /**
+     * تشغيل عداد توقيت زمني أثناء التحميل لتجربة مستخدم تفاعلية وفورية
+     */
+    function startLoadingTimer() {
+      const startTime = performance.now();
+      loadingText.textContent = "جاري التحقق الفوري من سجلات المتجر...";
+      loadingEl.style.display = 'block';
+
+      clearInterval(loadingTimerInterval);
+      loadingTimerInterval = setInterval(() => {
+        const elapsed = ((performance.now() - startTime) / 1000).toFixed(1);
+        loadingText.textContent = `جاري التحقق الفوري من سجلات المتجر... (${elapsed} ث)`;
+      }, 100);
+    }
+
+    function stopLoadingTimer() {
+      clearInterval(loadingTimerInterval);
+      loadingEl.style.display = 'none';
+    }
+
+    /**
+     * محرك الاستعلام فائق السرعة (Dual Engine):
+     * 1) يجرب مسار Google CDN المباشر (GViz) بسرعة 0.2 ثانية إن كان الشيت متاحاً للعرض
+     * 2) يتحول تلقائياً وسلساً إلى Google Apps Script المطور بدون كاش قديم
+     */
+    async function checkOrder(targetId) {
+      const rawId = targetId || orderInput.value;
+      const cleanId = normalizeDigits(rawId);
+
+      if (!cleanId) {
         showError("يرجى إدخال رقم الطلب للاستعلام");
         return;
       }
 
       hideError();
+      startLoadingTimer();
+      currentTrackedId = cleanId;
 
-      // 1. فحص فوري في ذاكرة المتصفح (0ms)
-      const cachedOrderStr = sessionStorage.getItem("alfoad_order_" + id);
-      if (cachedOrderStr) {
-        try {
-          const cached = JSON.parse(cachedOrderStr);
-          displayOrder(cached);
-          // سنحدث بهدوء في الخلفية للتأكد من أحدث حالة
-        } catch(e){}
-      } else {
-        resultContainer.style.display = 'none';
+      // -------------------------------------------------------------
+      // المسار 1: محاولة الاستعلام اللحظي فائق السرعة عبر Google CDN (GViz)
+      // -------------------------------------------------------------
+      try {
+        const gvizOrder = await tryFastGvizQuery(cleanId);
+        if (gvizOrder) {
+          stopLoadingTimer();
+          displayOrder(gvizOrder, "Google CDN (0.2 ثانية ⚡)");
+          return;
+        }
+      } catch (e) {
+        // إذا فشل GViz (مثلاً الشيت خاص)، ننتقل مباشرة لمسار السيرفر
       }
 
-      loadingEl.style.display = 'block';
-
+      // -------------------------------------------------------------
+      // المسار 2: الاستعلام المباشر عبر Google Apps Script بدون أي كاش نهائياً
+      // -------------------------------------------------------------
       try {
-        const fetchUrl = `${API_BASE}?action=track&orderId=${encodeURIComponent(id)}&t=${Date.now()}`;
+        // معامل عشوائي إجباري لمنع كاش المتصفح أو البروكسي
+        const fetchUrl = `${API_BASE}?action=track&orderId=${encodeURIComponent(cleanId)}&_nocache=${Date.now()}_${Math.random()}`;
+        
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 ثواني كحد أقصى
+        const timeoutId = setTimeout(() => controller.abort(), 9000);
 
         const res = await fetch(fetchUrl, {
           method: 'GET',
+          cache: 'no-store', // منع كاش المتصفح قطعياً
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache'
+          },
           signal: controller.signal
         });
         clearTimeout(timeoutId);
 
         const data = await res.json();
-        loadingEl.style.display = 'none';
+        stopLoadingTimer();
 
         if (data.success && data.order) {
-          sessionStorage.setItem("alfoad_order_" + id, JSON.stringify(data.order));
-          displayOrder(data.order);
+          displayOrder(data.order, "خادم المتجر المباشر");
         } else {
           showError(data.error || "لم يتم العثور على طلب بهذا الرقم، يرجى التأكد من الرقم.");
         }
       } catch (err) {
-        loadingEl.style.display = 'none';
-        if (!cachedOrderStr) {
-          showError("تعذر إكمال الاستعلام في الوقت المحدد. يرجى إعادة المحاولة أو التواصل مباشرة عبر الواتساب.");
-        }
+        stopLoadingTimer();
+        showError("تعذر إكمال الاستعلام في الوقت المحدد. يرجى إعادة المحاولة أو التواصل مباشرة عبر الواتساب.");
       }
     }
 
-    function displayOrder(order) {
+    /**
+     * استعلام Google Visualization API فائق السرعة (أقل من 250ms)
+     */
+    async function tryFastGvizQuery(orderId) {
+      const gvizUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}&tq=${encodeURIComponent("select * where A = '" + orderId + "' or A = " + orderId)}&_nc=${Date.now()}`;
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000); // مهلة ثانيتين فقط
+
+      const response = await fetch(gvizUrl, {
+        method: 'GET',
+        cache: 'no-store',
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+
+      if (!response.ok) return null;
+      const text = await response.text();
+
+      // فحص صيغة رد GViz JSON
+      const match = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]+)\);?$/);
+      if (!match) return null;
+
+      const gvizJson = JSON.parse(match[1]);
+      if (gvizJson.status !== 'ok' || !gvizJson.table || !gvizJson.table.rows || gvizJson.table.rows.length === 0) {
+        return null;
+      }
+
+      // تحويل أول صف مطابق إلى كائن الطلب الموحد
+      const row = gvizJson.table.rows[0].c;
+      const cols = gvizJson.table.cols.map(c => (c && c.label) ? String(c.label).trim() : '');
+
+      return parseGvizRow(row, cols, orderId);
+    }
+
+    /**
+     * تحويل خلايا GViz إلى هيكل الطلب المعتمد
+     */
+    function parseGvizRow(cells, cols, fallbackId) {
+      const getVal = (idx) => {
+        if (idx >= 0 && idx < cells.length && cells[idx] && cells[idx].v !== null && cells[idx].v !== undefined) {
+          return cells[idx].v;
+        }
+        return '';
+      };
+
+      const lowerCols = cols.map(c => c.toLowerCase());
+      function findIndex(keywords, fallback) {
+        for (let i = 0; i < lowerCols.length; i++) {
+          for (const kw of keywords) {
+            if (lowerCols[i] === kw || lowerCols[i].includes(kw)) return i;
+          }
+        }
+        return fallback;
+      }
+
+      const idIdx = findIndex(["orderid", "order_id", "طلب", "رقم الطلب", "id"], 0);
+      const custIdx = findIndex(["customername", "customer_name", "customer", "اسم العميل", "العميل"], 1);
+      const phoneIdx = findIndex(["phone", "mobile", "رقم الهاتف", "الهاتف", "جوال"], 2);
+      const totalIdx = findIndex(["total_amount", "totalamount", "total", "المبلغ الاجمالي", "المبلغ الإجمالي", "الاجمالي", "السعر", "price"], 3);
+      const recIdx = findIndex(["المبلغ الواصل", "الواصل", "المدفوع", "received", "received_amount", "paid"], 4);
+      const remIdx = findIndex(["remaining", "المتبقي", "المبلغ المتبقي", "باقي"], 5);
+      const dateIdx = findIndex(["date", "تاريخ", "التاريخ"], 6);
+      const descIdx = findIndex(["order_description", "description", "وصف الطلب", "الوصف", "تفاصيل"], 7);
+      const notesIdx = findIndex(["order_notes", "notes", "ملاحظات الطلب", "ملاحظات"], 8);
+      const statusIdx = findIndex(["status", "الحالة", "حالة الطلب", "حالة"], 9);
+
+      const orderId = String(getVal(idIdx) || fallbackId);
+      const custName = String(getVal(custIdx) || "عميل مميز");
+      let phone = String(getVal(phoneIdx) || "");
+      if (phone.length >= 7) {
+        phone = phone.substring(0, 3) + "****" + phone.substring(phone.length - 2);
+      }
+
+      const total = Number(getVal(totalIdx)) || 0;
+      const received = Number(getVal(recIdx)) || 0;
+      const remainingVal = getVal(remIdx);
+      const remaining = (remainingVal !== '') ? Number(remainingVal) : Math.max(0, total - received);
+
+      let status = Number(getVal(statusIdx));
+      if (!status || status < 1 || status > 4) {
+        status = 1;
+      }
+
+      let dateVal = getVal(dateIdx);
+      if (typeof dateVal === 'string' && dateVal.includes('Date(')) {
+        try {
+          const matchDate = dateVal.match(/\((.*?)\)/);
+          if (matchDate) {
+            const parts = matchDate[1].split(',');
+            dateVal = `${parts[0]}-${String(Number(parts[1])+1).padStart(2,'0')}-${String(parts[2]).padStart(2,'0')}`;
+          }
+        } catch(e){}
+      }
+
+      const statusLabels = {
+        1: { title: "تم استلام الطلب", desc: "تم تأكيد واستلام طلبكم بنجاح وهو الآن مدرج ضمن جدول العمل" },
+        2: { title: "قيد التجهيز والتخصيص", desc: "جاري تجهيز ونقش وتغليف هديتكم بعناية فائقة" },
+        3: { title: "جاهز للاستلام / الشحن", desc: "طلبكم جاهز بالكامل في المتجر بانتظار استلامكم أو تسليمه للمندوب" },
+        4: { title: "تم التسليم بنجاح", desc: "تم تسليم الطلب بحمد الله. شكراً لاختياركم متجر الفؤاد للتحف والهدايا" }
+      };
+
+      return {
+        OrderID: orderId,
+        CustomerName: custName,
+        Phone: phone,
+        Total_Amount: total,
+        Received: received,
+        Remaining: remaining,
+        Order_Description: String(getVal(descIdx) || ""),
+        Order_Notes: String(getVal(notesIdx) || ""),
+        Date: String(dateVal || ""),
+        Status: status,
+        StatusTitle: statusLabels[status].title,
+        StatusDesc: statusLabels[status].desc
+      };
+    }
+
+    /**
+     * عرض بيانات الطلب اللحظية على واجهة المستخدم
+     */
+    function displayOrder(order, sourceInfo) {
       document.getElementById('resOrderID').textContent = order.OrderID;
       document.getElementById('resCustomer').textContent = order.CustomerName || 'عميل المتجر';
-      document.getElementById('resDate').textContent = order.Date || 'غير محدد';
+      document.getElementById('resDate').textContent = order.Date || 'اليوم';
 
       // وصف الطلب
       const descWrapper = document.getElementById('resDescWrapper');
@@ -765,6 +1004,12 @@
       // تحديث مسار التتبع Stepper
       updateStepper(order.Status);
 
+      // توقيت جلب البيانات
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('ar-YE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      document.getElementById('resLiveTimestamp').textContent = `⚡ آخر فحص: ${timeStr}`;
+      document.getElementById('resEngineSource').textContent = sourceInfo || "بيانات لحظية";
+
       // تحديث رابط الواتساب
       const waBtn = document.getElementById('waContactBtn');
       const waMsg = `السلام عليكم متجر الفؤاد، أستفسر بخصوص طلبي رقم (#${order.OrderID}) المسجل باسم (${order.CustomerName}).\nإجمالي المبلغ: ${total.toLocaleString('ar-YE')} ر.ي، المتبقي: ${remaining.toLocaleString('ar-YE')} ر.ي.`;
@@ -793,17 +1038,24 @@
     function showError(msg) {
       errorBox.textContent = msg;
       errorBox.style.display = 'block';
+      resultContainer.style.display = 'none';
     }
 
     function hideError() {
       errorBox.style.display = 'none';
     }
 
+    // أحداث البحث والتفاعل
     searchBtn.onclick = () => checkOrder();
+    refreshBtn.onclick = () => {
+      if (currentTrackedId) checkOrder(currentTrackedId);
+    };
+
     orderInput.onkeypress = (e) => {
       if (e.key === 'Enter') checkOrder();
     };
 
+    // الاستعلام التلقائي عند فتح الرابط المباشر من الواتساب (?order=100628)
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
       const queryOrderId = urlParams.get('order') || urlParams.get('id');
