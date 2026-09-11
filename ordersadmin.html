@@ -1,0 +1,1821 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>لوحة تحكم الطلبات | متجر الفؤاد للتحف والهدايا</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #0a0e17;
+      --bg-card: #121826;
+      --bg-card-hover: #172033;
+      --bg-input: #1a2236;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-active: rgba(6, 182, 212, 0.5);
+      
+      --txt-main: #f1f5f9;
+      --txt-muted: #94a3b8;
+      --txt-dim: #64748b;
+      
+      /* Status Colors */
+      --status-1: #06b6d4; /* تم الاستلام - Cyan */
+      --status-2: #f59e0b; /* قيد التجهيز - Amber */
+      --status-3: #10b981; /* جاهز - Emerald */
+      --status-4: #8b5cf6; /* تم التسليم - Violet */
+      --danger: #ef4444;   /* أحمر */
+      
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--txt-main);
+      min-height: 100vh;
+      line-height: 1.5;
+      padding-bottom: 40px;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: rgba(18, 24, 38, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      padding: 12px 20px;
+    }
+
+    .nav-container {
+      max-width: 1250px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 900;
+      color: #000;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+
+    .brand-title h1 {
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.3px;
+    }
+
+    .brand-title p {
+      font-size: 12px;
+      color: var(--txt-muted);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sync-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--txt-muted);
+      background: var(--bg-input);
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      display: inline-block;
+      transition: background 0.3s;
+    }
+    .status-dot.syncing {
+      background: #f59e0b;
+      animation: pulse 1s infinite alternate;
+    }
+    @keyframes pulse {
+      from { opacity: 0.4; transform: scale(0.85); }
+      to { opacity: 1; transform: scale(1.15); }
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1250px;
+      margin: 20px auto;
+      padding: 0 16px;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: var(--transition);
+      box-shadow: var(--shadow-card);
+    }
+    .stat-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .stat-info .stat-label {
+      font-size: 12px;
+      color: var(--txt-muted);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .stat-info .stat-value {
+      font-size: 20px;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .icon-total { background: rgba(255, 255, 255, 0.08); color: #fff; }
+    .icon-processing { background: rgba(245, 158, 11, 0.15); color: var(--status-2); }
+    .icon-ready { background: rgba(16, 185, 129, 0.15); color: var(--status-3); }
+    .icon-delivered { background: rgba(139, 92, 246, 0.15); color: var(--status-4); }
+    .icon-revenue { background: rgba(6, 182, 212, 0.15); color: var(--status-1); }
+    .icon-received { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+    .icon-remaining { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+
+    /* Control Panel / Filters Bar */
+    .controls-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .controls-top {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .search-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 260px;
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--txt-dim);
+      pointer-events: none;
+      font-size: 16px;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      padding: 10px 40px 10px 14px;
+      border-radius: var(--radius-sm);
+      color: var(--txt-main);
+      font-size: 14px;
+      transition: var(--transition);
+      outline: none;
+    }
+    .search-input:focus {
+      border-color: var(--status-1);
+      box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #06b6d4, #0891b2);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.25);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #0891b2, #0e7490);
+    }
+
+    .btn-secondary {
+      background: var(--bg-input);
+      color: var(--txt-main);
+      border: 1px solid var(--border-color);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Filter Pills */
+    .filters-bar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: thin;
+    }
+
+    .filter-pill {
+      background: var(--bg-input);
+      color: var(--txt-muted);
+      border: 1px solid var(--border-color);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: var(--transition);
+    }
+    .filter-pill:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .filter-pill.active {
+      background: #06b6d4;
+      color: #000;
+      border-color: #06b6d4;
+      font-weight: 800;
+    }
+    .filter-pill .badge-count {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 1px 7px;
+      border-radius: 12px;
+      font-size: 11px;
+    }
+
+    /* Orders Container */
+    .orders-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Order Card */
+    .order-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: var(--transition);
+      box-shadow: var(--shadow-card);
+      position: relative;
+    }
+    .order-card:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+      background: var(--bg-card-hover);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .order-main-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .order-number {
+      font-size: 17px;
+      font-weight: 900;
+      color: #f59e0b;
+      background: rgba(245, 158, 11, 0.12);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+
+    .customer-name {
+      font-size: 17px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .header-badges {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .badge-status-1 { background: rgba(6, 182, 212, 0.15); color: var(--status-1); border: 1px solid rgba(6, 182, 212, 0.3); }
+    .badge-status-2 { background: rgba(245, 158, 11, 0.15); color: var(--status-2); border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-status-3 { background: rgba(16, 185, 129, 0.15); color: var(--status-3); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-status-4 { background: rgba(139, 92, 246, 0.15); color: var(--status-4); border: 1px solid rgba(139, 92, 246, 0.3); }
+
+    .payment-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 12px;
+    }
+    .pay-paid { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .pay-partial { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .pay-unpaid { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+    /* Order Description & Notes */
+    .order-desc-text {
+      font-size: 13px;
+      color: #e2e8f0;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      border-right: 3px solid #f59e0b;
+      margin-top: -4px;
+    }
+    .order-note-text {
+      font-size: 12px;
+      color: #fbbf24;
+      background: rgba(245, 158, 11, 0.08);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Order Details Row */
+    .card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      font-size: 13px;
+      color: var(--txt-muted);
+      background: rgba(0, 0, 0, 0.22);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      align-items: center;
+    }
+
+    .meta-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .meta-item a {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .meta-item a:hover {
+      color: var(--status-1);
+      text-decoration: underline;
+    }
+    
+    .price-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .price-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .val-total { color: #38bdf8; font-weight: 800; }
+    .val-received { color: #10b981; font-weight: 800; }
+    .val-remaining { color: #f87171; font-weight: 800; }
+
+    .btn-settle-mini {
+      background: rgba(16, 185, 129, 0.18);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: 6px;
+      padding: 2px 7px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .btn-settle-mini:hover {
+      background: #10b981;
+      color: #000;
+    }
+
+    /* Actions Layout */
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Status Switcher Buttons */
+    .status-buttons-group {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-input);
+      padding: 3px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      flex-wrap: wrap;
+    }
+
+    .status-btn {
+      background: transparent;
+      border: none;
+      color: var(--txt-muted);
+      padding: 5px 9px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: var(--transition);
+    }
+    .status-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .status-btn.active-1 { background: var(--status-1); color: #000; font-weight: 800; }
+    .status-btn.active-2 { background: var(--status-2); color: #000; font-weight: 800; }
+    .status-btn.active-3 { background: var(--status-3); color: #000; font-weight: 800; }
+    .status-btn.active-4 { background: var(--status-4); color: #fff; font-weight: 800; }
+
+    /* Utility action buttons (WhatsApp, Edit, Delete, Link) */
+    .card-tools {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .tool-btn {
+      background: var(--bg-input);
+      color: var(--txt-main);
+      border: 1px solid var(--border-color);
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+    .tool-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
+    .tool-btn-whatsapp {
+      background: rgba(37, 211, 102, 0.15);
+      color: #25d366;
+      border-color: rgba(37, 211, 102, 0.3);
+      font-weight: 700;
+    }
+    .tool-btn-whatsapp:hover {
+      background: #25d366;
+      color: #000;
+    }
+
+    .tool-btn-delete {
+      background: rgba(239, 68, 68, 0.12);
+      color: #f87171;
+      border-color: rgba(239, 68, 68, 0.25);
+    }
+    .tool-btn-delete:hover {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    /* Empty state & Loading */
+    .state-box {
+      text-align: center;
+      padding: 40px 20px;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      border: 1px dashed var(--border-color);
+      color: var(--txt-muted);
+    }
+    .state-box .icon {
+      font-size: 40px;
+      margin-bottom: 10px;
+      color: var(--txt-dim);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 520px;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      animation: modalIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.95) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+    .modal-header h3 {
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+    }
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--txt-dim);
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .modal-close:hover { color: #fff; }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .form-group label {
+      font-size: 13px;
+      color: var(--txt-muted);
+      font-weight: 600;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      color: var(--txt-main);
+      font-size: 14px;
+      outline: none;
+      transition: var(--transition);
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      border-color: var(--status-1);
+    }
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .input-row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+
+    .calc-box {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border-color);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    /* Prompt Modal for WhatsApp */
+    .whatsapp-prompt-box {
+      text-align: center;
+      padding: 10px 0;
+    }
+    .whatsapp-prompt-icon {
+      font-size: 48px;
+      margin-bottom: 8px;
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 200;
+      pointer-events: none;
+    }
+    .toast {
+      background: #1e293b;
+      color: #fff;
+      border: 1px solid var(--border-color);
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: auto;
+    }
+    .toast.toast-success { border-right: 4px solid var(--status-3); }
+    .toast.toast-error { border-right: 4px solid var(--danger); }
+    .toast.toast-info { border-right: 4px solid var(--status-1); }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 640px) {
+      .input-row, .input-row-3 { grid-template-columns: 1fr; }
+      .card-header { flex-direction: column; align-items: flex-start; }
+      .card-footer { flex-direction: column; align-items: stretch; }
+      .status-buttons-group { justify-content: space-between; }
+      .card-tools { justify-content: space-between; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- شريط التنقل العلوي -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <div class="brand-logo">🎁</div>
+        <div class="brand-title">
+          <h1>متجر الفؤاد للتحف والهدايا</h1>
+          <p>لوحة التحكم السريعة في الطلبات والحسابات</p>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <div class="sync-status">
+          <span class="status-dot" id="syncDot"></span>
+          <span id="syncText">جاهز ومحدث</span>
+        </div>
+        <button class="btn btn-secondary" id="refreshBtn" title="تحديث البيانات">
+          🔄 تحديث
+        </button>
+        <button class="btn btn-secondary" id="settingsBtn" title="إعدادات الربط والرابط">
+          ⚙️
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    
+    <!-- بطاقات الإحصائيات الحية والمالية -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-info">
+          <div class="stat-label">إجمالي الطلبات</div>
+          <div class="stat-value" id="statTotal">0</div>
+        </div>
+        <div class="stat-icon icon-total">📦</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <div class="stat-label">قيد التجهيز</div>
+          <div class="stat-value" id="statProcessing">0</div>
+        </div>
+        <div class="stat-icon icon-processing">⏳</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <div class="stat-label">جاهز للتسليم</div>
+          <div class="stat-value" id="statReady">0</div>
+        </div>
+        <div class="stat-icon icon-ready">✅</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <div class="stat-label">تم التسليم</div>
+          <div class="stat-value" id="statDelivered">0</div>
+        </div>
+        <div class="stat-icon icon-delivered">🚚</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <div class="stat-label">المبلغ الإجمالي</div>
+          <div class="stat-value" id="statTotalAmount" style="color: #38bdf8;">0</div>
+        </div>
+        <div class="stat-icon icon-revenue">💰</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <div class="stat-label">المبلغ الواصل</div>
+          <div class="stat-value" id="statReceived" style="color: #10b981;">0</div>
+        </div>
+        <div class="stat-icon icon-received">💵</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <div class="stat-label">المبلغ المتبقي</div>
+          <div class="stat-value" id="statRemaining" style="color: #f87171;">0</div>
+        </div>
+        <div class="stat-icon icon-remaining">⏳</div>
+      </div>
+    </section>
+
+    <!-- شريط البحث والتحكم والفلترة -->
+    <section class="controls-panel">
+      <div class="controls-top">
+        <div class="search-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" class="search-input" placeholder="ابحث برقم الطلب، اسم العميل، الهاتف، أو الوصف...">
+        </div>
+        <div class="action-buttons">
+          <button class="btn btn-primary" id="openAddModalBtn">
+            ➕ إضافة طلب جديد
+          </button>
+          <button class="btn btn-secondary" id="exportBtn" title="تصدير لملف CSV">
+            📥 تصدير
+          </button>
+        </div>
+      </div>
+
+      <!-- فلاتر الحالات -->
+      <div class="filters-bar">
+        <button class="filter-pill active" data-filter="all">
+          الكل <span class="badge-count" id="countAll">0</span>
+        </button>
+        <button class="filter-pill" data-filter="1">
+          تم الاستلام <span class="badge-count" id="count1">0</span>
+        </button>
+        <button class="filter-pill" data-filter="2">
+          قيد التجهيز <span class="badge-count" id="count2">0</span>
+        </button>
+        <button class="filter-pill" data-filter="3">
+          جاهز <span class="badge-count" id="count3">0</span>
+        </button>
+        <button class="filter-pill" data-filter="4">
+          تم التسليم <span class="badge-count" id="count4">0</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- قائمة الطلبات -->
+    <section id="ordersContainer" class="orders-list">
+      <!-- يتم حقن البطاقات ديناميكياً -->
+    </section>
+
+    <!-- رسالة عند عدم وجود طلبات -->
+    <div id="emptyState" class="state-box" style="display: none;">
+      <div class="icon">📭</div>
+      <h3>لا توجد طلبات مطابقة</h3>
+      <p>جرب تغيير فلتر الحالة أو كلمة البحث، أو أضف طلباً جديداً.</p>
+    </div>
+
+  </main>
+
+  <!-- نافذة إضافة / تعديل طلب -->
+  <div class="modal-overlay" id="orderModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">إضافة طلب جديد</h3>
+        <button class="modal-close" id="closeModalBtn">&times;</button>
+      </div>
+      <form id="orderForm">
+        <input type="hidden" id="editRow">
+        <div class="input-row">
+          <div class="form-group">
+            <label style="display:flex; justify-content:space-between; align-items:center;">
+              <span>رقم الطلب (6 أرقام) *</span>
+              <button type="button" id="rerollIdBtn" style="background:none; border:none; color:var(--status-1); cursor:pointer; font-size:12px; font-weight:700;">🎲 رقم عشوائي</button>
+            </label>
+            <input type="text" id="orderIDInput" required placeholder="مثال: 589234" maxlength="10">
+          </div>
+          <div class="form-group">
+            <label>التاريخ *</label>
+            <input type="date" id="orderDateInput" required>
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="form-group">
+            <label>اسم العميل *</label>
+            <input type="text" id="customerNameInput" required placeholder="الاسم الثلاثي أو الثنائي">
+          </div>
+          <div class="form-group">
+            <label>رقم الهاتف</label>
+            <input type="tel" id="phoneInput" placeholder="77xxxxxxx">
+          </div>
+        </div>
+
+        <!-- وصف الطلب والملاحظات -->
+        <div class="form-group">
+          <label>وصف وتفاصيل الطلب (الهدية / التحف)</label>
+          <input type="text" id="descInput" placeholder="مثال: درع كريستال فاخر مع نقش اسم وتاريخ التخرج">
+        </div>
+        <div class="form-group">
+          <label>ملاحظات إضافية خاصة بالطلب</label>
+          <input type="text" id="notesInput" placeholder="مثال: التغليف شريطة ذهبية - التسليم قبل المغرب">
+        </div>
+
+        <!-- الحقول المالية: الإجمالي، الواصل، والمتبقي -->
+        <div class="input-row-3">
+          <div class="form-group">
+            <label>المبلغ الإجمالي *</label>
+            <input type="number" id="totalAmountInput" required placeholder="0" min="0" step="any">
+          </div>
+          <div class="form-group">
+            <label>المبلغ الواصل</label>
+            <input type="number" id="receivedInput" placeholder="0" min="0" step="any">
+          </div>
+          <div class="form-group">
+            <label>المبلغ المتبقي</label>
+            <input type="number" id="remainingInput" placeholder="0" readonly style="background: rgba(0,0,0,0.4); color: #f87171; font-weight: 800;">
+          </div>
+        </div>
+
+        <div class="calc-box">
+          <span id="paymentStatusHint">حالة الدفع: أدخل المبالغ لمعرفة المتبقي</span>
+          <span id="paymentStatusBadge" class="payment-badge pay-unpaid" style="display:none;">غير مسدد</span>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelModalBtn">إلغاء</button>
+          <button type="submit" class="btn btn-primary" id="saveOrderBtn">💾 حفظ الطلب</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- نافذة التنبيه بعد الإضافة لإرسال واتساب للعميل -->
+  <div class="modal-overlay" id="whatsappPromptModal">
+    <div class="modal-content" style="max-width: 420px; text-align: center;">
+      <div class="whatsapp-prompt-box">
+        <div class="whatsapp-prompt-icon">🎉</div>
+        <h3 style="margin-bottom: 8px; font-size: 19px;">تمت إضافة الطلب بنجاح!</h3>
+        <p style="color: var(--txt-muted); font-size: 14px; margin-bottom: 16px;">
+          هل تود إرسال تفاصيل الطلب ورابط التتبع المباشر إلى واتساب العميل (<span id="promptCustomerName" style="color: #fff; font-weight:700;"></span>) الآن؟
+        </p>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+          <button class="btn btn-secondary" onclick="closeWhatsAppPrompt()">تخطي</button>
+          <button class="btn tool-btn-whatsapp" id="sendPromptWhatsAppBtn" style="padding: 10px 18px; font-size: 15px;">
+            💬 إرسال عبر واتساب
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة خيار التسوية المالية عند تسليم الطلب -->
+  <div class="modal-overlay" id="deliverySettlementModal">
+    <div class="modal-content" style="max-width: 440px; text-align: center;">
+      <div style="font-size: 44px; margin-bottom: 8px;">🚚 💵</div>
+      <h3 style="margin-bottom: 8px; font-size: 19px;">تسليم الطلب والتسوية المالية</h3>
+      <p style="color: var(--txt-muted); font-size: 14px; margin-bottom: 16px; line-height: 1.6;">
+        الطلب رقم <strong style="color: #f59e0b;" id="settleOrderID">#</strong> للعميل (<strong style="color: #fff;" id="settleCustomerName"></strong>)<br>
+        متبقي عليه حالياً: <strong style="color: #f87171; font-size: 16px;" id="settleRemainingAmount">0 ر.ي</strong><br>
+        هل تم استلام كامل المبلغ المتبقي وتسوية الحساب؟
+      </p>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <button class="btn btn-primary" id="confirmSettleAndDeliverBtn" style="background: linear-gradient(135deg, #10b981, #059669); justify-content: center;">
+          💳 نعم، تم استلام المبلغ بالكامل والتسليم
+        </button>
+        <button class="btn btn-secondary" id="confirmDeliverOnlyBtn" style="justify-content: center;">
+          🚚 تسليم فقط (إبقاء المبلغ آجل/متبقي)
+        </button>
+        <button class="btn btn-secondary" onclick="closeSettlementModal()" style="border:none; color:var(--txt-dim); justify-content: center;">
+          إلغاء
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة الإعدادات -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>إعدادات النظام والروابط</h3>
+        <button class="modal-close" id="closeSettingsBtn">&times;</button>
+      </div>
+      <div class="form-group">
+        <label>رابط Google Apps Script (API URL)</label>
+        <input type="text" id="settingApiUrl" style="direction: ltr;">
+      </div>
+      <div class="form-group">
+        <label>رمز التوكن السري (API Token)</label>
+        <input type="text" id="settingApiToken" style="direction: ltr;">
+      </div>
+      <div class="form-group">
+        <label>رابط صفحة تتبع العملاء (Customer Tracking Base URL)</label>
+        <input type="text" id="settingTrackingUrl" placeholder="اتركه فارغاً للاستخدام التلقائي" style="direction: ltr;">
+        <small style="color: var(--txt-dim); font-size: 11px;">سيتم تضمين هذا الرابط في رسائل الواتساب مع رقم الطلب تلقائياً.</small>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="resetSettingsBtn">إعادة للافتراضي</button>
+        <button type="button" class="btn btn-primary" id="saveSettingsBtn">حفظ التغييرات</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- حاوية التنبيهات المنبثقة Toasts -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    // ==========================================
+    // تهيئة الإعدادات والمتغيرات الأساسية
+    // ==========================================
+    const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbwpqk1oFqskaXn6hQmjJiG1kv5Ivmh8KD5vG4igpoJm9bLenJt5Jlc08BbGGOx9MHY/exec";
+    const DEFAULT_API_TOKEN = "s3cr3tK3y123";
+
+    let API_URL = localStorage.getItem("alfoad_api_url") || DEFAULT_API_URL;
+    let API_TOKEN = localStorage.getItem("alfoad_api_token") || DEFAULT_API_TOKEN;
+    let CUSTOM_TRACKING_URL = localStorage.getItem("alfoad_tracking_url") || "";
+
+    let orders = [];
+    let currentFilter = 'all';
+    let searchQuery = '';
+
+    // ==========================================
+    // توليد رقم طلب عشوائي مكون من 6 أرقام
+    // ==========================================
+    function generateRandomOrderId() {
+      const existing = new Set(orders.map(o => String(o.OrderID).trim()));
+      let id = '';
+      let attempts = 0;
+      do {
+        // رقم عشوائي بين 100000 و 999999
+        id = Math.floor(100000 + Math.random() * 900000).toString();
+        attempts++;
+      } while (existing.has(id) && attempts < 200);
+      return id;
+    }
+
+    document.getElementById('rerollIdBtn').onclick = () => {
+      document.getElementById('orderIDInput').value = generateRandomOrderId();
+    };
+
+    // ==========================================
+    // حساب المتبقي التلقائي في النموذج
+    // ==========================================
+    const totalAmountInput = document.getElementById('totalAmountInput');
+    const receivedInput = document.getElementById('receivedInput');
+    const remainingInput = document.getElementById('remainingInput');
+    const paymentHint = document.getElementById('paymentStatusHint');
+    const paymentBadge = document.getElementById('paymentStatusBadge');
+
+    function calculateRemaining() {
+      const total = parseFloat(totalAmountInput.value) || 0;
+      const received = parseFloat(receivedInput.value) || 0;
+      const remaining = Math.max(0, total - received);
+      remainingInput.value = remaining;
+
+      paymentBadge.style.display = 'inline-block';
+      if (total <= 0) {
+        paymentHint.textContent = 'أدخل المبلغ الإجمالي';
+        paymentBadge.className = 'payment-badge pay-unpaid';
+        paymentBadge.textContent = 'غير مسجل';
+      } else if (remaining === 0) {
+        paymentHint.textContent = 'تم سداد المبلغ بالكامل ✅';
+        paymentBadge.className = 'payment-badge pay-paid';
+        paymentBadge.textContent = 'مسدد بالكامل';
+      } else if (received > 0) {
+        paymentHint.textContent = `واصل عربون ومتبقي ${remaining.toLocaleString('ar-YE')} ر.ي`;
+        paymentBadge.className = 'payment-badge pay-partial';
+        paymentBadge.textContent = 'واصل جزئي';
+      } else {
+        paymentHint.textContent = 'لم يتم دفع أي مبلغ بعد (متبقي كاملاً)';
+        paymentBadge.className = 'payment-badge pay-unpaid';
+        paymentBadge.textContent = 'غير مدفوع';
+      }
+    }
+
+    totalAmountInput.addEventListener('input', calculateRemaining);
+    receivedInput.addEventListener('input', calculateRemaining);
+
+    // ==========================================
+    // نظام التنبيهات
+    // ==========================================
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      
+      const icons = { success: '✅', error: '⚠️', info: 'ℹ️' };
+      toast.innerHTML = `<span>${icons[type] || '✨'}</span> <span>${message}</span>`;
+      
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    function setSyncState(isSyncing, text = 'محدث') {
+      const dot = document.getElementById('syncDot');
+      const label = document.getElementById('syncText');
+      if (isSyncing) {
+        dot.classList.add('syncing');
+        label.textContent = text || 'جاري المزامنة...';
+      } else {
+        dot.classList.remove('syncing');
+        label.textContent = text || 'متصل ومحدث';
+      }
+    }
+
+    // ==========================================
+    // تحميل البيانات وإدارة التخزين المحلي (Cache)
+    // ==========================================
+    function loadCachedOrders() {
+      const cached = localStorage.getItem("alfoad_orders_cache");
+      if (cached) {
+        try {
+          orders = JSON.parse(cached);
+          render();
+        } catch(e){}
+      }
+    }
+
+    async function fetchOrders(forceNoCache = false) {
+      setSyncState(true, 'جاري جلب البيانات...');
+      try {
+        const url = `${API_URL}?token=${encodeURIComponent(API_TOKEN)}${forceNoCache ? '&nocache=1' : ''}`;
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (Array.isArray(data)) {
+          orders = data;
+          localStorage.setItem("alfoad_orders_cache", JSON.stringify(orders));
+          render();
+          setSyncState(false, 'محدث الآن');
+        } else if (data.error) {
+          showToast(data.error, 'error');
+          setSyncState(false, 'تنبيه اتصال');
+        }
+      } catch (err) {
+        console.error("فشل جلب البيانات:", err);
+        showToast("تعذر جلب البيانات من الخادم، تم عرض النسخة المحفوظة", 'error');
+        setSyncState(false, 'وضع أوفلاين');
+      }
+    }
+
+    // ==========================================
+    // الرندرة وحساب الإحصائيات (Render Engine)
+    // ==========================================
+    const statusMeta = {
+      1: { name: 'تم الاستلام', icon: '📥', class: 'badge-status-1' },
+      2: { name: 'قيد التجهيز', icon: '⏳', class: 'badge-status-2' },
+      3: { name: 'جاهز', icon: '✅', class: 'badge-status-3' },
+      4: { name: 'تم التسليم', icon: '🚚', class: 'badge-status-4' }
+    };
+
+    function updateStats() {
+      const total = orders.length;
+      const count1 = orders.filter(o => o.Status == 1).length;
+      const count2 = orders.filter(o => o.Status == 2).length;
+      const count3 = orders.filter(o => o.Status == 3).length;
+      const count4 = orders.filter(o => o.Status == 4).length;
+
+      const totalAmount = orders.reduce((sum, o) => sum + (Number(o.Total_Amount !== undefined ? o.Total_Amount : o.Price) || 0), 0);
+      const totalReceived = orders.reduce((sum, o) => sum + (Number(o.Received) || 0), 0);
+      const totalRemaining = orders.reduce((sum, o) => {
+        const rem = (o.Remaining !== undefined) ? Number(o.Remaining) : Math.max(0, (Number(o.Total_Amount || o.Price) || 0) - (Number(o.Received) || 0));
+        return sum + rem;
+      }, 0);
+
+      document.getElementById('statTotal').textContent = total;
+      document.getElementById('statProcessing').textContent = count2;
+      document.getElementById('statReady').textContent = count3;
+      document.getElementById('statDelivered').textContent = count4;
+
+      document.getElementById('statTotalAmount').textContent = Number(totalAmount).toLocaleString('ar-YE') + ' ر.ي';
+      document.getElementById('statReceived').textContent = Number(totalReceived).toLocaleString('ar-YE') + ' ر.ي';
+      document.getElementById('statRemaining').textContent = Number(totalRemaining).toLocaleString('ar-YE') + ' ر.ي';
+
+      document.getElementById('countAll').textContent = total;
+      document.getElementById('count1').textContent = count1;
+      document.getElementById('count2').textContent = count2;
+      document.getElementById('count3').textContent = count3;
+      document.getElementById('count4').textContent = count4;
+    }
+
+    function render() {
+      updateStats();
+      const container = document.getElementById('ordersContainer');
+      const emptyState = document.getElementById('emptyState');
+      container.innerHTML = '';
+
+      const q = searchQuery.toLowerCase().trim();
+      const filtered = orders.filter(o => {
+        const matchesFilter = (currentFilter === 'all') || (String(o.Status) === String(currentFilter));
+        const matchesQuery = !q || 
+          String(o.OrderID).toLowerCase().includes(q) ||
+          String(o.CustomerName).toLowerCase().includes(q) ||
+          String(o.Phone).toLowerCase().includes(q) ||
+          String(o.Order_Description || '').toLowerCase().includes(q) ||
+          String(o.Order_Notes || '').toLowerCase().includes(q);
+        return matchesFilter && matchesQuery;
+      });
+
+      if (filtered.length === 0) {
+        emptyState.style.display = 'block';
+        return;
+      }
+      emptyState.style.display = 'none';
+
+      const sorted = [...filtered].reverse();
+      sorted.forEach(order => {
+        const card = createOrderCard(order);
+        container.appendChild(card);
+      });
+    }
+
+    function getTrackingUrl(orderId) {
+      if (CUSTOM_TRACKING_URL) {
+        return `${CUSTOM_TRACKING_URL}${CUSTOM_TRACKING_URL.includes('?') ? '&' : '?'}order=${orderId}`;
+      }
+      let origin = window.location.href;
+      if (origin.includes('/admin/')) {
+        return origin.replace('/admin/index.html', `/customer/index.html?order=${orderId}`).replace('/admin/', `/customer/index.html?order=${orderId}`);
+      }
+      return `${window.location.origin}/customer/index.html?order=${orderId}`;
+    }
+
+    function createOrderCard(order) {
+      const div = document.createElement('div');
+      div.className = 'order-card';
+      div.dataset.row = order.row;
+
+      const st = statusMeta[order.Status] || statusMeta[1];
+
+      const totalAmt = Number(order.Total_Amount !== undefined ? order.Total_Amount : order.Price) || 0;
+      const receivedAmt = Number(order.Received) || 0;
+      const remainingAmt = (order.Remaining !== undefined) ? Number(order.Remaining) : Math.max(0, totalAmt - receivedAmt);
+
+      let payBadge = '';
+      if (totalAmt > 0 && remainingAmt === 0) {
+        payBadge = '<span class="payment-badge pay-paid">مسدد بالكامل ✅</span>';
+      } else if (receivedAmt > 0 && remainingAmt > 0) {
+        payBadge = `<span class="payment-badge pay-partial">باقي: ${remainingAmt.toLocaleString('ar-YE')} ر.ي</span>`;
+      } else {
+        payBadge = '<span class="payment-badge pay-unpaid">غير مدفوع ⚠️</span>';
+      }
+
+      // إظهار وصف وملاحظات الطلب إذا كانت موجودة
+      let descHtml = '';
+      if (order.Order_Description) {
+        descHtml = `<div class="order-desc-text">🎁 <strong>الطلب:</strong> ${order.Order_Description}</div>`;
+      }
+      let noteHtml = '';
+      if (order.Order_Notes) {
+        noteHtml = `<span class="order-note-text">📌 ${order.Order_Notes}</span>`;
+      }
+
+      // زر تسوية مصغر إذا كان هناك متبقي
+      let settleBtnMini = '';
+      if (remainingAmt > 0) {
+        settleBtnMini = `<button class="btn-settle-mini" onclick="handleDirectSettlement(${order.row})" title="تسوية المبلغ المتبقي بالكامل">💳 تسوية</button>`;
+      }
+
+      div.innerHTML = `
+        <div class="card-header">
+          <div class="order-main-info">
+            <span class="order-number">#${order.OrderID}</span>
+            <span class="customer-name">${order.CustomerName}</span>
+            ${noteHtml}
+          </div>
+          <div class="header-badges">
+            ${payBadge}
+            <span class="status-badge ${st.class}">${st.icon} ${st.name}</span>
+          </div>
+        </div>
+
+        ${descHtml}
+
+        <div class="card-meta">
+          <span class="meta-item">
+            📞 <a href="tel:${order.Phone}">${order.Phone || 'لا يوجد هاتف'}</a>
+          </span>
+          <div class="price-group">
+            <span class="price-box">💰 الإجمالي: <span class="val-total">${totalAmt.toLocaleString('ar-YE')} ر.ي</span></span>
+            <span class="price-box">💵 الواصل: <span class="val-received">${receivedAmt.toLocaleString('ar-YE')} ر.ي</span></span>
+            <span class="price-box">⏳ المتبقي: <span class="val-remaining">${remainingAmt.toLocaleString('ar-YE')} ر.ي</span> ${settleBtnMini}</span>
+          </div>
+          <span class="meta-item" style="margin-right: auto;">
+            📅 ${order.Date || 'غير محدد'}
+          </span>
+        </div>
+
+        <div class="card-footer">
+          <div class="status-buttons-group">
+            <button class="status-btn ${order.Status == 1 ? 'active-1' : ''}" onclick="onStatusButtonClick(${order.row}, 1)">📥 استلام</button>
+            <button class="status-btn ${order.Status == 2 ? 'active-2' : ''}" onclick="onStatusButtonClick(${order.row}, 2)">⏳ تجهيز</button>
+            <button class="status-btn ${order.Status == 3 ? 'active-3' : ''}" onclick="onStatusButtonClick(${order.row}, 3)">✅ جاهز</button>
+            <button class="status-btn ${order.Status == 4 ? 'active-4' : ''}" onclick="onStatusButtonClick(${order.row}, 4)">🚚 تسليم</button>
+          </div>
+
+          <div class="card-tools">
+            <button class="tool-btn tool-btn-whatsapp" onclick="openCustomerWhatsApp('${order.Phone}', '${order.CustomerName}', '${order.OrderID}', ${order.Status}, ${totalAmt}, ${receivedAmt}, ${remainingAmt}, '${order.Order_Description || ''}')" title="مراسلة واتساب">
+              💬 واتساب
+            </button>
+            <button class="tool-btn" onclick="copyTrackingLink('${order.OrderID}')" title="نسخ رابط التتبع">
+              🔗 تتبع
+            </button>
+            <button class="tool-btn" onclick="openEditModal(${order.row})" title="تعديل">
+              ✏️
+            </button>
+            <button class="tool-btn tool-btn-delete" onclick="handleDeleteOrder(${order.row})" title="حذف">
+              🗑️
+            </button>
+          </div>
+        </div>
+      `;
+
+      return div;
+    }
+
+    // ==========================================
+    // منطق تغيير الحالة والتسوية المالية عند التسليم
+    // ==========================================
+    let pendingDeliveryOrder = null;
+
+    function onStatusButtonClick(row, status) {
+      const order = orders.find(o => o.row === row);
+      if (!order) return;
+
+      const totalAmt = Number(order.Total_Amount !== undefined ? order.Total_Amount : order.Price) || 0;
+      const receivedAmt = Number(order.Received) || 0;
+      const remainingAmt = (order.Remaining !== undefined) ? Number(order.Remaining) : Math.max(0, totalAmt - receivedAmt);
+
+      // إذا ضغط على "تسليم" وكان هناك متبقي > 0: نسأله عن التسوية المالية
+      if (status === 4 && remainingAmt > 0) {
+        pendingDeliveryOrder = order;
+        document.getElementById('settleOrderID').textContent = `#${order.OrderID}`;
+        document.getElementById('settleCustomerName').textContent = order.CustomerName;
+        document.getElementById('settleRemainingAmount').textContent = `${remainingAmt.toLocaleString('ar-YE')} ر.ي`;
+        document.getElementById('deliverySettlementModal').classList.add('active');
+        return;
+      }
+
+      handleStatusChange(row, status, false);
+    }
+
+    function closeSettlementModal() {
+      document.getElementById('deliverySettlementModal').classList.remove('active');
+      pendingDeliveryOrder = null;
+    }
+
+    document.getElementById('confirmSettleAndDeliverBtn').onclick = () => {
+      if (pendingDeliveryOrder) {
+        handleStatusChange(pendingDeliveryOrder.row, 4, true); // true = settlePayment
+      }
+      closeSettlementModal();
+    };
+
+    document.getElementById('confirmDeliverOnlyBtn').onclick = () => {
+      if (pendingDeliveryOrder) {
+        handleStatusChange(pendingDeliveryOrder.row, 4, false); // false = deliver only
+      }
+      closeSettlementModal();
+    };
+
+    // تسوية مالية مباشرة بضغطة زر
+    async function handleDirectSettlement(row) {
+      const order = orders.find(o => o.row === row);
+      if (!order) return;
+
+      const totalAmt = Number(order.Total_Amount !== undefined ? order.Total_Amount : order.Price) || 0;
+      const remainingAmt = (order.Remaining !== undefined) ? Number(order.Remaining) : Math.max(0, totalAmt - (Number(order.Received) || 0));
+
+      if (!confirm(`هل تود تسوية المبلغ المتبقي (${remainingAmt.toLocaleString('ar-YE')} ر.ي) للطلب #${order.OrderID} واحتسابه مسدداً بالكامل؟`)) {
+        return;
+      }
+
+      // تحديث فوري محلياً (Optimistic UI)
+      order.Received = totalAmt;
+      order.Remaining = 0;
+      render();
+      showToast(`تمت تسوية حساب الطلب #${order.OrderID} بالكامل ✅`, 'success');
+      setSyncState(true, 'مزامنة التسوية...');
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify({ token: API_TOKEN, action: 'settlePayment', row })
+        });
+        const data = await res.json();
+        if (data.success || data.result) {
+          localStorage.setItem("alfoad_orders_cache", JSON.stringify(orders));
+          setSyncState(false, 'تم حفظ التسوية');
+        }
+      } catch(e) {
+        setSyncState(false, 'خطأ مزامنة');
+      }
+    }
+
+    async function handleStatusChange(row, newStatus, settlePayment = false) {
+      const order = orders.find(o => o.row === row);
+      if (!order) return;
+
+      const prevStatus = order.Status;
+      const prevReceived = order.Received;
+      const prevRemaining = order.Remaining;
+
+      // تحديث لحظي على الشاشة (Optimistic UI في 0 ثانية!)
+      order.Status = newStatus;
+      if (settlePayment) {
+        const totalAmt = Number(order.Total_Amount !== undefined ? order.Total_Amount : order.Price) || 0;
+        order.Received = totalAmt;
+        order.Remaining = 0;
+      }
+      render();
+
+      const msg = settlePayment ? 
+        `تم تسليم الطلب #${order.OrderID} وتسوية المبلغ بالكامل ✅` : 
+        `تم تغيير حالة الطلب #${order.OrderID} إلى (${statusMeta[newStatus].name})`;
+      showToast(msg, 'success');
+      setSyncState(true, 'مزامنة الحالة...');
+
+      try {
+        const payload = {
+          token: API_TOKEN,
+          action: 'updateStatus',
+          row: row,
+          status: newStatus,
+          settlePayment: settlePayment
+        };
+
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (data.success || data.result) {
+          localStorage.setItem("alfoad_orders_cache", JSON.stringify(orders));
+          setSyncState(false, 'تم الحفظ');
+        } else {
+          throw new Error(data.error || 'خطأ في التحديث');
+        }
+      } catch (err) {
+        console.error("فشل التحديث:", err);
+        order.Status = prevStatus;
+        order.Received = prevReceived;
+        order.Remaining = prevRemaining;
+        render();
+        showToast("فشلت المزامنة مع الخادم، تمت استعادة الحالة السابقة", 'error');
+        setSyncState(false, 'خطأ في الحفظ');
+      }
+    }
+
+    // ==========================================
+    // حذف الطلب الفوري
+    // ==========================================
+    async function handleDeleteOrder(row) {
+      const order = orders.find(o => o.row === row);
+      if (!order) return;
+
+      if (!confirm(`هل أنت متأكد من حذف الطلب رقم #${order.OrderID} للعميل (${order.CustomerName})؟`)) {
+        return;
+      }
+
+      const backupOrders = [...orders];
+      orders = orders.filter(o => o.row !== row);
+      render();
+      showToast(`تم حذف الطلب #${order.OrderID}`, 'info');
+      setSyncState(true, 'جاري الحذف من الخادم...');
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify({ token: API_TOKEN, action: 'deleteOrder', row })
+        });
+        const data = await res.json();
+        if (data.success || data.result) {
+          localStorage.setItem("alfoad_orders_cache", JSON.stringify(orders));
+          setSyncState(false, 'تم الحذف');
+        } else {
+          throw new Error(data.error || 'خطأ');
+        }
+      } catch (err) {
+        orders = backupOrders;
+        render();
+        showToast("فشل حذف الطلب من الخادم، تمت استعادة البيانات", 'error');
+        setSyncState(false, 'خطأ');
+      }
+    }
+
+    // ==========================================
+    // إدارة النوافذ المنبثقة (إضافة وتعديل)
+    // ==========================================
+    const orderModal = document.getElementById('orderModal');
+    const orderForm = document.getElementById('orderForm');
+
+    document.getElementById('openAddModalBtn').onclick = () => {
+      document.getElementById('modalTitle').textContent = 'إضافة طلب جديد';
+      document.getElementById('editRow').value = '';
+      
+      // توليد رقم عشوائي مكون من 6 أرقام
+      document.getElementById('orderIDInput').value = generateRandomOrderId();
+      document.getElementById('customerNameInput').value = '';
+      document.getElementById('phoneInput').value = '';
+      document.getElementById('descInput').value = '';
+      document.getElementById('notesInput').value = '';
+      document.getElementById('totalAmountInput').value = '';
+      document.getElementById('receivedInput').value = '';
+      document.getElementById('remainingInput').value = '0';
+      
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('orderDateInput').value = today;
+
+      calculateRemaining();
+      orderModal.classList.add('active');
+      document.getElementById('customerNameInput').focus();
+    };
+
+    function openEditModal(row) {
+      const o = orders.find(x => x.row === row);
+      if (!o) return;
+
+      document.getElementById('modalTitle').textContent = `تعديل الطلب #${o.OrderID}`;
+      document.getElementById('editRow').value = o.row;
+      document.getElementById('orderIDInput').value = o.OrderID;
+      document.getElementById('customerNameInput').value = o.CustomerName;
+      document.getElementById('phoneInput').value = o.Phone;
+      document.getElementById('descInput').value = o.Order_Description || '';
+      document.getElementById('notesInput').value = o.Order_Notes || '';
+      document.getElementById('totalAmountInput').value = (o.Total_Amount !== undefined ? o.Total_Amount : o.Price) || '';
+      document.getElementById('receivedInput').value = o.Received || '';
+      document.getElementById('remainingInput').value = (o.Remaining !== undefined ? o.Remaining : '');
+      document.getElementById('orderDateInput').value = o.Date;
+
+      calculateRemaining();
+      orderModal.classList.add('active');
+    }
+
+    function closeModal() {
+      orderModal.classList.remove('active');
+    }
+    document.getElementById('closeModalBtn').onclick = closeModal;
+    document.getElementById('cancelModalBtn').onclick = closeModal;
+
+    // نافذة إرسال واتساب بعد الإضافة
+    let pendingWhatsAppOrder = null;
+    function showWhatsAppPrompt(order) {
+      pendingWhatsAppOrder = order;
+      document.getElementById('promptCustomerName').textContent = order.CustomerName;
+      document.getElementById('whatsappPromptModal').classList.add('active');
+    }
+    function closeWhatsAppPrompt() {
+      document.getElementById('whatsappPromptModal').classList.remove('active');
+      pendingWhatsAppOrder = null;
+    }
+    document.getElementById('sendPromptWhatsAppBtn').onclick = () => {
+      if (pendingWhatsAppOrder) {
+        openCustomerWhatsApp(
+          pendingWhatsAppOrder.Phone,
+          pendingWhatsAppOrder.CustomerName,
+          pendingWhatsAppOrder.OrderID,
+          pendingWhatsAppOrder.Status || 1,
+          pendingWhatsAppOrder.Total_Amount,
+          pendingWhatsAppOrder.Received,
+          pendingWhatsAppOrder.Remaining,
+          pendingWhatsAppOrder.Order_Description || '',
+          true // isNewOrder
+        );
+      }
+      closeWhatsAppPrompt();
+    };
+
+    orderForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const rowVal = document.getElementById('editRow').value;
+      const isEdit = Boolean(rowVal);
+
+      const totalAmt = Number(document.getElementById('totalAmountInput').value) || 0;
+      const receivedAmt = Number(document.getElementById('receivedInput').value) || 0;
+      const remainingAmt = Math.max(0, totalAmt - receivedAmt);
+
+      const orderData = {
+        token: API_TOKEN,
+        action: isEdit ? 'updateOrder' : 'addOrder',
+        row: isEdit ? Number(rowVal) : undefined,
+        OrderID: document.getElementById('orderIDInput').value.trim(),
+        CustomerName: document.getElementById('customerNameInput').value.trim(),
+        Phone: document.getElementById('phoneInput').value.trim(),
+        Order_Description: document.getElementById('descInput').value.trim(),
+        Order_Notes: document.getElementById('notesInput').value.trim(),
+        Total_Amount: totalAmt,
+        Price: totalAmt,
+        Received: receivedAmt,
+        Remaining: remainingAmt,
+        Date: document.getElementById('orderDateInput').value,
+        Status: 1
+      };
+
+      closeModal();
+      setSyncState(true, 'جاري الحفظ...');
+
+      if (!isEdit) {
+        // عند إضافة طلب جديد: تحويل الفلتر تلقائياً للكل لظهوره في تم الاستلام مباشرة
+        currentFilter = 'all';
+        document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+        document.querySelector('.filter-pill[data-filter="all"]')?.classList.add('active');
+
+        const tempOrder = {
+          row: orders.length + 2,
+          ...orderData,
+          Status: 1
+        };
+        orders.push(tempOrder);
+        render();
+        showToast("تمت إضافة الطلب في مرحلة (تم الاستلام) ✅", 'success');
+        showWhatsAppPrompt(tempOrder);
+      }
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify(orderData)
+        });
+        const data = await res.json();
+
+        if (data.success || data.result) {
+          showToast(isEdit ? "تم تحديث الطلب بنجاح" : "تم حفظ الطلب في Google Sheets بنجاح", 'success');
+          fetchOrders(true);
+        } else {
+          showToast(data.message || data.error || "حدث خطأ أثناء الحفظ", 'error');
+        }
+      } catch (err) {
+        showToast("تعذر الاتصال بالخادم، سيتم الحفظ عند عودة الاتصال", 'error');
+      }
+    };
+
+    // ==========================================
+    // أدوات واتساب مع رابط التتبع والوصف
+    // ==========================================
+    function openCustomerWhatsApp(phone, name, orderId, status, totalAmount = 0, received = 0, remaining = 0, desc = '', isNewOrder = false) {
+      if (!phone) {
+        showToast("لا يوجد رقم هاتف مسجل لهذا العميل", 'error');
+        return;
+      }
+      
+      let cleanPhone = phone.replace(/[^0-9]/g, '');
+      if (cleanPhone.startsWith('0')) cleanPhone = cleanPhone.substring(1);
+      if (!cleanPhone.startsWith('967')) cleanPhone = '967' + cleanPhone;
+
+      const stName = statusMeta[status]?.name || 'تم الاستلام';
+      const trackingUrl = getTrackingUrl(orderId);
+
+      let descSnippet = desc ? `🎁 *تفاصيل الطلب:* ${desc}\n` : '';
+
+      let msg = '';
+      if (isNewOrder) {
+        msg = `مرحباً أ/ *${name}* 🌸\nتم تأكيد وتسجيل طلبكم بنجاح في *متجر الفؤاد للتحف والهدايا* ✨\n\n` +
+              `📦 *رقم الطلب:* #${orderId}\n` +
+              descSnippet +
+              `💰 *المبلغ الإجمالي:* ${Number(totalAmount).toLocaleString('ar-YE')} ر.ي\n` +
+              `💵 *المبلغ الواصل:* ${Number(received).toLocaleString('ar-YE')} ر.ي\n` +
+              `⏳ *المبلغ المتبقي:* ${Number(remaining).toLocaleString('ar-YE')} ر.ي\n\n` +
+              `🔗 *يمكنكم تتبع مراحل تجهيز طلبكم لحظة بلحظة عبر الرابط التالي:*\n${trackingUrl}\n\n` +
+              `نسعد بخدمتكم دائماً في متجر الفؤاد 🎁`;
+      } else {
+        msg = `مرحباً أ/ *${name}* 🌸\nنود إعلامكم من *متجر الفؤاد للتحف والهدايا* بتحديث حالة طلبكم:\n\n` +
+              `📦 *رقم الطلب:* #${orderId}\n` +
+              descSnippet +
+              `🏷️ *حالة الطلب:* [ ${stName} ]\n` +
+              `💰 *المبلغ الإجمالي:* ${Number(totalAmount).toLocaleString('ar-YE')} ر.ي\n` +
+              `💵 *المبلغ الواصل:* ${Number(received).toLocaleString('ar-YE')} ر.ي\n` +
+              `⏳ *المبلغ المتبقي:* ${Number(remaining).toLocaleString('ar-YE')} ر.ي\n\n` +
+              `🔗 *تتبع مسار طلبكم والتفاصيل عبر الرابط:*\n${trackingUrl}\n\n` +
+              `شكراً لثقتكم واختياركم متجر الفؤاد ✨`;
+      }
+
+      const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
+      window.open(waUrl, '_blank');
+    }
+
+    function copyTrackingLink(orderId) {
+      const trackingUrl = getTrackingUrl(orderId);
+      navigator.clipboard.writeText(trackingUrl).then(() => {
+        showToast(`تم نسخ رابط تتبع الطلب #${orderId} للحافظة 📋`, 'info');
+      }).catch(() => {
+        prompt("رابط تتبع الطلب للعميل:", trackingUrl);
+      });
+    }
+
+    document.getElementById('exportBtn').onclick = () => {
+      if (!orders.length) return alert("لا توجد بيانات للتصدير");
+      let csvContent = "\uFEFFرقم الطلب,اسم العميل,الهاتف,الوصف,الملاحظات,المبلغ الإجمالي,المبلغ الواصل,المبلغ المتبقي,التاريخ,الحالة\n";
+      orders.forEach(o => {
+        const stName = statusMeta[o.Status]?.name || '';
+        const tot = Number(o.Total_Amount !== undefined ? o.Total_Amount : o.Price) || 0;
+        const rec = Number(o.Received) || 0;
+        const rem = (o.Remaining !== undefined) ? Number(o.Remaining) : Math.max(0, tot - rec);
+        csvContent += `"${o.OrderID}","${o.CustomerName}","${o.Phone}","${o.Order_Description||''}","${o.Order_Notes||''}","${tot}","${rec}","${rem}","${o.Date}","${stName}"\n`;
+      });
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `طلبات_متجر_الفؤاد_${new Date().toISOString().slice(0,10)}.csv`;
+      link.click();
+    };
+
+    // ==========================================
+    // فلترة وبحث وتحديث يدوي
+    // ==========================================
+    document.querySelectorAll('.filter-pill').forEach(pill => {
+      pill.onclick = () => {
+        document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        currentFilter = pill.dataset.filter;
+        render();
+      };
+    });
+
+    document.getElementById('searchInput').oninput = (e) => {
+      searchQuery = e.target.value;
+      render();
+    };
+
+    document.getElementById('refreshBtn').onclick = () => {
+      fetchOrders(true);
+      showToast("جاري تحديث البيانات من Google Sheets...", 'info');
+    };
+
+    // ==========================================
+    // إدارة الإعدادات
+    // ==========================================
+    const settingsModal = document.getElementById('settingsModal');
+    document.getElementById('settingsBtn').onclick = () => {
+      document.getElementById('settingApiUrl').value = API_URL;
+      document.getElementById('settingApiToken').value = API_TOKEN;
+      document.getElementById('settingTrackingUrl').value = CUSTOM_TRACKING_URL;
+      settingsModal.classList.add('active');
+    };
+    document.getElementById('closeSettingsBtn').onclick = () => settingsModal.classList.remove('active');
+
+    document.getElementById('saveSettingsBtn').onclick = () => {
+      API_URL = document.getElementById('settingApiUrl').value.trim();
+      API_TOKEN = document.getElementById('settingApiToken').value.trim();
+      CUSTOM_TRACKING_URL = document.getElementById('settingTrackingUrl').value.trim();
+      
+      localStorage.setItem("alfoad_api_url", API_URL);
+      localStorage.setItem("alfoad_api_token", API_TOKEN);
+      localStorage.setItem("alfoad_tracking_url", CUSTOM_TRACKING_URL);
+
+      settingsModal.classList.remove('active');
+      showToast("تم حفظ إعدادات النظام والروابط بنجاح", 'success');
+      fetchOrders(true);
+    };
+
+    document.getElementById('resetSettingsBtn').onclick = () => {
+      document.getElementById('settingApiUrl').value = DEFAULT_API_URL;
+      document.getElementById('settingApiToken').value = DEFAULT_API_TOKEN;
+      document.getElementById('settingTrackingUrl').value = "";
+    };
+
+    window.onclick = (e) => {
+      if (e.target === orderModal) closeModal();
+      if (e.target === settingsModal) settingsModal.classList.remove('active');
+      if (e.target === document.getElementById('whatsappPromptModal')) closeWhatsAppPrompt();
+      if (e.target === document.getElementById('deliverySettlementModal')) closeSettlementModal();
+    };
+
+    loadCachedOrders();
+    fetchOrders();
+  </script>
+</body>
+</html>
