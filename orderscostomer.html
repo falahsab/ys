@@ -104,7 +104,7 @@
       font-weight: 600;
     }
 
-    /* نافذة تنبيه فاخرة منبثقة عند جاهزية الطلب */
+    /* بانر التنبيه بالجاهزية الفعلي */
     .ready-banner-alert {
       display: none;
       background: linear-gradient(135deg, #10b981, #059669);
@@ -113,7 +113,7 @@
       padding: 14px 18px;
       margin-bottom: 16px;
       box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
-      animation: bannerSlide 0.4s ease;
+      animation: bannerSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
     }
     @keyframes bannerSlide {
@@ -126,7 +126,7 @@
       gap: 12px;
     }
     .ready-banner-icon {
-      font-size: 30px;
+      font-size: 32px;
     }
     .ready-banner-text h4 {
       font-size: 16px;
@@ -534,6 +534,32 @@
       margin-top: 12px;
     }
 
+    /* رسالة التأكيد المؤقتة (Toast) */
+    .toast-mini {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(30px);
+      background: #1e293b;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-right: 4px solid var(--gold-primary);
+      padding: 10px 18px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1000;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .toast-mini.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
     footer {
       background: rgba(10, 14, 23, 0.9);
       border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -588,14 +614,14 @@
       <p class="store-subtitle">ذمار • نصنع من الهدايا ذكريات لا تُنسى ✨</p>
     </header>
 
-    <!-- بانر الإشعار المرئي الفوري (يعمل على الجوال والكمبيوتر) -->
+    <!-- بانر الجاهزية الفعلي (يظهر حصراً وفقط عندما تكون الحالة 3 جاهز) -->
     <div id="readyBannerAlert" class="ready-banner-alert">
       <button class="ready-banner-close" onclick="closeReadyBanner()">&times;</button>
       <div class="ready-banner-content">
         <div class="ready-banner-icon">🎉</div>
         <div class="ready-banner-text">
           <h4>بشرى سارة! طلبكم أصبح جاهزاً للاستلام الآن</h4>
-          <p>طلبكم رقم #<span id="bannerOrderId"></span> تم تجهيزه بالكامل وهو بانتظاركم في المتجر ✨</p>
+          <p>طلبكم رقم #<span id="bannerOrderId"></span> تم الانتهاء من تجهيزه وهو بانتظاركم في المتجر ✨</p>
         </div>
       </div>
     </div>
@@ -736,6 +762,9 @@
 
   </div>
 
+  <!-- رسالة Toast المؤقتة لتأكيد تفعيل التنبيهات -->
+  <div id="toastMini" class="toast-mini"></div>
+
   <!-- تذييل الصفحة -->
   <footer>
     <div class="footer-content">
@@ -770,8 +799,10 @@
     const resultContainer = document.getElementById('resultContainer');
     const readyBannerAlert = document.getElementById('readyBannerAlert');
     const bannerOrderId = document.getElementById('bannerOrderId');
+    const toastMini = document.getElementById('toastMini');
 
     let currentTrackedId = null;
+    let previousKnownStatus = null; // لتتبع التغير الحقيقي للحالة
     let loadingTimerInterval = null;
 
     const statusStyles = {
@@ -781,9 +812,7 @@
       4: { text: "تم التسليم", bg: "rgba(139,92,246,0.15)", border: "rgba(139,92,246,0.3)", color: "#8b5cf6" }
     };
 
-    // ==========================================
-    // تسجيل Service Worker خفيف لدعم أندرويد رسمياً
-    // ==========================================
+    // Service Worker خفيف لدعم هواتف أندرويد
     if ('serviceWorker' in navigator) {
       try {
         const swBlob = new Blob([`
@@ -794,9 +823,7 @@
       } catch(e){}
     }
 
-    // ==========================================
-    // نغمة صوتية فاخرة (حصرياً عند الجاهزية فقط)
-    // ==========================================
+    // نغمة احتفالية لطيفة (تعمل حصراً وفقط عند تحول الطلب إلى جاهز)
     function playCustomerReadySound() {
       try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -817,17 +844,8 @@
       } catch(e) {}
     }
 
-    // ==========================================
-    // إرسال الإشعار الآمن (متوافق 100% مع الجوال والكمبيوتر)
-    // ==========================================
-    async function sendSafeNotification(title, body) {
-      // 1. إشعار مرئي دائم في واجهة الصفحة
-      if (readyBannerAlert) {
-        bannerOrderId.textContent = currentTrackedId || '';
-        readyBannerAlert.style.display = 'block';
-      }
-
-      // 2. محاولة إرسال إشعار المتصفح/الجوال بأمان
+    // إرسال إشعار نظام حقيقي
+    async function triggerSystemNotification(title, body) {
       try {
         if ('serviceWorker' in navigator) {
           const reg = await navigator.serviceWorker.getRegistration();
@@ -842,7 +860,6 @@
         }
       } catch(e) {}
 
-      // للكمبيوتر فقط
       try {
         if ('Notification' in window && Notification.permission === 'granted') {
           new Notification(title, {
@@ -851,6 +868,15 @@
           });
         }
       } catch(e) {}
+    }
+
+    function showToastMini(msg) {
+      if (!toastMini) return;
+      toastMini.textContent = msg;
+      toastMini.classList.add('show');
+      setTimeout(() => {
+        toastMini.classList.remove('show');
+      }, 3500);
     }
 
     function closeReadyBanner() {
@@ -879,30 +905,35 @@
       loadingEl.style.display = 'none';
     }
 
-    async function checkOrder(targetId) {
+    // ==========================================
+    // دالة الاستعلام الرئيسية
+    // ==========================================
+    async function checkOrder(targetId, isSilent = false) {
       const rawId = targetId || orderInput.value;
       const cleanId = normalizeDigits(rawId);
 
       if (!cleanId) {
-        showError("يرجى إدخال رقم الطلب للاستعلام");
+        if (!isSilent) showError("يرجى إدخال رقم الطلب للاستعلام");
         return;
       }
 
-      hideError();
-      startLoadingTimer();
+      if (!isSilent) {
+        hideError();
+        startLoadingTimer();
+      }
       currentTrackedId = cleanId;
 
-      // المسار 1: Google CDN الفائق
+      // 1. تجربة محرك Google CDN السريع
       try {
         const gvizOrder = await tryFastGvizQuery(cleanId);
         if (gvizOrder) {
-          stopLoadingTimer();
-          displayOrder(gvizOrder, "Google CDN (0.2 ثانية ⚡)");
+          if (!isSilent) stopLoadingTimer();
+          displayOrder(gvizOrder, "Google CDN (مباشر ⚡)", isSilent);
           return;
         }
       } catch (e) {}
 
-      // المسار 2: Google Apps Script المباشر
+      // 2. تجربة Google Apps Script المباشر
       try {
         const fetchUrl = `${API_BASE}?action=track&orderId=${encodeURIComponent(cleanId)}&_t=${Date.now()}`;
         const controller = new AbortController();
@@ -915,16 +946,18 @@
         clearTimeout(timeoutId);
 
         const data = await res.json();
-        stopLoadingTimer();
+        if (!isSilent) stopLoadingTimer();
 
         if (data.success && data.order) {
-          displayOrder(data.order, "خادم المتجر المباشر");
-        } else {
+          displayOrder(data.order, "خادم المتجر المباشر", isSilent);
+        } else if (!isSilent) {
           showError(data.error || "لم يتم العثور على طلب بهذا الرقم، يرجى التأكد من الرقم.");
         }
       } catch (err) {
-        stopLoadingTimer();
-        showError("تعذر إكمال الاستعلام في الوقت المحدد. يرجى إعادة المحاولة أو التواصل مباشرة عبر الواتساب.");
+        if (!isSilent) {
+          stopLoadingTimer();
+          showError("تعذر إكمال الاستعلام في الوقت المحدد. يرجى إعادة المحاولة أو التواصل مباشرة عبر الواتساب.");
+        }
       }
     }
 
@@ -997,7 +1030,7 @@
       const remainingVal = getVal(remIdx);
       const remaining = (remainingVal !== '') ? Number(remainingVal) : Math.max(0, total - received);
 
-      // استخراج الحالة الدقيق من 4 إلى 1
+      // استخراج الحالة بدقة (من 4 إلى 1)
       let status = 1;
 
       const statusColIdx = findIndex(["status", "الحالة", "حالة الطلب", "حالة"], -1);
@@ -1080,8 +1113,11 @@
       };
     }
 
-    function displayOrder(order, sourceInfo) {
-      // 1. تعبئة وعرض البيانات فوراً (أولاً وقبل أي شيء حتى لا يتأثر الجوال)
+    // ==========================================
+    // عرض بيانات الطلب وإدارة التنبيهات اللحظية
+    // ==========================================
+    function displayOrder(order, sourceInfo, isSilent = false) {
+      // 1. تعبئة البيانات في الواجهة أولاً
       document.getElementById('resOrderID').textContent = order.OrderID;
       document.getElementById('resCustomer').textContent = order.CustomerName || 'عميل المتجر';
       document.getElementById('resDate').textContent = order.Date || 'اليوم';
@@ -1134,21 +1170,37 @@
       const waMsg = `السلام عليكم متجر الفؤاد، أستفسر بخصوص طلبي رقم (#${order.OrderID}) المسجل باسم (${order.CustomerName}).\nإجمالي المبلغ: ${total.toLocaleString('ar-YE')} ر.ي، المتبقي: ${remaining.toLocaleString('ar-YE')} ر.ي.`;
       waBtn.href = `https://wa.me/967772259877?text=${encodeURIComponent(waMsg)}`;
 
-      // إظهار البطاقة بدون أي تأخير على الجوال والكمبيوتر
       resultContainer.style.display = 'block';
 
-      // 2. منطق التنبيه الصوتي والإشعار: يعمل حصراً إذا أصبحت الحالة (جاهز للاستلام رقم 3)
+      // ==============================================================
+      // المنطق الذكي للتنبيه الصوتي والبانر (فقط عند التحول الفعلي لـ 3 جاهز)
+      // ==============================================================
+      const isJustTurnedReady = (previousKnownStatus !== null && previousKnownStatus !== 3 && order.Status === 3);
+
       if (order.Status === 3) {
-        const notifKey = `alfoad_ready_notified_${order.OrderID}`;
-        if (!localStorage.getItem(notifKey)) {
+        // إظهار بانر الجاهزية الأخضر طالما الطلب جاهز
+        if (readyBannerAlert) {
+          bannerOrderId.textContent = order.OrderID;
+          readyBannerAlert.style.display = 'block';
+        }
+
+        // تشغيل الرنة وإشعار النظام فقط إذا تحول الطلب الآن إلى جاهز
+        if (isJustTurnedReady) {
           playCustomerReadySound();
-          sendSafeNotification(
+          triggerSystemNotification(
             "متجر الفؤاد للتحف والهدايا ✨",
             `مرحباً ${order.CustomerName}، طلبكم رقم #${order.OrderID} أصبح جاهزاً للاستلام الآن! 🎁`
           );
-          localStorage.setItem(notifKey, "true");
+        }
+      } else {
+        // إذا لم يكن الطلب جاهزاً (مثلاً: تم الاستلام، تجهيز، أو تسليم)، نخفي بانر الجاهزية فوراً
+        if (readyBannerAlert) {
+          readyBannerAlert.style.display = 'none';
         }
       }
+
+      // حفظ الحالة الحالية لمقارنتها في الفحص الصامت القادم
+      previousKnownStatus = order.Status;
     }
 
     function updateStepper(statusLevel) {
@@ -1176,7 +1228,7 @@
       errorBox.style.display = 'none';
     }
 
-    // زر تفعيل التنبيهات: تم إزالة تشغيل الرنة منه تماماً
+    // زر تفعيل التنبيهات: يعرض رسالة تأكيد هادئة فقط بدون رنين وبدون بانر
     if (notifyBtn) {
       if ("Notification" in window && Notification.permission === "granted") {
         notifyBtn.classList.add('active');
@@ -1184,24 +1236,25 @@
       }
 
       notifyBtn.onclick = () => {
-        if (!("Notification" in window)) {
-          alert("التنبيهات مفعلة تلقائياً عبر الشاشة ✅");
-          return;
-        }
-        Notification.requestPermission().then(perm => {
-          if (perm === "granted") {
+        if ("Notification" in window) {
+          Notification.requestPermission().then(perm => {
+            if (perm === "granted") {
+              notifyBtn.classList.add('active');
+              notifyBtn.textContent = "🔔 التنبيهات مفعلة";
+              showToastMini("تم تفعيل التنبيهات بنجاح! سيتم إشعارك فور جاهزية الطلب 🔔");
+            } else {
+              showToastMini("تم تفعيل التنبيه التلقائي عبر شاشة الموقع ✅");
+            }
+          }).catch(() => {
             notifyBtn.classList.add('active');
             notifyBtn.textContent = "🔔 التنبيهات مفعلة";
-            // تنبيه هادئ بالتفعيل بدون رنة الجاهزية
-            sendSafeNotification(
-              "متجر الفؤاد للتحف والهدايا ✨",
-              "تم تفعيل التنبيهات بنجاح! سيتم إشعارك فور أن يصبح طلبك جاهزاً للاستلام."
-            );
-          }
-        }).catch(() => {
+            showToastMini("تم تفعيل التنبيه التلقائي عبر شاشة الموقع ✅");
+          });
+        } else {
           notifyBtn.classList.add('active');
           notifyBtn.textContent = "🔔 التنبيهات مفعلة";
-        });
+          showToastMini("التنبيهات مفعلة تلقائياً طالما الصفحة مفتوحة ✨");
+        }
       };
     }
 
@@ -1214,10 +1267,15 @@
       if (e.key === 'Enter') checkOrder();
     };
 
-    // فحص دوري في الخلفية كل 45 ثانية لتحديث الحالة للعميل وهو فاتح الصفحة
+    // ==============================================================
+    // المزامنة الحية الصامتة كل 10 ثوانٍ (Live Auto-Sync)
+    // تفحص في الخلفية بدون إعادة تحميل أو إزعاج العميل
+    // ==============================================================
     setInterval(() => {
-      if (currentTrackedId) checkOrder(currentTrackedId);
-    }, 45000);
+      if (currentTrackedId) {
+        checkOrder(currentTrackedId, true); // true تعني فحص صامت في الخلفية
+      }
+    }, 10000);
 
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
