@@ -716,7 +716,7 @@
     } catch (e) {}
 
     // روابط النظام ومصادر البيانات
-    const API_BASE = "https://script.google.com/macros/s/AKfycbyS_6f97T9sbDY7U63k6yJp5B2j95nsWz9wMUBszWL-4UDslKJ2Yk_AyTCZATjs3r22/exec";
+    const API_BASE = "https://script.google.com/macros/s/AKfycbyk5EH-6edxcsseoXOxRnMGVrbvliDOQuINGYbL6zPI6w3VksxtJ18_Muir92RSA3YI/exec";
     const SPREADSHEET_ID = "1olejIBhQty7dtosCWYCn8sy8RCKsq0ks6eid_SOBpOY";
     const SHEET_NAME = "Orders";
 
@@ -769,9 +769,9 @@
     }
 
     /**
-     * محرك الاستعلام فائق السرعة (Dual Engine):
-     * 1) يجرب مسار Google CDN المباشر (GViz) بسرعة 0.2 ثانية إن كان الشيت متاحاً للعرض
-     * 2) يتحول تلقائياً وسلساً إلى Google Apps Script المطور بدون كاش قديم
+     * محرك الاستعلام اللحظي (Dual Engine):
+     * 1) مسار Google CDN فائق السرعة (GViz)
+     * 2) مسار خادم Google Apps Script المباشر
      */
     async function checkOrder(targetId) {
       const rawId = targetId || orderInput.value;
@@ -797,26 +797,21 @@
           return;
         }
       } catch (e) {
-        // إذا فشل GViz (مثلاً الشيت خاص)، ننتقل مباشرة لمسار السيرفر
+        // إذا حدث استثناء ننتقل مباشرة للمسار الثاني
       }
 
       // -------------------------------------------------------------
       // المسار 2: الاستعلام المباشر عبر Google Apps Script بدون أي كاش نهائياً
       // -------------------------------------------------------------
       try {
-        // معامل عشوائي إجباري لمنع كاش المتصفح أو البروكسي
-        const fetchUrl = `${API_BASE}?action=track&orderId=${encodeURIComponent(cleanId)}&_nocache=${Date.now()}_${Math.random()}`;
+        const fetchUrl = `${API_BASE}?action=track&orderId=${encodeURIComponent(cleanId)}&_t=${Date.now()}`;
         
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 9000);
 
+        // جلب بسيط بدون custom headers لتجنب مشاكل الـ CORS مع جوجل
         const res = await fetch(fetchUrl, {
           method: 'GET',
-          cache: 'no-store', // منع كاش المتصفح قطعياً
-          headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache'
-          },
           signal: controller.signal
         });
         clearTimeout(timeoutId);
@@ -839,14 +834,14 @@
      * استعلام Google Visualization API فائق السرعة (أقل من 250ms)
      */
     async function tryFastGvizQuery(orderId) {
-      const gvizUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}&tq=${encodeURIComponent("select * where A = '" + orderId + "' or A = " + orderId)}&_nc=${Date.now()}`;
+      // نرسل headers=1 لضمان استرجاع أسماء الأعمدة بدقة
+      const gvizUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&headers=1&sheet=${encodeURIComponent(SHEET_NAME)}&tq=${encodeURIComponent("select * where A = '" + orderId + "' or A = " + orderId)}&_nc=${Date.now()}`;
       
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2000); // مهلة ثانيتين فقط
+      const timeoutId = setTimeout(() => controller.abort(), 2500);
 
       const response = await fetch(gvizUrl, {
         method: 'GET',
-        cache: 'no-store',
         signal: controller.signal
       });
       clearTimeout(timeoutId);
@@ -854,7 +849,6 @@
       if (!response.ok) return null;
       const text = await response.text();
 
-      // فحص صيغة رد GViz JSON
       const match = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]+)\);?$/);
       if (!match) return null;
 
@@ -863,15 +857,14 @@
         return null;
       }
 
-      // تحويل أول صف مطابق إلى كائن الطلب الموحد
       const row = gvizJson.table.rows[0].c;
-      const cols = gvizJson.table.cols.map(c => (c && c.label) ? String(c.label).trim() : '');
+      const cols = (gvizJson.table.cols || []).map(c => (c && c.label) ? String(c.label).trim() : '');
 
       return parseGvizRow(row, cols, orderId);
     }
 
     /**
-     * تحويل خلايا GViz إلى هيكل الطلب المعتمد
+     * استخراج بيانات الطلب والحالة بدقة تامة (يدعم كل تنسيقات الشيت)
      */
     function parseGvizRow(cells, cols, fallbackId) {
       const getVal = (idx) => {
@@ -900,7 +893,6 @@
       const dateIdx = findIndex(["date", "تاريخ", "التاريخ"], 6);
       const descIdx = findIndex(["order_description", "description", "وصف الطلب", "الوصف", "تفاصيل"], 7);
       const notesIdx = findIndex(["order_notes", "notes", "ملاحظات الطلب", "ملاحظات"], 8);
-      const statusIdx = findIndex(["status", "الحالة", "حالة الطلب", "حالة"], 9);
 
       const orderId = String(getVal(idIdx) || fallbackId);
       const custName = String(getVal(custIdx) || "عميل مميز");
@@ -914,9 +906,59 @@
       const remainingVal = getVal(remIdx);
       const remaining = (remainingVal !== '') ? Number(remainingVal) : Math.max(0, total - received);
 
-      let status = Number(getVal(statusIdx));
-      if (!status || status < 1 || status > 4) {
-        status = 1;
+      // ==============================================================
+      // استخراج الحالة الذكي الشامل (يدعم الأعمدة الأربعة وعمود الحالة الموحد)
+      // ==============================================================
+      let status = 1;
+
+      // 1. أولاً: فحص عمود الحالة الموحد (سواء كان رقماً أو نصاً عربياً)
+      const statusColIdx = findIndex(["status", "الحالة", "حالة الطلب", "حالة"], -1);
+      if (statusColIdx !== -1) {
+        const rawStatus = getVal(statusColIdx);
+        const numStatus = Number(rawStatus);
+        if (numStatus >= 1 && numStatus <= 4) {
+          status = numStatus;
+        } else if (typeof rawStatus === 'string') {
+          const s = rawStatus.trim();
+          if (s.includes("تسليم") || s.toLowerCase().includes("delivered")) status = 4;
+          else if (s.includes("جاهز") || s.toLowerCase().includes("ready")) status = 3;
+          else if (s.includes("تجهيز") || s.toLowerCase().includes("processing")) status = 2;
+          else if (s.includes("استلام") || s.toLowerCase().includes("received")) status = 1;
+        }
+      }
+
+      // 2. ثانياً: إذا لم تتحدد الحالة بعد، نفحص الأعمدة الأربعة المنفصلة للمراحل
+      if (status === 1) {
+        const isCellChecked = (idx) => {
+          if (idx < 0 || idx >= cells.length || !cells[idx]) return false;
+          const v = cells[idx].v;
+          return v === 1 || v === true || String(v).trim() === "1" || String(v).trim().toLowerCase() === "true";
+        };
+
+        const deliveredCol = findIndex(["تم التسليم", "تسليم", "delivered", "st_delivered"], 12);
+        const readyCol = findIndex(["جاهز", "ready", "st_ready"], 11);
+        const processingCol = findIndex(["قيد التجهيز", "تجهيز", "processing", "st_processing"], 10);
+        const receivedCol = findIndex(["تم الاستلام", "استلام", "received", "st_received"], 9);
+
+        // الترتيب من الأحدث للأقدم لضمان دقة آخر مرحلة وصل إليها الطلب
+        if (isCellChecked(deliveredCol)) {
+          status = 4;
+        } else if (isCellChecked(readyCol)) {
+          status = 3;
+        } else if (isCellChecked(processingCol)) {
+          status = 2;
+        } else if (isCellChecked(receivedCol)) {
+          status = 1;
+        } else {
+          // فحص احتياطي ذكي لأي خلية بها رقم الحالة من العمود التاسع فما فوق
+          for (let i = 9; i < cells.length; i++) {
+            const valNum = Number(cells[i] ? cells[i].v : null);
+            if (valNum >= 1 && valNum <= 4) {
+              status = valNum;
+              break;
+            }
+          }
+        }
       }
 
       let dateVal = getVal(dateIdx);
