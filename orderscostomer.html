@@ -68,42 +68,84 @@
       z-index: 1;
       max-width: 650px;
       width: 92%;
-      margin: 25px auto;
+      margin: 20px auto;
     }
 
     .store-header {
       text-align: center;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
 
     .store-logo-emblem {
-      width: 76px;
-      height: 76px;
-      margin: 0 auto 12px;
-      border-radius: 22px;
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 10px;
+      border-radius: 20px;
       background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 38px;
+      font-size: 36px;
       box-shadow: 0 10px 25px rgba(217, 119, 6, 0.35);
       border: 2px solid rgba(255, 255, 255, 0.2);
     }
 
     .store-title {
-      font-size: 25px;
+      font-size: 24px;
       font-weight: 900;
       color: #fff;
-      letter-spacing: -0.5px;
       margin-bottom: 4px;
       text-shadow: 0 2px 10px rgba(0,0,0,0.5);
     }
 
     .store-subtitle {
-      font-size: 14px;
+      font-size: 13px;
       color: var(--gold-light);
       font-weight: 600;
-      letter-spacing: 0.5px;
+    }
+
+    /* نافذة تنبيه فاخرة منبثقة عند جاهزية الطلب */
+    .ready-banner-alert {
+      display: none;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff;
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+      animation: bannerSlide 0.4s ease;
+      position: relative;
+    }
+    @keyframes bannerSlide {
+      from { opacity: 0; transform: translateY(-15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .ready-banner-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .ready-banner-icon {
+      font-size: 30px;
+    }
+    .ready-banner-text h4 {
+      font-size: 16px;
+      font-weight: 900;
+      margin-bottom: 2px;
+    }
+    .ready-banner-text p {
+      font-size: 13px;
+      opacity: 0.95;
+    }
+    .ready-banner-close {
+      position: absolute;
+      left: 12px;
+      top: 10px;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
     }
 
     .search-card {
@@ -112,16 +154,15 @@
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--border-card);
       border-radius: var(--radius-lg);
-      padding: 22px;
+      padding: 20px;
       box-shadow: var(--shadow-luxury);
       margin-bottom: 20px;
-      transition: all 0.3s ease;
     }
 
     .card-title {
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 800;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -163,8 +204,8 @@
       background: rgba(10, 14, 23, 0.85);
       border: 1.5px solid rgba(255, 255, 255, 0.15);
       border-radius: var(--radius-md);
-      padding: 13px 16px;
-      font-size: 16px;
+      padding: 12px 14px;
+      font-size: 15px;
       color: #fff;
       outline: none;
       transition: all 0.25s ease;
@@ -179,8 +220,8 @@
       color: #000;
       border: none;
       border-radius: var(--radius-md);
-      padding: 0 22px;
-      font-size: 15px;
+      padding: 0 18px;
+      font-size: 14px;
       font-weight: 800;
       cursor: pointer;
       display: inline-flex;
@@ -190,28 +231,19 @@
       box-shadow: 0 6px 16px rgba(245, 158, 11, 0.3);
       white-space: nowrap;
     }
-    .check-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4);
-      background: linear-gradient(135deg, var(--gold-light), var(--gold-primary));
-    }
-    .check-btn:active {
-      transform: scale(0.98);
-    }
 
     .loading-state {
       display: none;
       text-align: center;
-      padding: 18px 12px;
-      font-size: 14px;
+      padding: 16px 12px;
+      font-size: 13px;
       color: var(--gold-light);
       font-weight: 600;
-      animation: fadeIn 0.3s;
     }
     .loading-spinner {
       display: inline-block;
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
       border: 3px solid rgba(245, 158, 11, 0.25);
       border-radius: 50%;
       border-top-color: var(--gold-primary);
@@ -223,7 +255,7 @@
 
     .result-container {
       display: none;
-      animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
     @keyframes slideUp {
       from { opacity: 0; transform: translateY(12px); }
@@ -236,7 +268,7 @@
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--border-card);
       border-radius: var(--radius-lg);
-      padding: 22px;
+      padding: 20px;
       box-shadow: var(--shadow-luxury);
       margin-bottom: 20px;
     }
@@ -246,37 +278,37 @@
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      padding-bottom: 14px;
-      margin-bottom: 16px;
+      padding-bottom: 12px;
+      margin-bottom: 14px;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
     }
 
     .order-badge-id {
       background: rgba(245, 158, 11, 0.15);
       border: 1px solid rgba(245, 158, 11, 0.3);
       color: var(--gold-light);
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 800;
-      padding: 6px 14px;
+      padding: 5px 12px;
       border-radius: var(--radius-sm);
     }
 
     .banner-actions {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       flex-wrap: wrap;
     }
 
     .current-status-tag {
-      padding: 6px 16px;
+      padding: 5px 14px;
       border-radius: 30px;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 800;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
 
     .btn-action-mini {
@@ -284,7 +316,7 @@
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: var(--txt-muted);
       border-radius: 20px;
-      padding: 5px 12px;
+      padding: 4px 10px;
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
@@ -306,7 +338,7 @@
     .timestamp-bar {
       font-size: 11px;
       color: var(--txt-dim);
-      margin-top: 6px;
+      margin-top: 4px;
       margin-bottom: 12px;
       display: flex;
       justify-content: space-between;
@@ -318,15 +350,15 @@
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-right: 4px solid var(--gold-primary);
       border-radius: var(--radius-sm);
-      padding: 12px 14px;
-      margin-bottom: 18px;
-      font-size: 14px;
+      padding: 10px 12px;
+      margin-bottom: 16px;
+      font-size: 13px;
       color: #f1f5f9;
       line-height: 1.5;
     }
 
     .timeline-stepper {
-      margin: 20px 0 20px;
+      margin: 16px 0 16px;
       position: relative;
     }
 
@@ -334,7 +366,7 @@
       display: flex;
       align-items: flex-start;
       position: relative;
-      padding-bottom: 24px;
+      padding-bottom: 20px;
     }
     .stepper-item:last-child {
       padding-bottom: 0;
@@ -343,9 +375,9 @@
     .stepper-item::before {
       content: '';
       position: absolute;
-      right: 19px;
-      top: 38px;
-      bottom: -6px;
+      right: 17px;
+      top: 34px;
+      bottom: -4px;
       width: 2px;
       background: rgba(255, 255, 255, 0.1);
       z-index: 0;
@@ -358,20 +390,19 @@
     }
 
     .stepper-icon {
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       background: #1a2236;
       border: 2px solid rgba(255, 255, 255, 0.15);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
+      font-size: 15px;
       position: relative;
       z-index: 1;
-      margin-left: 16px;
+      margin-left: 14px;
       flex-shrink: 0;
-      transition: all 0.3s ease;
       color: var(--txt-dim);
     }
 
@@ -390,7 +421,7 @@
     }
 
     .stepper-content h4 {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 800;
       color: #fff;
       margin-bottom: 2px;
@@ -400,7 +431,7 @@
     }
 
     .stepper-content p {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--txt-muted);
       line-height: 1.4;
     }
@@ -409,7 +440,7 @@
       background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(6, 182, 212, 0.08));
       border: 1px solid rgba(16, 185, 129, 0.25);
       border-radius: var(--radius-md);
-      padding: 14px 16px;
+      padding: 12px 14px;
       margin-top: 14px;
       display: flex;
       justify-content: space-around;
@@ -425,7 +456,7 @@
       margin-bottom: 2px;
     }
     .fin-box .fin-val {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 900;
     }
 
@@ -433,14 +464,15 @@
       background: rgba(10, 14, 23, 0.6);
       border: 1px solid rgba(255, 255, 255, 0.06);
       border-radius: var(--radius-md);
-      padding: 16px;
+      padding: 14px;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      gap: 10px;
       margin-top: 14px;
     }
     @media(max-width: 480px){
       .order-details-grid { grid-template-columns: 1fr; }
+      .banner-actions { width: 100%; justify-content: space-between; }
     }
 
     .detail-item .label {
@@ -449,7 +481,7 @@
       margin-bottom: 2px;
     }
     .detail-item .value {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       color: #fff;
     }
@@ -458,7 +490,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-top: 18px;
+      margin-top: 16px;
     }
     @media (max-width: 480px) {
       .action-buttons-group { grid-template-columns: 1fr; }
@@ -484,17 +516,10 @@
       color: #000;
       font-weight: 800;
     }
-    .btn-whatsapp:hover {
-      background: #20ba59;
-    }
-
     .btn-print {
       background: rgba(255, 255, 255, 0.08);
       color: #fff;
       border: 1px solid rgba(255, 255, 255, 0.15);
-    }
-    .btn-print:hover {
-      background: rgba(255, 255, 255, 0.15);
     }
 
     .error-box {
@@ -502,22 +527,20 @@
       background: rgba(239, 68, 68, 0.15);
       border: 1px solid rgba(239, 68, 68, 0.3);
       border-radius: var(--radius-md);
-      padding: 14px;
+      padding: 12px;
       color: #fca5a5;
-      font-size: 14px;
+      font-size: 13px;
       text-align: center;
-      margin-top: 14px;
+      margin-top: 12px;
     }
 
     footer {
       background: rgba(10, 14, 23, 0.9);
       border-top: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 22px 16px;
+      padding: 20px 16px;
       text-align: center;
       font-size: 13px;
       color: var(--txt-muted);
-      position: relative;
-      z-index: 1;
     }
 
     .footer-content {
@@ -540,15 +563,11 @@
       color: var(--gold-light);
       text-decoration: none;
       font-weight: 600;
-      transition: color 0.2s;
-    }
-    .footer-links a:hover {
-      text-decoration: underline;
     }
 
     @media print {
       body { background: #fff; color: #000; }
-      .bg-light-1, .search-card, .action-buttons-group, footer, .check-btn, .banner-actions { display: none !important; }
+      .bg-light-1, .search-card, .action-buttons-group, footer, .check-btn, .banner-actions, .ready-banner-alert { display: none !important; }
       .result-container { display: block !important; }
       .order-status-card { border: 1px solid #000; box-shadow: none; background: #fff; color: #000; }
       .order-status-card * { color: #000 !important; }
@@ -568,6 +587,18 @@
       <h1 class="store-title">متجر الفؤاد للتحف والهدايا</h1>
       <p class="store-subtitle">ذمار • نصنع من الهدايا ذكريات لا تُنسى ✨</p>
     </header>
+
+    <!-- بانر الإشعار المرئي الفوري (يعمل على الجوال والكمبيوتر) -->
+    <div id="readyBannerAlert" class="ready-banner-alert">
+      <button class="ready-banner-close" onclick="closeReadyBanner()">&times;</button>
+      <div class="ready-banner-content">
+        <div class="ready-banner-icon">🎉</div>
+        <div class="ready-banner-text">
+          <h4>بشرى سارة! طلبكم أصبح جاهزاً للاستلام الآن</h4>
+          <p>طلبكم رقم #<span id="bannerOrderId"></span> تم تجهيزه بالكامل وهو بانتظاركم في المتجر ✨</p>
+        </div>
+      </div>
+    </div>
 
     <!-- صندوق الاستعلام السريع -->
     <section class="search-card">
@@ -597,7 +628,7 @@
         <div class="order-top-banner">
           <div class="order-badge-id">طلب رقم #<span id="resOrderID">--</span></div>
           <div class="banner-actions">
-            <button id="notifyBtn" class="btn-action-mini" title="إشعاري فور تجهيز الطلب">
+            <button id="notifyBtn" class="btn-action-mini" title="تفعيل تنبيهات الجاهزية">
               🔔 تنبيهي عند الجاهزية
             </button>
             <button id="refreshBtn" class="btn-action-mini" title="إعادة التحقق من الحالة الآن">
@@ -724,7 +755,7 @@
       localStorage.removeItem("alfoad_customer_cached_order");
     } catch (e) {}
 
-    // الروابط ومصادر البيانات
+    // روابط النظام
     const API_BASE = "https://script.google.com/macros/s/AKfycbyS_6f97T9sbDY7U63k6yJp5B2j95nsWz9wMUBszWL-4UDslKJ2Yk_AyTCZATjs3r22/exec";
     const SPREADSHEET_ID = "1olejIBhQty7dtosCWYCn8sy8RCKsq0ks6eid_SOBpOY";
     const SHEET_NAME = "Orders";
@@ -737,9 +768,10 @@
     const loadingText = document.getElementById('loadingText');
     const errorBox = document.getElementById('errorBox');
     const resultContainer = document.getElementById('resultContainer');
+    const readyBannerAlert = document.getElementById('readyBannerAlert');
+    const bannerOrderId = document.getElementById('bannerOrderId');
 
     let currentTrackedId = null;
-    let currentTrackedOrder = null;
     let loadingTimerInterval = null;
 
     const statusStyles = {
@@ -749,8 +781,23 @@
       4: { text: "تم التسليم", bg: "rgba(139,92,246,0.15)", border: "rgba(139,92,246,0.3)", color: "#8b5cf6" }
     };
 
-    // نغمة احتفالية عند جاهزية الطلب
-    function playCustomerChime() {
+    // ==========================================
+    // تسجيل Service Worker خفيف لدعم أندرويد رسمياً
+    // ==========================================
+    if ('serviceWorker' in navigator) {
+      try {
+        const swBlob = new Blob([`
+          self.addEventListener('install', e => self.skipWaiting());
+          self.addEventListener('activate', e => self.clients.claim());
+        `], { type: 'application/javascript' });
+        navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
+      } catch(e){}
+    }
+
+    // ==========================================
+    // نغمة صوتية فاخرة (حصرياً عند الجاهزية فقط)
+    // ==========================================
+    function playCustomerReadySound() {
       try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         if (!AudioCtx) return;
@@ -760,14 +807,54 @@
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.frequency.value = freq;
-          gain.gain.setValueAtTime(0.2, now + i * 0.1);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.4);
+          gain.gain.setValueAtTime(0.25, now + i * 0.1);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.35);
           osc.connect(gain);
           gain.connect(ctx.destination);
           osc.start(now + i * 0.1);
-          osc.stop(now + i * 0.1 + 0.4);
+          osc.stop(now + i * 0.1 + 0.35);
         });
       } catch(e) {}
+    }
+
+    // ==========================================
+    // إرسال الإشعار الآمن (متوافق 100% مع الجوال والكمبيوتر)
+    // ==========================================
+    async function sendSafeNotification(title, body) {
+      // 1. إشعار مرئي دائم في واجهة الصفحة
+      if (readyBannerAlert) {
+        bannerOrderId.textContent = currentTrackedId || '';
+        readyBannerAlert.style.display = 'block';
+      }
+
+      // 2. محاولة إرسال إشعار المتصفح/الجوال بأمان
+      try {
+        if ('serviceWorker' in navigator) {
+          const reg = await navigator.serviceWorker.getRegistration();
+          if (reg && reg.showNotification) {
+            await reg.showNotification(title, {
+              body: body,
+              icon: 'https://api.iconify.design/lucide:gift.svg',
+              vibrate: [200, 100, 200]
+            });
+            return;
+          }
+        }
+      } catch(e) {}
+
+      // للكمبيوتر فقط
+      try {
+        if ('Notification' in window && Notification.permission === 'granted') {
+          new Notification(title, {
+            body: body,
+            icon: 'https://api.iconify.design/lucide:gift.svg'
+          });
+        }
+      } catch(e) {}
+    }
+
+    function closeReadyBanner() {
+      if (readyBannerAlert) readyBannerAlert.style.display = 'none';
     }
 
     function normalizeDigits(str) {
@@ -910,7 +997,7 @@
       const remainingVal = getVal(remIdx);
       const remaining = (remainingVal !== '') ? Number(remainingVal) : Math.max(0, total - received);
 
-      // استخراج الحالة الشامل بدقة
+      // استخراج الحالة الدقيق من 4 إلى 1
       let status = 1;
 
       const statusColIdx = findIndex(["status", "الحالة", "حالة الطلب", "حالة"], -1);
@@ -994,7 +1081,7 @@
     }
 
     function displayOrder(order, sourceInfo) {
-      currentTrackedOrder = order;
+      // 1. تعبئة وعرض البيانات فوراً (أولاً وقبل أي شيء حتى لا يتأثر الجوال)
       document.getElementById('resOrderID').textContent = order.OrderID;
       document.getElementById('resCustomer').textContent = order.CustomerName || 'عميل المتجر';
       document.getElementById('resDate').textContent = order.Date || 'اليوم';
@@ -1038,19 +1125,6 @@
 
       updateStepper(order.Status);
 
-      // نظام إشعار العميل عند الجاهزية
-      if (order.Status === 3 || order.Status === 4) {
-        const notifKey = `alfoad_notified_${order.OrderID}_${order.Status}`;
-        if (!localStorage.getItem(notifKey) && Notification.permission === "granted") {
-          playCustomerChime();
-          new Notification("متجر الفؤاد للتحف والهدايا ✨", {
-            body: `مرحباً ${order.CustomerName}، طلبكم رقم #${order.OrderID} أصبح جاهزاً للاستلام الآن! 🎁`,
-            icon: "https://api.iconify.design/lucide:gift.svg"
-          });
-          localStorage.setItem(notifKey, "true");
-        }
-      }
-
       const now = new Date();
       const timeStr = now.toLocaleTimeString('ar-YE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
       document.getElementById('resLiveTimestamp').textContent = `⚡ آخر فحص: ${timeStr}`;
@@ -1060,8 +1134,21 @@
       const waMsg = `السلام عليكم متجر الفؤاد، أستفسر بخصوص طلبي رقم (#${order.OrderID}) المسجل باسم (${order.CustomerName}).\nإجمالي المبلغ: ${total.toLocaleString('ar-YE')} ر.ي، المتبقي: ${remaining.toLocaleString('ar-YE')} ر.ي.`;
       waBtn.href = `https://wa.me/967772259877?text=${encodeURIComponent(waMsg)}`;
 
+      // إظهار البطاقة بدون أي تأخير على الجوال والكمبيوتر
       resultContainer.style.display = 'block';
-      resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // 2. منطق التنبيه الصوتي والإشعار: يعمل حصراً إذا أصبحت الحالة (جاهز للاستلام رقم 3)
+      if (order.Status === 3) {
+        const notifKey = `alfoad_ready_notified_${order.OrderID}`;
+        if (!localStorage.getItem(notifKey)) {
+          playCustomerReadySound();
+          sendSafeNotification(
+            "متجر الفؤاد للتحف والهدايا ✨",
+            `مرحباً ${order.CustomerName}، طلبكم رقم #${order.OrderID} أصبح جاهزاً للاستلام الآن! 🎁`
+          );
+          localStorage.setItem(notifKey, "true");
+        }
+      }
     }
 
     function updateStepper(statusLevel) {
@@ -1089,7 +1176,7 @@
       errorBox.style.display = 'none';
     }
 
-    // زر إشعارات العميل
+    // زر تفعيل التنبيهات: تم إزالة تشغيل الرنة منه تماماً
     if (notifyBtn) {
       if ("Notification" in window && Notification.permission === "granted") {
         notifyBtn.classList.add('active');
@@ -1098,19 +1185,22 @@
 
       notifyBtn.onclick = () => {
         if (!("Notification" in window)) {
-          alert("متصفح جهازك لا يدعم إشعارات الويب المباشرة");
+          alert("التنبيهات مفعلة تلقائياً عبر الشاشة ✅");
           return;
         }
         Notification.requestPermission().then(perm => {
           if (perm === "granted") {
-            playCustomerChime();
             notifyBtn.classList.add('active');
             notifyBtn.textContent = "🔔 التنبيهات مفعلة";
-            new Notification("متجر الفؤاد للتحف والهدايا ✨", {
-              body: "تم تفعيل التنبيهات! سنشعرك فور أن يصبح طلبك جاهزاً للاستلام.",
-              icon: "https://api.iconify.design/lucide:gift.svg"
-            });
+            // تنبيه هادئ بالتفعيل بدون رنة الجاهزية
+            sendSafeNotification(
+              "متجر الفؤاد للتحف والهدايا ✨",
+              "تم تفعيل التنبيهات بنجاح! سيتم إشعارك فور أن يصبح طلبك جاهزاً للاستلام."
+            );
           }
+        }).catch(() => {
+          notifyBtn.classList.add('active');
+          notifyBtn.textContent = "🔔 التنبيهات مفعلة";
         });
       };
     }
@@ -1124,7 +1214,7 @@
       if (e.key === 'Enter') checkOrder();
     };
 
-    // فحص دوري ذكي في الخلفية كل 45 ثانية إذا كانت الصفحة مفتوحة
+    // فحص دوري في الخلفية كل 45 ثانية لتحديث الحالة للعميل وهو فاتح الصفحة
     setInterval(() => {
       if (currentTrackedId) checkOrder(currentTrackedId);
     }, 45000);
