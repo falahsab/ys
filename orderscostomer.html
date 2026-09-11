@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>استعلام وتتبع حالة الطلب | متجر الفؤاد للتحف والهدايا</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at top, #141b2d 0%, #080c14 100%);
+      --bg-card: rgba(18, 24, 38, 0.75);
+      --border-card: rgba(255, 255, 255, 0.1);
+      
+      --gold-primary: #f59e0b;
+      --gold-light: #fbbf24;
+      --gold-dark: #b45309;
+      --gold-glow: rgba(245, 158, 11, 0.25);
+      
+      --txt-main: #ffffff;
+      --txt-muted: #94a3b8;
+      --txt-dim: #64748b;
+      
+      --success: #10b981;
+      --info: #06b6d4;
+      --violet: #8b5cf6;
+      
+      --radius-lg: 20px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --shadow-luxury: 0 15px 35px -5px rgba(0, 0, 0, 0.6), 0 0 20px var(--gold-glow);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      color: var(--txt-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      line-height: 1.6;
+    }
+
+    /* Decorative Background Lights */
+    .bg-light-1 {
+      position: fixed;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 500px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .main-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 650px;
+      width: 92%;
+      margin: 30px auto;
+    }
+
+    /* Store Header */
+    .store-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .store-logo-emblem {
+      width: 76px;
+      height: 76px;
+      margin: 0 auto 14px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
+      box-shadow: 0 10px 25px rgba(217, 119, 6, 0.35);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .store-title {
+      font-size: 26px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+
+    .store-subtitle {
+      font-size: 14px;
+      color: var(--gold-light);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    /* Search Box Container */
+    .search-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-luxury);
+      margin-bottom: 24px;
+      transition: all 0.3s ease;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #fff;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .order-input {
+      flex: 1;
+      background: rgba(10, 14, 23, 0.8);
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      font-size: 16px;
+      color: #fff;
+      outline: none;
+      transition: all 0.25s ease;
+    }
+    .order-input:focus {
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 0 4px var(--gold-glow);
+    }
+
+    .check-btn {
+      background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+      color: #000;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0 24px;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.25s ease;
+      box-shadow: 0 6px 16px rgba(245, 158, 11, 0.3);
+    }
+    .check-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4);
+      background: linear-gradient(135deg, var(--gold-light), var(--gold-primary));
+    }
+    .check-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Fast Loading skeleton */
+    .loading-state {
+      display: none;
+      text-align: center;
+      padding: 24px 16px;
+      font-size: 15px;
+      color: var(--gold-light);
+      font-weight: 600;
+      animation: fadeIn 0.3s;
+    }
+    .loading-spinner {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      border: 3px solid rgba(245, 158, 11, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--gold-primary);
+      animation: spin 0.8s linear infinite;
+      vertical-align: middle;
+      margin-left: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Tracking Result Card */
+    .result-container {
+      display: none;
+      animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .order-status-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-luxury);
+      margin-bottom: 20px;
+    }
+
+    .order-top-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 16px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .order-badge-id {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: var(--gold-light);
+      font-size: 15px;
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+    }
+
+    .current-status-tag {
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Order Description Card Section */
+    .customer-order-desc-box {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-right: 4px solid var(--gold-primary);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: #f1f5f9;
+      line-height: 1.5;
+    }
+
+    /* Timeline Stepper */
+    .timeline-stepper {
+      margin: 24px 0 24px;
+      position: relative;
+    }
+
+    .stepper-item {
+      display: flex;
+      align-items: flex-start;
+      position: relative;
+      padding-bottom: 26px;
+    }
+    .stepper-item:last-child {
+      padding-bottom: 0;
+    }
+
+    .stepper-item::before {
+      content: '';
+      position: absolute;
+      right: 19px;
+      top: 38px;
+      bottom: -6px;
+      width: 2px;
+      background: rgba(255, 255, 255, 0.1);
+      z-index: 0;
+    }
+    .stepper-item:last-child::before {
+      display: none;
+    }
+    .stepper-item.completed::before {
+      background: var(--gold-primary);
+    }
+
+    .stepper-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #1a2236;
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      position: relative;
+      z-index: 1;
+      margin-left: 16px;
+      flex-shrink: 0;
+      transition: all 0.3s ease;
+      color: var(--txt-dim);
+    }
+
+    .stepper-item.completed .stepper-icon {
+      background: var(--gold-dark);
+      border-color: var(--gold-light);
+      color: #fff;
+    }
+
+    .stepper-item.active .stepper-icon {
+      background: var(--gold-primary);
+      border-color: #fff;
+      color: #000;
+      box-shadow: 0 0 15px var(--gold-primary);
+      transform: scale(1.1);
+    }
+
+    .stepper-content h4 {
+      font-size: 15px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 3px;
+    }
+    .stepper-item.muted .stepper-content h4 {
+      color: var(--txt-dim);
+    }
+
+    .stepper-content p {
+      font-size: 13px;
+      color: var(--txt-muted);
+      line-height: 1.4;
+    }
+
+    /* Financial Banner */
+    .financial-banner {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1));
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      margin-top: 14px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      text-align: center;
+    }
+
+    .fin-box .fin-title {
+      font-size: 11px;
+      color: var(--txt-muted);
+      margin-bottom: 2px;
+    }
+    .fin-box .fin-val {
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    /* Details Grid */
+    .order-details-grid {
+      background: rgba(10, 14, 23, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+    @media(max-width: 480px){
+      .order-details-grid { grid-template-columns: 1fr; }
+    }
+
+    .detail-item .label {
+      font-size: 12px;
+      color: var(--txt-muted);
+      margin-bottom: 2px;
+    }
+    .detail-item .value {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* Quick Action Buttons for Customer */
+    .action-buttons-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    @media (max-width: 480px) {
+      .action-buttons-group { grid-template-columns: 1fr; }
+    }
+
+    .action-btn {
+      padding: 12px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.25s ease;
+    }
+
+    .btn-whatsapp {
+      background: #25d366;
+      color: #000;
+      font-weight: 800;
+    }
+    .btn-whatsapp:hover {
+      background: #20ba59;
+    }
+
+    .btn-print {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .btn-print:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Error Message Box */
+    .error-box {
+      display: none;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      color: #fca5a5;
+      font-size: 14px;
+      text-align: center;
+      margin-top: 14px;
+    }
+
+    /* Store Footer */
+    footer {
+      background: rgba(10, 14, 23, 0.9);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 24px 16px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--txt-muted);
+      position: relative;
+      z-index: 1;
+    }
+
+    .footer-content {
+      max-width: 600px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--gold-light);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+
+    @media print {
+      body { background: #fff; color: #000; }
+      .bg-light-1, .search-card, .action-buttons-group, footer, .check-btn { display: none !important; }
+      .result-container { display: block !important; }
+      .order-status-card { border: 1px solid #000; box-shadow: none; background: #fff; color: #000; }
+      .order-status-card * { color: #000 !important; }
+      .order-badge-id { border: 1px solid #000; background: #f0f0f0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-light-1"></div>
+
+  <div class="main-wrapper">
+    
+    <!-- واجهة المتجر -->
+    <header class="store-header">
+      <div class="store-logo-emblem">🎁</div>
+      <h1 class="store-title">متجر الفؤاد للتحف والهدايا</h1>
+      <p class="store-subtitle">ذمار • نصنع من الهدايا ذكريات لا تُنسى ✨</p>
+    </header>
+
+    <!-- صندوق الاستعلام -->
+    <section class="search-card">
+      <h2 class="card-title">🔍 استعلام عن حالة طلبك</h2>
+      <div class="input-group">
+        <input type="text" id="orderInput" class="order-input" placeholder="أدخل رقم الطلب المكون من 6 أرقام..." 
+               maxlength="10" autocomplete="off">
+        <button id="searchBtn" class="check-btn">استعلام</button>
+      </div>
+      <div id="errorBox" class="error-box"></div>
+      <div id="loading" class="loading-state">
+        <span class="loading-spinner"></span>
+        جاري الاستعلام الفوري والتحقق من الطلب...
+      </div>
+    </section>
+
+    <!-- بطاقة نتيجة التتبع -->
+    <section id="resultContainer" class="result-container">
+      <div class="order-status-card">
+        
+        <div class="order-top-banner">
+          <div class="order-badge-id">طلب رقم #<span id="resOrderID">--</span></div>
+          <div id="resStatusBadge" class="current-status-tag">--</div>
+        </div>
+
+        <!-- تفاصيل ووصف الطلب إذا كان مسجلاً -->
+        <div id="resDescWrapper" class="customer-order-desc-box" style="display: none;">
+          🎁 <strong>تفاصيل ومحتويات الطلب:</strong> <span id="resOrderDesc">--</span>
+        </div>
+
+        <!-- المراحل الزمنية للطلب Stepper -->
+        <div class="timeline-stepper">
+          
+          <div class="stepper-item" id="step1">
+            <div class="stepper-icon">📥</div>
+            <div class="stepper-content">
+              <h4>تم الاستلام</h4>
+              <p>تم تأكيد طلبكم وتسجيله بنجاح في نظام المتجر.</p>
+            </div>
+          </div>
+
+          <div class="stepper-item" id="step2">
+            <div class="stepper-icon">⏳</div>
+            <div class="stepper-content">
+              <h4>قيد التجهيز والتخصيص</h4>
+              <p>جاري نقش، تجهيز وتغليف التحف والهدايا الخاصة بكم بعناية.</p>
+            </div>
+          </div>
+
+          <div class="stepper-item" id="step3">
+            <div class="stepper-icon">✅</div>
+            <div class="stepper-content">
+              <h4>جاهز للاستلام أو الشحن</h4>
+              <p>طلبكم جاهز بالكامل بالمتجر بانتظار تشريفكم أو تسليمه لمندوب التوصيل.</p>
+            </div>
+          </div>
+
+          <div class="stepper-item" id="step4">
+            <div class="stepper-icon">🚚</div>
+            <div class="stepper-content">
+              <h4>تم التسليم بنجاح</h4>
+              <p>تم تسليم الطلب بحمد الله. سعدنا جداً بخدمتكم في متجر الفؤاد!</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- تفاصيل الحساب المالي للطلب -->
+        <div class="financial-banner">
+          <div class="fin-box">
+            <div class="fin-title">المبلغ الإجمالي</div>
+            <div class="fin-val" id="resTotalAmount" style="color: #38bdf8;">0 ر.ي</div>
+          </div>
+          <div class="fin-box">
+            <div class="fin-title">المبلغ الواصل</div>
+            <div class="fin-val" id="resReceived" style="color: #10b981;">0 ر.ي</div>
+          </div>
+          <div class="fin-box">
+            <div class="fin-title">المبلغ المتبقي</div>
+            <div class="fin-val" id="resRemaining" style="color: #f87171;">0 ر.ي</div>
+          </div>
+        </div>
+
+        <!-- تفاصيل العميل والتاريخ -->
+        <div class="order-details-grid">
+          <div class="detail-item">
+            <div class="label">اسم العميل</div>
+            <div class="value" id="resCustomer">--</div>
+          </div>
+          <div class="detail-item">
+            <div class="label">تاريخ الطلب</div>
+            <div class="value" id="resDate">--</div>
+          </div>
+          <div class="detail-item">
+            <div class="label">حالة الدفع</div>
+            <div class="value" id="resPaymentText" style="color: #fbbf24;">--</div>
+          </div>
+          <div class="detail-item">
+            <div class="label">ملاحظات الطلب</div>
+            <div class="value" id="resNotes">لا توجد ملاحظات خاصة</div>
+          </div>
+        </div>
+
+        <!-- أزرار الإجراءات السريعة -->
+        <div class="action-buttons-group">
+          <a id="waContactBtn" href="https://wa.me/967772259877" target="_blank" class="action-btn btn-whatsapp">
+            💬 استفسار عبر واتساب المتجر
+          </a>
+          <button onclick="window.print()" class="action-btn btn-print">
+            🖨️ طباعة إيصال الطلب
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <!-- تذييل الصفحة -->
+  <footer>
+    <div class="footer-content">
+      <div>📍 <strong>العنوان:</strong> ذمار - خط المغرب - جوار مدرسة الميثاق للبنات</div>
+      <div>📞 <strong>خدمة العملاء:</strong> 772259877 | ☎️ 06-426445</div>
+      <div class="footer-links">
+        <a href="https://wa.me/967772259877" target="_blank">محادثة واتساب مباشرة</a>
+        <span>•</span>
+        <span>متجر الفؤاد © 2026</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const API_BASE = "https://script.google.com/macros/s/AKfycbwpqk1oFqskaXn6hQmjJiG1kv5Ivmh8KD5vG4igpoJm9bLenJt5Jlc08BbGGOx9MHY/exec";
+
+    const orderInput = document.getElementById('orderInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const loadingEl = document.getElementById('loading');
+    const errorBox = document.getElementById('errorBox');
+    const resultContainer = document.getElementById('resultContainer');
+
+    const statusStyles = {
+      1: { text: "تم الاستلام", bg: "rgba(6,182,212,0.15)", border: "rgba(6,182,212,0.3)", color: "#06b6d4" },
+      2: { text: "قيد التجهيز", bg: "rgba(245,158,11,0.15)", border: "rgba(245,158,11,0.3)", color: "#f59e0b" },
+      3: { text: "جاهز للاستلام", bg: "rgba(16,185,129,0.15)", border: "rgba(16,185,129,0.3)", color: "#10b981" },
+      4: { text: "تم التسليم", bg: "rgba(139,92,246,0.15)", border: "rgba(139,92,246,0.3)", color: "#8b5cf6" }
+    };
+
+    async function checkOrder(orderId) {
+      const id = String(orderId || orderInput.value).trim();
+      if (!id) {
+        showError("يرجى إدخال رقم الطلب للاستعلام");
+        return;
+      }
+
+      hideError();
+
+      // 1. فحص التخزين السريع في المتصفح للاستجابة اللحظية في 0 ملي ثانية!
+      const cachedOrderStr = sessionStorage.getItem("alfoad_order_" + id);
+      if (cachedOrderStr) {
+        try {
+          const cached = JSON.parse(cachedOrderStr);
+          displayOrder(cached);
+          // سنقوم أيضاً بالتحقق في الخلفية لتحديث الحالة إذا تغيرت
+        } catch(e){}
+      } else {
+        resultContainer.style.display = 'none';
+      }
+
+      loadingEl.style.display = 'block';
+
+      try {
+        const res = await fetch(`${API_BASE}?action=track&orderId=${encodeURIComponent(id)}`);
+        const data = await res.json();
+
+        loadingEl.style.display = 'none';
+
+        if (data.success && data.order) {
+          // حفظ في الكاش المحلي للمتصفح
+          sessionStorage.setItem("alfoad_order_" + id, JSON.stringify(data.order));
+          displayOrder(data.order);
+        } else {
+          showError(data.error || "لم يتم العثور على طلب بهذا الرقم، يرجى التأكد من صحة الرقم.");
+        }
+      } catch (err) {
+        loadingEl.style.display = 'none';
+        // إذا لم يكن معروضاً مسبقاً من الكاش، أظهر رسالة الخطأ
+        if (!cachedOrderStr) {
+          showError("تعذر الاتصال بالخادم للاستعلام. يرجى المحاولة مرة أخرى أو التواصل عبر واتساب المتجر.");
+        }
+      }
+    }
+
+    function displayOrder(order) {
+      document.getElementById('resOrderID').textContent = order.OrderID;
+      document.getElementById('resCustomer').textContent = order.CustomerName || 'عميل المتجر';
+      document.getElementById('resDate').textContent = order.Date || 'غير محدد';
+
+      // وصف الطلب
+      const descWrapper = document.getElementById('resDescWrapper');
+      if (order.Order_Description && order.Order_Description.trim()) {
+        document.getElementById('resOrderDesc').textContent = order.Order_Description;
+        descWrapper.style.display = 'block';
+      } else {
+        descWrapper.style.display = 'none';
+      }
+
+      // ملاحظات الطلب
+      document.getElementById('resNotes').textContent = order.Order_Notes || 'لا توجد ملاحظات خاصة';
+
+      const total = Number(order.Total_Amount !== undefined ? order.Total_Amount : order.Price) || 0;
+      const received = Number(order.Received) || 0;
+      const remaining = (order.Remaining !== undefined) ? Number(order.Remaining) : Math.max(0, total - received);
+
+      document.getElementById('resTotalAmount').textContent = total.toLocaleString('ar-YE') + ' ر.ي';
+      document.getElementById('resReceived').textContent = received.toLocaleString('ar-YE') + ' ر.ي';
+      document.getElementById('resRemaining').textContent = remaining.toLocaleString('ar-YE') + ' ر.ي';
+
+      const payTextEl = document.getElementById('resPaymentText');
+      if (total > 0 && remaining === 0) {
+        payTextEl.textContent = 'مسدد بالكامل ✅';
+        payTextEl.style.color = '#10b981';
+      } else if (remaining > 0 && received > 0) {
+        payTextEl.textContent = `متبقي ${remaining.toLocaleString('ar-YE')} ر.ي عند الاستلام ⏳`;
+        payTextEl.style.color = '#f59e0b';
+      } else {
+        payTextEl.textContent = 'غير مدفوع (المبلغ مطلوب كاملاً) ⚠️';
+        payTextEl.style.color = '#ef4444';
+      }
+
+      // وسم الحالة
+      const badge = document.getElementById('resStatusBadge');
+      const st = statusStyles[order.Status] || statusStyles[1];
+      badge.textContent = order.StatusTitle || st.text;
+      badge.style.backgroundColor = st.bg;
+      badge.style.borderColor = st.border;
+      badge.style.color = st.color;
+
+      // تحديث مسار التتبع Stepper
+      updateStepper(order.Status);
+
+      // تحديث رابط الواتساب
+      const waBtn = document.getElementById('waContactBtn');
+      const waMsg = `السلام عليكم متجر الفؤاد، أستفسر بخصوص طلبي رقم (#${order.OrderID}) المسجل باسم (${order.CustomerName}).\nإجمالي المبلغ: ${total.toLocaleString('ar-YE')} ر.ي، المتبقي: ${remaining.toLocaleString('ar-YE')} ر.ي.`;
+      waBtn.href = `https://wa.me/967772259877?text=${encodeURIComponent(waMsg)}`;
+
+      resultContainer.style.display = 'block';
+      resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function updateStepper(statusLevel) {
+      const totalSteps = 4;
+      for (let i = 1; i <= totalSteps; i++) {
+        const el = document.getElementById(`step${i}`);
+        el.classList.remove('completed', 'active', 'muted');
+
+        if (i < statusLevel) {
+          el.classList.add('completed');
+        } else if (i === statusLevel) {
+          el.classList.add('active');
+        } else {
+          el.classList.add('muted');
+        }
+      }
+    }
+
+    function showError(msg) {
+      errorBox.textContent = msg;
+      errorBox.style.display = 'block';
+    }
+
+    function hideError() {
+      errorBox.style.display = 'none';
+    }
+
+    searchBtn.onclick = () => checkOrder();
+    orderInput.onkeypress = (e) => {
+      if (e.key === 'Enter') checkOrder();
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const queryOrderId = urlParams.get('order') || urlParams.get('id');
+      if (queryOrderId) {
+        orderInput.value = queryOrderId;
+        checkOrder(queryOrderId);
+      }
+    });
+  </script>
+</body>
+</html>
