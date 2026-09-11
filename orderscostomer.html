@@ -266,6 +266,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      flex-wrap: wrap;
     }
 
     .current-status-tag {
@@ -278,22 +279,28 @@
       gap: 6px;
     }
 
-    .refresh-mini-btn {
+    .btn-action-mini {
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: var(--txt-muted);
       border-radius: 20px;
-      padding: 5px 10px;
+      padding: 5px 12px;
       font-size: 12px;
+      font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 4px;
       transition: all 0.2s ease;
     }
-    .refresh-mini-btn:hover {
+    .btn-action-mini:hover {
       background: rgba(255, 255, 255, 0.16);
       color: #fff;
+    }
+    .btn-action-mini.active {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: rgba(16, 185, 129, 0.4);
+      color: #10b981;
     }
 
     .timestamp-bar {
@@ -541,7 +548,7 @@
 
     @media print {
       body { background: #fff; color: #000; }
-      .bg-light-1, .search-card, .action-buttons-group, footer, .check-btn, .refresh-mini-btn { display: none !important; }
+      .bg-light-1, .search-card, .action-buttons-group, footer, .check-btn, .banner-actions { display: none !important; }
       .result-container { display: block !important; }
       .order-status-card { border: 1px solid #000; box-shadow: none; background: #fff; color: #000; }
       .order-status-card * { color: #000 !important; }
@@ -590,7 +597,10 @@
         <div class="order-top-banner">
           <div class="order-badge-id">طلب رقم #<span id="resOrderID">--</span></div>
           <div class="banner-actions">
-            <button id="refreshBtn" class="refresh-mini-btn" title="إعادة التحقق من الحالة الآن">
+            <button id="notifyBtn" class="btn-action-mini" title="إشعاري فور تجهيز الطلب">
+              🔔 تنبيهي عند الجاهزية
+            </button>
+            <button id="refreshBtn" class="btn-action-mini" title="إعادة التحقق من الحالة الآن">
               🔄 تحديث
             </button>
             <div id="resStatusBadge" class="current-status-tag">--</div>
@@ -602,7 +612,7 @@
           <span id="resEngineSource" style="color: #10b981;">اتصال مباشر</span>
         </div>
 
-        <!-- تفاصيل ووصف الطلب إذا كان مسجلاً -->
+        <!-- تفاصيل ووصف الطلب -->
         <div id="resDescWrapper" class="customer-order-desc-box" style="display: none;">
           🎁 <strong>تفاصيل ومحتويات الطلب:</strong> <span id="resOrderDesc">--</span>
         </div>
@@ -709,26 +719,27 @@
   </footer>
 
   <script>
-    // تفريغ أي كاش قديم متبقي في متصفح العميل فوراً
     try {
       sessionStorage.clear();
       localStorage.removeItem("alfoad_customer_cached_order");
     } catch (e) {}
 
-    // روابط النظام ومصادر البيانات
-    const API_BASE = "https://script.google.com/macros/s/AKfycbyk5EH-6edxcsseoXOxRnMGVrbvliDOQuINGYbL6zPI6w3VksxtJ18_Muir92RSA3YI/exec";
+    // الروابط ومصادر البيانات
+    const API_BASE = "https://script.google.com/macros/s/AKfycbyS_6f97T9sbDY7U63k6yJp5B2j95nsWz9wMUBszWL-4UDslKJ2Yk_AyTCZATjs3r22/exec";
     const SPREADSHEET_ID = "1olejIBhQty7dtosCWYCn8sy8RCKsq0ks6eid_SOBpOY";
     const SHEET_NAME = "Orders";
 
     const orderInput = document.getElementById('orderInput');
     const searchBtn = document.getElementById('searchBtn');
     const refreshBtn = document.getElementById('refreshBtn');
+    const notifyBtn = document.getElementById('notifyBtn');
     const loadingEl = document.getElementById('loading');
     const loadingText = document.getElementById('loadingText');
     const errorBox = document.getElementById('errorBox');
     const resultContainer = document.getElementById('resultContainer');
 
     let currentTrackedId = null;
+    let currentTrackedOrder = null;
     let loadingTimerInterval = null;
 
     const statusStyles = {
@@ -738,19 +749,32 @@
       4: { text: "تم التسليم", bg: "rgba(139,92,246,0.15)", border: "rgba(139,92,246,0.3)", color: "#8b5cf6" }
     };
 
-    /**
-     * تحويل الأرقام العربية المشرقية (١٢٣) إلى أرقام إنجليزية (123) تلقائياً
-     */
-    function normalizeDigits(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d))
-        .trim();
+    // نغمة احتفالية عند جاهزية الطلب
+    function playCustomerChime() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const now = ctx.currentTime;
+        [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0.2, now + i * 0.1);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.4);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + i * 0.1);
+          osc.stop(now + i * 0.1 + 0.4);
+        });
+      } catch(e) {}
     }
 
-    /**
-     * تشغيل عداد توقيت زمني أثناء التحميل لتجربة مستخدم تفاعلية وفورية
-     */
+    function normalizeDigits(str) {
+      if (!str) return '';
+      return String(str).replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d)).trim();
+    }
+
     function startLoadingTimer() {
       const startTime = performance.now();
       loadingText.textContent = "جاري التحقق الفوري من سجلات المتجر...";
@@ -768,11 +792,6 @@
       loadingEl.style.display = 'none';
     }
 
-    /**
-     * محرك الاستعلام اللحظي (Dual Engine):
-     * 1) مسار Google CDN فائق السرعة (GViz)
-     * 2) مسار خادم Google Apps Script المباشر
-     */
     async function checkOrder(targetId) {
       const rawId = targetId || orderInput.value;
       const cleanId = normalizeDigits(rawId);
@@ -786,9 +805,7 @@
       startLoadingTimer();
       currentTrackedId = cleanId;
 
-      // -------------------------------------------------------------
-      // المسار 1: محاولة الاستعلام اللحظي فائق السرعة عبر Google CDN (GViz)
-      // -------------------------------------------------------------
+      // المسار 1: Google CDN الفائق
       try {
         const gvizOrder = await tryFastGvizQuery(cleanId);
         if (gvizOrder) {
@@ -796,20 +813,14 @@
           displayOrder(gvizOrder, "Google CDN (0.2 ثانية ⚡)");
           return;
         }
-      } catch (e) {
-        // إذا حدث استثناء ننتقل مباشرة للمسار الثاني
-      }
+      } catch (e) {}
 
-      // -------------------------------------------------------------
-      // المسار 2: الاستعلام المباشر عبر Google Apps Script بدون أي كاش نهائياً
-      // -------------------------------------------------------------
+      // المسار 2: Google Apps Script المباشر
       try {
         const fetchUrl = `${API_BASE}?action=track&orderId=${encodeURIComponent(cleanId)}&_t=${Date.now()}`;
-        
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 9000);
 
-        // جلب بسيط بدون custom headers لتجنب مشاكل الـ CORS مع جوجل
         const res = await fetch(fetchUrl, {
           method: 'GET',
           signal: controller.signal
@@ -830,11 +841,7 @@
       }
     }
 
-    /**
-     * استعلام Google Visualization API فائق السرعة (أقل من 250ms)
-     */
     async function tryFastGvizQuery(orderId) {
-      // نرسل headers=1 لضمان استرجاع أسماء الأعمدة بدقة
       const gvizUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&headers=1&sheet=${encodeURIComponent(SHEET_NAME)}&tq=${encodeURIComponent("select * where A = '" + orderId + "' or A = " + orderId)}&_nc=${Date.now()}`;
       
       const controller = new AbortController();
@@ -863,9 +870,6 @@
       return parseGvizRow(row, cols, orderId);
     }
 
-    /**
-     * استخراج بيانات الطلب والحالة بدقة تامة (يدعم كل تنسيقات الشيت)
-     */
     function parseGvizRow(cells, cols, fallbackId) {
       const getVal = (idx) => {
         if (idx >= 0 && idx < cells.length && cells[idx] && cells[idx].v !== null && cells[idx].v !== undefined) {
@@ -906,12 +910,9 @@
       const remainingVal = getVal(remIdx);
       const remaining = (remainingVal !== '') ? Number(remainingVal) : Math.max(0, total - received);
 
-      // ==============================================================
-      // استخراج الحالة الذكي الشامل (يدعم الأعمدة الأربعة وعمود الحالة الموحد)
-      // ==============================================================
+      // استخراج الحالة الشامل بدقة
       let status = 1;
 
-      // 1. أولاً: فحص عمود الحالة الموحد (سواء كان رقماً أو نصاً عربياً)
       const statusColIdx = findIndex(["status", "الحالة", "حالة الطلب", "حالة"], -1);
       if (statusColIdx !== -1) {
         const rawStatus = getVal(statusColIdx);
@@ -927,7 +928,6 @@
         }
       }
 
-      // 2. ثانياً: إذا لم تتحدد الحالة بعد، نفحص الأعمدة الأربعة المنفصلة للمراحل
       if (status === 1) {
         const isCellChecked = (idx) => {
           if (idx < 0 || idx >= cells.length || !cells[idx]) return false;
@@ -940,7 +940,6 @@
         const processingCol = findIndex(["قيد التجهيز", "تجهيز", "processing", "st_processing"], 10);
         const receivedCol = findIndex(["تم الاستلام", "استلام", "received", "st_received"], 9);
 
-        // الترتيب من الأحدث للأقدم لضمان دقة آخر مرحلة وصل إليها الطلب
         if (isCellChecked(deliveredCol)) {
           status = 4;
         } else if (isCellChecked(readyCol)) {
@@ -950,7 +949,6 @@
         } else if (isCellChecked(receivedCol)) {
           status = 1;
         } else {
-          // فحص احتياطي ذكي لأي خلية بها رقم الحالة من العمود التاسع فما فوق
           for (let i = 9; i < cells.length; i++) {
             const valNum = Number(cells[i] ? cells[i].v : null);
             if (valNum >= 1 && valNum <= 4) {
@@ -995,15 +993,12 @@
       };
     }
 
-    /**
-     * عرض بيانات الطلب اللحظية على واجهة المستخدم
-     */
     function displayOrder(order, sourceInfo) {
+      currentTrackedOrder = order;
       document.getElementById('resOrderID').textContent = order.OrderID;
       document.getElementById('resCustomer').textContent = order.CustomerName || 'عميل المتجر';
       document.getElementById('resDate').textContent = order.Date || 'اليوم';
 
-      // وصف الطلب
       const descWrapper = document.getElementById('resDescWrapper');
       if (order.Order_Description && order.Order_Description.trim()) {
         document.getElementById('resOrderDesc').textContent = order.Order_Description;
@@ -1012,7 +1007,6 @@
         descWrapper.style.display = 'none';
       }
 
-      // ملاحظات الطلب
       document.getElementById('resNotes').textContent = order.Order_Notes || 'لا توجد ملاحظات خاصة';
 
       const total = Number(order.Total_Amount !== undefined ? order.Total_Amount : order.Price) || 0;
@@ -1035,7 +1029,6 @@
         payTextEl.style.color = '#ef4444';
       }
 
-      // وسم الحالة
       const badge = document.getElementById('resStatusBadge');
       const st = statusStyles[order.Status] || statusStyles[1];
       badge.textContent = order.StatusTitle || st.text;
@@ -1043,16 +1036,26 @@
       badge.style.borderColor = st.border;
       badge.style.color = st.color;
 
-      // تحديث مسار التتبع Stepper
       updateStepper(order.Status);
 
-      // توقيت جلب البيانات
+      // نظام إشعار العميل عند الجاهزية
+      if (order.Status === 3 || order.Status === 4) {
+        const notifKey = `alfoad_notified_${order.OrderID}_${order.Status}`;
+        if (!localStorage.getItem(notifKey) && Notification.permission === "granted") {
+          playCustomerChime();
+          new Notification("متجر الفؤاد للتحف والهدايا ✨", {
+            body: `مرحباً ${order.CustomerName}، طلبكم رقم #${order.OrderID} أصبح جاهزاً للاستلام الآن! 🎁`,
+            icon: "https://api.iconify.design/lucide:gift.svg"
+          });
+          localStorage.setItem(notifKey, "true");
+        }
+      }
+
       const now = new Date();
       const timeStr = now.toLocaleTimeString('ar-YE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
       document.getElementById('resLiveTimestamp').textContent = `⚡ آخر فحص: ${timeStr}`;
       document.getElementById('resEngineSource').textContent = sourceInfo || "بيانات لحظية";
 
-      // تحديث رابط الواتساب
       const waBtn = document.getElementById('waContactBtn');
       const waMsg = `السلام عليكم متجر الفؤاد، أستفسر بخصوص طلبي رقم (#${order.OrderID}) المسجل باسم (${order.CustomerName}).\nإجمالي المبلغ: ${total.toLocaleString('ar-YE')} ر.ي، المتبقي: ${remaining.toLocaleString('ar-YE')} ر.ي.`;
       waBtn.href = `https://wa.me/967772259877?text=${encodeURIComponent(waMsg)}`;
@@ -1062,8 +1065,7 @@
     }
 
     function updateStepper(statusLevel) {
-      const totalSteps = 4;
-      for (let i = 1; i <= totalSteps; i++) {
+      for (let i = 1; i <= 4; i++) {
         const el = document.getElementById(`step${i}`);
         el.classList.remove('completed', 'active', 'muted');
 
@@ -1087,7 +1089,32 @@
       errorBox.style.display = 'none';
     }
 
-    // أحداث البحث والتفاعل
+    // زر إشعارات العميل
+    if (notifyBtn) {
+      if ("Notification" in window && Notification.permission === "granted") {
+        notifyBtn.classList.add('active');
+        notifyBtn.textContent = "🔔 التنبيهات مفعلة";
+      }
+
+      notifyBtn.onclick = () => {
+        if (!("Notification" in window)) {
+          alert("متصفح جهازك لا يدعم إشعارات الويب المباشرة");
+          return;
+        }
+        Notification.requestPermission().then(perm => {
+          if (perm === "granted") {
+            playCustomerChime();
+            notifyBtn.classList.add('active');
+            notifyBtn.textContent = "🔔 التنبيهات مفعلة";
+            new Notification("متجر الفؤاد للتحف والهدايا ✨", {
+              body: "تم تفعيل التنبيهات! سنشعرك فور أن يصبح طلبك جاهزاً للاستلام.",
+              icon: "https://api.iconify.design/lucide:gift.svg"
+            });
+          }
+        });
+      };
+    }
+
     searchBtn.onclick = () => checkOrder();
     refreshBtn.onclick = () => {
       if (currentTrackedId) checkOrder(currentTrackedId);
@@ -1097,7 +1124,11 @@
       if (e.key === 'Enter') checkOrder();
     };
 
-    // الاستعلام التلقائي عند فتح الرابط المباشر من الواتساب (?order=100628)
+    // فحص دوري ذكي في الخلفية كل 45 ثانية إذا كانت الصفحة مفتوحة
+    setInterval(() => {
+      if (currentTrackedId) checkOrder(currentTrackedId);
+    }, 45000);
+
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
       const queryOrderId = urlParams.get('order') || urlParams.get('id');
