@@ -1162,15 +1162,14 @@
       }
     }
 
-    async function fetchOrders(forceNoCache = false) {
+        async function fetchOrders(forceNoCache = false) {
       setSyncState(true, 'جاري جلب البيانات...');
       try {
-        // إضافة توقيت لمنع كاش المتصفح على خوادم GitHub Pages
+        // منع الكاش عبر إضافة الوقت اللحظي إلى الرابط مباشرة
         const url = `${API_URL}?token=${encodeURIComponent(API_TOKEN)}&_t=${Date.now()}${forceNoCache ? '&nocache=1' : ''}`;
-        const res = await fetch(url, {
-          cache: 'no-store',
-          headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
-        });
+        
+        // جلب بسيط ومباشر بدون Custom Headers حتى لا تعترضه جوجل بسياسة CORS
+        const res = await fetch(url);
         const data = await res.json();
 
         if (Array.isArray(data)) {
@@ -1188,7 +1187,6 @@
         setSyncState(false, 'وضع أوفلاين');
       }
     }
-
     // ==========================================
     // الرندرة وحساب الإحصائيات (Render Engine)
     // ==========================================
