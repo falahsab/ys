@@ -107,7 +107,8 @@
     .nav-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .sync-status {
@@ -607,7 +608,7 @@
     }
 
     /* ==============================================================
-       تحسين وتطوير النوافذ المنبثقة لتكون متجاوبة 100% مع التمرير السلس
+       تحسين النوافذ المنبثقة: متجاوبة 100% مع تمرير رأسي وسلس
        ============================================================== */
     .modal-overlay {
       display: none;
@@ -626,7 +627,7 @@
     .modal-overlay.active {
       display: flex;
       justify-content: center;
-      align-items: flex-start; /* يبدأ من الأعلى حتى يمكن النزول لأسفل دائماً */
+      align-items: flex-start; /* يبدأ من الأعلى لمنع اقتطاع أزرار الأسفل */
     }
 
     .modal-content {
@@ -635,7 +636,7 @@
       border-radius: var(--radius-lg);
       width: 100%;
       max-width: 560px;
-      margin: auto 0; /* توسيط رأسي تلقائي ذكي */
+      margin: auto 0; /* توسيط رأسي تلقائي ومرن */
       padding: 22px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
       animation: modalIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -802,6 +803,9 @@
           <span class="status-dot" id="syncDot"></span>
           <span id="syncText">جاهز ومحدث</span>
         </div>
+        <button class="btn btn-secondary" id="notifyPermBtn" title="تفعيل إشعارات الطلبات">
+          🔔 إشعارات
+        </button>
         <button class="btn btn-secondary" id="refreshBtn" title="تحديث البيانات">
           🔄 تحديث
         </button>
@@ -1079,7 +1083,84 @@
     let searchQuery = '';
 
     // ==========================================
-    // توليد رقم طلب عشوائي مكون من 6 أرقام مع تطبيع الأرقام
+    // محرك النغمات الصوتية الفاخرة (Web Audio API)
+    // ==========================================
+    function playStoreChime() {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        const now = ctx.currentTime;
+
+        // النغمة الأولى
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(587.33, now); // D5
+        gain1.gain.setValueAtTime(0.25, now);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.4);
+
+        // النغمة الثانية
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(880, now + 0.12); // A5
+        gain2.gain.setValueAtTime(0.25, now + 0.12);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.start(now + 0.12);
+        osc2.stop(now + 0.7);
+      } catch (e) {}
+    }
+
+    // ==========================================
+    // إدارة إشعارات المتصفح
+    // ==========================================
+    function sendBrowserNotification(title, body) {
+      if (!("Notification" in window)) return;
+      if (Notification.permission === "granted") {
+        try {
+          new Notification(title, {
+            body: body,
+            icon: "https://api.iconify.design/lucide:gift.svg"
+          });
+        } catch(e) {}
+      }
+    }
+
+    const notifyPermBtn = document.getElementById('notifyPermBtn');
+    if (notifyPermBtn) {
+      if ("Notification" in window && Notification.permission === "granted") {
+        notifyPermBtn.style.color = "#10b981";
+        notifyPermBtn.title = "الإشعارات مفعلة ✅";
+      }
+
+      notifyPermBtn.onclick = () => {
+        if (!("Notification" in window)) {
+          showToast("متصفحك لا يدعم إشعارات الويب", "error");
+          return;
+        }
+        Notification.requestPermission().then(perm => {
+          if (perm === "granted") {
+            playStoreChime();
+            notifyPermBtn.style.color = "#10b981";
+            notifyPermBtn.title = "الإشعارات مفعلة ✅";
+            sendBrowserNotification("متجر الفؤاد للتحف والهدايا", "تم تفعيل إشعارات الطلبات بنجاح 🔔");
+            showToast("تم تفعيل إشعارات المتصفح بنجاح ✅", "success");
+          } else {
+            showToast("تم رفض إذن الإشعارات من إعدادات المتصفح", "error");
+          }
+        });
+      };
+    }
+
+    // ==========================================
+    // توليد رقم طلب عشوائي مكون من 6 أرقام
     // ==========================================
     function generateRandomOrderId() {
       const existing = new Set(orders.map(o => String(o.OrderID).trim()));
@@ -1139,7 +1220,7 @@
     receivedInput.addEventListener('input', calculateRemaining);
 
     // ==========================================
-    // نظام التنبيهات
+    // نظام التنبيهات Toasts
     // ==========================================
     function showToast(message, type = 'info') {
       const container = document.getElementById('toastContainer');
@@ -1191,6 +1272,16 @@
         const data = await res.json();
 
         if (Array.isArray(data)) {
+          // فحص وصول طلبات جديدة لتشغيل الصوت والإشعار
+          if (orders.length > 0 && data.length > orders.length) {
+            const latest = data[data.length - 1];
+            playStoreChime();
+            sendBrowserNotification(
+              "🔔 طلب جديد في متجر الفؤاد!", 
+              `طلب جديد #${latest.OrderID} للعميل: ${latest.CustomerName}`
+            );
+          }
+
           orders = data;
           localStorage.setItem("alfoad_orders_cache", JSON.stringify(orders));
           render();
@@ -1252,7 +1343,6 @@
       const emptyState = document.getElementById('emptyState');
       container.innerHTML = '';
 
-      // تحويل الأرقام العربية في البحث تلقائياً
       const rawQ = searchQuery.toLowerCase().trim();
       const q = rawQ.replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
 
@@ -1280,9 +1370,6 @@
       });
     }
 
-    /**
-     * توليد رابط تتبع دقيق 100% متوافق مع GitHub Pages والاستضافات المختلفة
-     */
     function getTrackingUrl(orderId) {
       if (CUSTOM_TRACKING_URL) {
         return `${CUSTOM_TRACKING_URL}${CUSTOM_TRACKING_URL.includes('?') ? '&' : '?'}order=${orderId}`;
@@ -1396,7 +1483,7 @@
     }
 
     // ==========================================
-    // منطق تغيير الحالة والتسوية المالية عند التسليم
+    // منطق تغيير الحالة والتسوية المالية
     // ==========================================
     let pendingDeliveryOrder = null;
 
@@ -1563,7 +1650,7 @@
     }
 
     // ==========================================
-    // إدارة النوافذ المنبثقة (إضافة وتعديل)
+    // إدارة النوافذ المنبثقة
     // ==========================================
     const orderModal = document.getElementById('orderModal');
     const orderForm = document.getElementById('orderForm');
@@ -1835,6 +1922,11 @@
       if (e.target === document.getElementById('whatsappPromptModal')) closeWhatsAppPrompt();
       if (e.target === document.getElementById('deliverySettlementModal')) closeSettlementModal();
     };
+
+    // فحص دوري تلقائي للطلبات الجديدة في الخلفية كل 60 ثانية
+    setInterval(() => {
+      fetchOrders(true);
+    }, 60000);
 
     loadCachedOrders();
     fetchOrders();
