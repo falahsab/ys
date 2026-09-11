@@ -51,7 +51,6 @@
       line-height: 1.6;
     }
 
-    /* Decorative Background Lights */
     .bg-light-1 {
       position: fixed;
       top: -100px;
@@ -202,10 +201,10 @@
     /* Tracking Result Card */
     .result-container {
       display: none;
-      animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
     @keyframes slideUp {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(15px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
@@ -514,18 +513,18 @@
       <p class="store-subtitle">ذمار • نصنع من الهدايا ذكريات لا تُنسى ✨</p>
     </header>
 
-    <!-- صندوق الاستعلام -->
+    <!-- صندوق الاستعلام السريع -->
     <section class="search-card">
       <h2 class="card-title">🔍 استعلام عن حالة طلبك</h2>
       <div class="input-group">
-        <input type="text" id="orderInput" class="order-input" placeholder="أدخل رقم الطلب المكون من 6 أرقام..." 
+        <input type="text" id="orderInput" class="order-input" placeholder="أدخل رقم الطلب (مثال: 589234)..." 
                maxlength="10" autocomplete="off">
-        <button id="searchBtn" class="check-btn">استعلام</button>
+        <button id="searchBtn" class="check-btn">استعلام فوري</button>
       </div>
       <div id="errorBox" class="error-box"></div>
       <div id="loading" class="loading-state">
         <span class="loading-spinner"></span>
-        جاري الاستعلام الفوري والتحقق من الطلب...
+        جاري الاستعلام الفوري من النظام...
       </div>
     </section>
 
@@ -550,7 +549,7 @@
             <div class="stepper-icon">📥</div>
             <div class="stepper-content">
               <h4>تم الاستلام</h4>
-              <p>تم تأكيد طلبكم وتسجيله بنجاح في نظام المتجر.</p>
+              <p>تم تأكيد واستلام طلبكم بنجاح وهو الآن مدرج ضمن جدول العمل والتنفيذ.</p>
             </div>
           </div>
 
@@ -558,7 +557,7 @@
             <div class="stepper-icon">⏳</div>
             <div class="stepper-content">
               <h4>قيد التجهيز والتخصيص</h4>
-              <p>جاري نقش، تجهيز وتغليف التحف والهدايا الخاصة بكم بعناية.</p>
+              <p>جاري نقش، تجهيز وتغليف التحف والهدايا الخاصة بكم بعناية فائقة.</p>
             </div>
           </div>
 
@@ -566,7 +565,7 @@
             <div class="stepper-icon">✅</div>
             <div class="stepper-content">
               <h4>جاهز للاستلام أو الشحن</h4>
-              <p>طلبكم جاهز بالكامل بالمتجر بانتظار تشريفكم أو تسليمه لمندوب التوصيل.</p>
+              <p>طلبكم جاهز بالكامل بالمتجر بانتظار استلامكم أو تسليمه لمندوب التوصيل.</p>
             </div>
           </div>
 
@@ -645,7 +644,9 @@
   </footer>
 
   <script>
-    const API_BASE = "https://script.google.com/macros/s/AKfycbwpqk1oFqskaXn6hQmjJiG1kv5Ivmh8KD5vG4igpoJm9bLenJt5Jlc08BbGGOx9MHY/exec";
+    // الرابط الفعلي المباشر لتطبيق الويب
+    const API_BASE = "https://script.google.com/macros/s/AKfycbzL-QYW0rlqIiTaadaQEKGOmYqLr25rAAm4hNUF1i26fUlynGb5OppP0lYeZIWRHg9_/exec";
+    const SPREADSHEET_ID = "1olejIBhQty7dtosCWYCn8sy8RCKsq0ks6eid_SOBpOY";
 
     const orderInput = document.getElementById('orderInput');
     const searchBtn = document.getElementById('searchBtn');
@@ -660,6 +661,11 @@
       4: { text: "تم التسليم", bg: "rgba(139,92,246,0.15)", border: "rgba(139,92,246,0.3)", color: "#8b5cf6" }
     };
 
+    /**
+     * استعلام فائق السرعة يعتمد على ثلاث طبقات:
+     * 1) كاش المتصفح المحلي (0 ملي ثانية)
+     * 2) اتصال مباشر بـ Google Apps Script السريع والمسبق التخزين
+     */
     async function checkOrder(orderId) {
       const id = String(orderId || orderInput.value).trim();
       if (!id) {
@@ -669,13 +675,13 @@
 
       hideError();
 
-      // 1. فحص التخزين السريع في المتصفح للاستجابة اللحظية في 0 ملي ثانية!
+      // 1. فحص فوري في ذاكرة المتصفح (0ms)
       const cachedOrderStr = sessionStorage.getItem("alfoad_order_" + id);
       if (cachedOrderStr) {
         try {
           const cached = JSON.parse(cachedOrderStr);
           displayOrder(cached);
-          // سنقوم أيضاً بالتحقق في الخلفية لتحديث الحالة إذا تغيرت
+          // سنحدث بهدوء في الخلفية للتأكد من أحدث حالة
         } catch(e){}
       } else {
         resultContainer.style.display = 'none';
@@ -684,23 +690,29 @@
       loadingEl.style.display = 'block';
 
       try {
-        const res = await fetch(`${API_BASE}?action=track&orderId=${encodeURIComponent(id)}`);
-        const data = await res.json();
+        const fetchUrl = `${API_BASE}?action=track&orderId=${encodeURIComponent(id)}&t=${Date.now()}`;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 ثواني كحد أقصى
 
+        const res = await fetch(fetchUrl, {
+          method: 'GET',
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        const data = await res.json();
         loadingEl.style.display = 'none';
 
         if (data.success && data.order) {
-          // حفظ في الكاش المحلي للمتصفح
           sessionStorage.setItem("alfoad_order_" + id, JSON.stringify(data.order));
           displayOrder(data.order);
         } else {
-          showError(data.error || "لم يتم العثور على طلب بهذا الرقم، يرجى التأكد من صحة الرقم.");
+          showError(data.error || "لم يتم العثور على طلب بهذا الرقم، يرجى التأكد من الرقم.");
         }
       } catch (err) {
         loadingEl.style.display = 'none';
-        // إذا لم يكن معروضاً مسبقاً من الكاش، أظهر رسالة الخطأ
         if (!cachedOrderStr) {
-          showError("تعذر الاتصال بالخادم للاستعلام. يرجى المحاولة مرة أخرى أو التواصل عبر واتساب المتجر.");
+          showError("تعذر إكمال الاستعلام في الوقت المحدد. يرجى إعادة المحاولة أو التواصل مباشرة عبر الواتساب.");
         }
       }
     }
