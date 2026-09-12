@@ -107,8 +107,7 @@
     .nav-actions {
       display: flex;
       align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .sync-status {
@@ -419,7 +418,6 @@
       border-radius: 20px;
       font-size: 12px;
       font-weight: 700;
-      transition: all 0.25s ease;
     }
     .badge-status-1 { background: rgba(6, 182, 212, 0.15); color: var(--status-1); border: 1px solid rgba(6, 182, 212, 0.3); }
     .badge-status-2 { background: rgba(245, 158, 11, 0.15); color: var(--status-2); border: 1px solid rgba(245, 158, 11, 0.3); }
@@ -431,12 +429,12 @@
       font-weight: 700;
       padding: 3px 8px;
       border-radius: 12px;
-      transition: all 0.25s ease;
     }
     .pay-paid { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
     .pay-partial { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
     .pay-unpaid { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
 
+    /* Order Description & Notes */
     .order-desc-text {
       font-size: 13px;
       color: #e2e8f0;
@@ -457,6 +455,7 @@
       gap: 5px;
     }
 
+    /* Order Details Row */
     .card-meta {
       display: flex;
       flex-wrap: wrap;
@@ -515,6 +514,7 @@
       color: #000;
     }
 
+    /* Actions Layout */
     .card-footer {
       display: flex;
       justify-content: space-between;
@@ -525,6 +525,7 @@
       border-top: 1px solid rgba(255, 255, 255, 0.05);
     }
 
+    /* Status Switcher Buttons */
     .status-buttons-group {
       display: flex;
       gap: 4px;
@@ -558,6 +559,7 @@
     .status-btn.active-3 { background: var(--status-3); color: #000; font-weight: 800; }
     .status-btn.active-4 { background: var(--status-4); color: #fff; font-weight: 800; }
 
+    /* Utility action buttons (WhatsApp, Edit, Delete, Link) */
     .card-tools {
       display: flex;
       gap: 6px;
@@ -605,6 +607,7 @@
       color: #fff;
     }
 
+    /* Empty state & Loading */
     .state-box {
       text-align: center;
       padding: 40px 20px;
@@ -619,25 +622,23 @@
       color: var(--txt-dim);
     }
 
-    /* تحسين النوافذ المنبثقة: متجاوبة 100% مع تمرير رأسي */
+    /* Modal */
     .modal-overlay {
       display: none;
       position: fixed;
-      inset: 0;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.78);
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
       z-index: 100;
-      padding: 20px 14px;
-      overflow-y: auto;
-      scrollbar-width: thin;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
     }
     .modal-overlay.active {
       display: flex;
-      justify-content: center;
-      align-items: flex-start;
     }
 
     .modal-content {
@@ -645,15 +646,13 @@
       border: 1px solid var(--border-color);
       border-radius: var(--radius-lg);
       width: 100%;
-      max-width: 560px;
-      margin: auto 0;
-      padding: 22px;
+      max-width: 520px;
+      padding: 24px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
       animation: modalIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
     }
     @keyframes modalIn {
-      from { opacity: 0; transform: scale(0.96) translateY(12px); }
+      from { opacity: 0; transform: scale(0.95) translateY(10px); }
       to { opacity: 1; transform: scale(1) translateY(0); }
     }
 
@@ -661,9 +660,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 18px;
     }
     .modal-header h3 {
       font-size: 18px;
@@ -674,10 +671,8 @@
       background: transparent;
       border: none;
       color: var(--txt-dim);
-      font-size: 22px;
+      font-size: 20px;
       cursor: pointer;
-      line-height: 1;
-      padding: 4px;
     }
     .modal-close:hover { color: #fff; }
 
@@ -719,30 +714,23 @@
     .calc-box {
       background: rgba(0, 0, 0, 0.25);
       border: 1px solid var(--border-color);
-      padding: 10px 12px;
+      padding: 8px 12px;
       border-radius: var(--radius-sm);
       display: flex;
       align-items: center;
       justify-content: space-between;
       font-size: 13px;
       margin-top: 4px;
-      flex-wrap: wrap;
-      gap: 6px;
     }
 
     .modal-footer {
       display: flex;
       justify-content: flex-end;
       gap: 10px;
-      margin-top: 18px;
-      padding-top: 14px;
-      border-top: 1px solid var(--border-color);
-      position: sticky;
-      bottom: -4px;
-      background: var(--bg-card);
-      z-index: 10;
+      margin-top: 20px;
     }
 
+    /* Prompt Modal for WhatsApp */
     .whatsapp-prompt-box {
       text-align: center;
       padding: 10px 0;
@@ -752,6 +740,7 @@
       margin-bottom: 8px;
     }
 
+    /* Toast Notification */
     .toast-container {
       position: fixed;
       bottom: 24px;
@@ -786,13 +775,11 @@
     }
 
     @media (max-width: 640px) {
-      .input-row, .input-row-3 { grid-template-columns: 1fr; gap: 8px; }
+      .input-row, .input-row-3 { grid-template-columns: 1fr; }
       .card-header { flex-direction: column; align-items: flex-start; }
       .card-footer { flex-direction: column; align-items: stretch; }
       .status-buttons-group { justify-content: space-between; }
       .card-tools { justify-content: space-between; }
-      .modal-overlay { padding: 10px; }
-      .modal-content { padding: 16px; }
     }
   </style>
 </head>
@@ -1189,6 +1176,7 @@
       let id = '';
       let attempts = 0;
       do {
+        // رقم عشوائي بين 100000 و 999999
         id = Math.floor(100000 + Math.random() * 900000).toString();
         attempts++;
       } while (existing.has(id) && attempts < 200);
@@ -1242,7 +1230,7 @@
     receivedInput.addEventListener('input', calculateRemaining);
 
     // ==========================================
-    // نظام التنبيهات Toasts
+    // نظام التنبيهات
     // ==========================================
     function showToast(message, type = 'info') {
       const container = document.getElementById('toastContainer');
@@ -1289,8 +1277,12 @@
     async function fetchOrders(forceNoCache = false) {
       setSyncState(true, 'جاري جلب البيانات...');
       try {
+        // إضافة توقيت لمنع كاش المتصفح على خوادم GitHub Pages
         const url = `${API_URL}?token=${encodeURIComponent(API_TOKEN)}&_t=${Date.now()}${forceNoCache ? '&nocache=1' : ''}`;
-        const res = await fetch(url);
+        const res = await fetch(url, {
+          cache: 'no-store',
+          headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+        });
         const data = await res.json();
 
         if (Array.isArray(data)) {
@@ -1312,6 +1304,35 @@
     // ==========================================
     // محرك الفحص اللحظي فائق السرعة عبر Google CDN (GViz)
     // ==========================================
+    /**
+     * تطبيع وتحويل قيمة الحالة إلى 1, 2, 3, 4 بدقة 100%
+     * يدعم النصوص الصريحة، الأرقام، الأرقام العربية، والكسور العشرية
+     */
+    function normalizeStatusValue(val) {
+      if (val === null || val === undefined) return null;
+      const s = String(val).trim();
+      if (!s) return null;
+
+      // فحص النصوص العربية والإنجليزية الصريحة
+      if (s.includes("تسليم") || s.includes("مسلم") || s.includes("مسلّم") || s.toLowerCase() === 'delivered' || s === '4') return 4;
+      if (s.includes("جاهز") || s.toLowerCase() === 'ready' || s === '3') return 3;
+      if (s.includes("تجهيز") || s.includes("تنفيذ") || s.toLowerCase() === 'processing' || s === '2') return 2;
+      if (s.includes("استلام") || s.toLowerCase() === 'received' || s === '1') return 1;
+
+      // تحويل الأرقام العربية إلى إنجليزية
+      const numStr = s.replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
+      const n = parseInt(numStr, 10);
+      if (n >= 1 && n <= 4) return n;
+
+      return null;
+    }
+
+    function isTruthyCell(cell) {
+      if (!cell) return false;
+      const v = cell.v;
+      return v === 1 || v === true || String(v).toLowerCase() === 'true' || String(v) === '1';
+    }
+
     function parseGvizRowAdmin(cells, cols, rowNumber) {
       const getVal = (idx) => {
         if (idx >= 0 && idx < cells.length && cells[idx] && cells[idx].v !== null && cells[idx].v !== undefined) {
@@ -1330,31 +1351,33 @@
         return fallback;
       }
 
-      const idIdx = findColIndex(["orderid", "order_id", "طلب", "رقم الطلب", "id"], 0);
-      const custIdx = findColIndex(["customername", "customer_name", "customer", "اسم العميل", "العميل"], 1);
-      const phoneIdx = findColIndex(["phone", "mobile", "رقم الهاتف", "الهاتف", "جوال"], 2);
-      const totalIdx = findColIndex(["total_amount", "totalamount", "total", "المبلغ الاجمالي", "المبلغ الإجمالي", "الاجمالي", "السعر", "price"], 3);
-      const recIdx = findColIndex(["المبلغ الواصل", "الواصل", "المدفوع", "received", "received_amount", "paid"], 4);
+      const idIdx = findColIndex(["orderid", "order_id", "طلب", "رقم الطلب", "id", "الرقم"], 0);
+      const custIdx = findColIndex(["customername", "customer_name", "customer", "اسم العميل", "العميل", "الاسم"], 1);
+      const phoneIdx = findColIndex(["phone", "mobile", "رقم الهاتف", "الهاتف", "جوال", "الموبايل", "تلفون"], 2);
+      const totalIdx = findColIndex(["total_amount", "totalamount", "total", "المبلغ الاجمالي", "المبلغ الإجمالي", "الاجمالي", "الإجمالي", "السعر", "price", "المبلغ"], 3);
+      const recIdx = findColIndex(["المبلغ الواصل", "الواصل", "المدفوع", "received", "received_amount", "paid", "عربون"], 4);
       const remIdx = findColIndex(["remaining", "المتبقي", "المبلغ المتبقي", "باقي"], 5);
-      const dateIdx = findColIndex(["date", "تاريخ", "التاريخ"], 6);
-      const descIdx = findColIndex(["order_description", "description", "وصف الطلب", "الوصف", "تفاصيل"], 7);
-      const notesIdx = findColIndex(["order_notes", "notes", "ملاحظات الطلب", "ملاحظات"], 8);
-      const statusIdx = findColIndex(["status", "الحالة", "حالة الطلب", "حالة"], 9);
+      const dateIdx = findColIndex(["date", "تاريخ", "التاريخ", "تاريخ الطلب"], 6);
+      const descIdx = findColIndex(["order_description", "description", "وصف الطلب", "الوصف", "تفاصيل", "تفاصيل الطلب", "الطلب"], -1);
+      const notesIdx = findColIndex(["order_notes", "notes", "ملاحظات الطلب", "ملاحظات", "الملاحظات"], -1);
+      const statusIdx = findColIndex(["status", "الحالة", "حالة الطلب", "حالة", "المرحلة", "مرحلة الطلب", "st_status"], -1);
 
       const stRecIdx = findColIndex(["تم الاستلام", "حالة الاستلام", "st_received"], -1);
       const stProcIdx = findColIndex(["processing", "قيد التجهيز", "st_processing"], -1);
       const stRdyIdx = findColIndex(["ready", "جاهز", "st_ready"], -1);
       const stDelIdx = findColIndex(["delivered", "تم التسليم", "st_delivered"], -1);
 
-      const orderId = String(getVal(idIdx)).trim();
-      if (!orderId) return null;
+      let orderId = String(getVal(idIdx)).trim();
+      if (!orderId || orderId === 'رقم الطلب' || orderId.toLowerCase() === 'orderid') return null;
+      // إزالة .0 ناتجة عن معالجة الأرقام في جوجل شيت
+      if (orderId.endsWith('.0')) orderId = orderId.slice(0, -2);
 
       const custName = String(getVal(custIdx) || 'عميل المتجر');
       const phone = String(getVal(phoneIdx) || '');
       const total = Number(getVal(totalIdx)) || 0;
       const received = Number(getVal(recIdx)) || 0;
       const remVal = getVal(remIdx);
-      const remaining = (remVal !== '') ? Number(remVal) : Math.max(0, total - received);
+      const remaining = (remVal !== '' && remVal !== null && remVal !== undefined) ? Number(remVal) : Math.max(0, total - received);
 
       let dateVal = getVal(dateIdx);
       if (typeof dateVal === 'string' && dateVal.includes('Date(')) {
@@ -1369,13 +1392,33 @@
         dateVal = dateVal.toISOString().slice(0, 10);
       }
 
-      let status = Number(getVal(statusIdx));
-      if (!status || status < 1 || status > 4) {
-        if (stDelIdx >= 0 && (getVal(stDelIdx) === 1 || getVal(stDelIdx) === true || String(getVal(stDelIdx)).toLowerCase() === 'true')) status = 4;
-        else if (stRdyIdx >= 0 && (getVal(stRdyIdx) === 1 || getVal(stRdyIdx) === true || String(getVal(stRdyIdx)).toLowerCase() === 'true')) status = 3;
-        else if (stProcIdx >= 0 && (getVal(stProcIdx) === 1 || getVal(stProcIdx) === true || String(getVal(stProcIdx)).toLowerCase() === 'true')) status = 2;
-        else status = 1;
+      // استخراج الحالة بذكاء ودقة متناهية
+      let status = null;
+      if (statusIdx >= 0) {
+        status = normalizeStatusValue(getVal(statusIdx));
       }
+      if (!status) {
+        if (stDelIdx >= 0 && isTruthyCell(cells[stDelIdx])) status = 4;
+        else if (stRdyIdx >= 0 && isTruthyCell(cells[stRdyIdx])) status = 3;
+        else if (stProcIdx >= 0 && isTruthyCell(cells[stProcIdx])) status = 2;
+        else if (stRecIdx >= 0 && isTruthyCell(cells[stRecIdx])) status = 1;
+      }
+      // إذا لم يُعثر على عمود الحالة الصريح، نفحص كافة خلايا الصف للبحث عن أي نص حالة صريح
+      if (!status) {
+        for (let i = 0; i < cells.length; i++) {
+          const s = normalizeStatusValue(cells[i]?.v);
+          if (s) {
+            status = s;
+            break;
+          }
+        }
+      }
+      if (!status || status < 1 || status > 4) {
+        status = 1;
+      }
+
+      const descVal = (descIdx >= 0) ? String(getVal(descIdx) || '') : '';
+      const notesVal = (notesIdx >= 0) ? String(getVal(notesIdx) || '') : '';
 
       return {
         row: rowNumber,
@@ -1386,34 +1429,11 @@
         Price: total,
         Received: received,
         Remaining: remaining,
-        Order_Description: String(getVal(descIdx) || ''),
-        Order_Notes: String(getVal(notesIdx) || ''),
+        Order_Description: descVal,
+        Order_Notes: notesVal,
         Date: String(dateVal || ''),
         Status: status
       };
-    }
-
-    function prependOrderCardIfMatches(order) {
-      const container = document.getElementById('ordersContainer');
-      const emptyState = document.getElementById('emptyState');
-
-      const rawQ = searchQuery.toLowerCase().trim();
-      const q = rawQ.replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
-
-      const matchesFilter = (currentFilter === 'all') || (String(order.Status) === String(currentFilter));
-      const matchesQuery = !q || 
-        String(order.OrderID).toLowerCase().includes(q) ||
-        String(order.CustomerName).toLowerCase().includes(q) ||
-        String(order.Phone).toLowerCase().includes(q) ||
-        String(order.Order_Description || '').toLowerCase().includes(q) ||
-        String(order.Order_Notes || '').toLowerCase().includes(q);
-
-      if (matchesFilter && matchesQuery) {
-        const card = createOrderCard(order);
-        card.classList.add('card-highlight-new');
-        container.prepend(card);
-        if (emptyState) emptyState.style.display = 'none';
-      }
     }
 
     let isPollingGviz = false;
@@ -1423,7 +1443,7 @@
       try {
         const gvizUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&headers=1&sheet=${encodeURIComponent(SHEET_NAME)}&_nc=${Date.now()}`;
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 4000);
+        const timeoutId = setTimeout(() => controller.abort(), 4500);
         const res = await fetch(gvizUrl, { cache: 'no-store', signal: controller.signal });
         clearTimeout(timeoutId);
 
@@ -1435,11 +1455,25 @@
         const gvizJson = JSON.parse(match[1]);
         if (gvizJson.status !== 'ok' || !gvizJson.table || !gvizJson.table.rows) return;
 
-        const cols = (gvizJson.table.cols || []).map(c => (c && c.label) ? String(c.label).trim() : '');
+        let cols = (gvizJson.table.cols || []).map(c => (c && c.label) ? String(c.label).trim() : '');
         const gvizRows = gvizJson.table.rows;
+        let startRowIndex = 0;
+
+        // إذا كانت عناوين الأعمدة فارغة، نتحقق مما إذا كانت موجودة في أول صف
+        const hasColLabels = cols.some(c => c && c.length > 0);
+        if (!hasColLabels && gvizRows.length > 0 && gvizRows[0].c) {
+          const firstRowVals = gvizRows[0].c.map(cell => (cell && cell.v !== null && cell.v !== undefined) ? String(cell.v).trim() : '');
+          const looksLikeHeader = firstRowVals.some(v => 
+            v.includes("طلب") || v.includes("عميل") || v.includes("هاتف") || v.includes("حالة") || v.includes("مبلغ")
+          );
+          if (looksLikeHeader) {
+            cols = firstRowVals;
+            startRowIndex = 1;
+          }
+        }
 
         const parsedOrders = [];
-        for (let i = 0; i < gvizRows.length; i++) {
+        for (let i = startRowIndex; i < gvizRows.length; i++) {
           const cells = gvizRows[i].c;
           if (!cells) continue;
           const parsed = parseGvizRowAdmin(cells, cols, i + 2);
@@ -1450,14 +1484,14 @@
 
         if (parsedOrders.length === 0) return;
 
-        // 1. فحص الطلبات الجديدة المضافة للجدول
+        // 1. فحص الطلبات الجديدة المضافة للجدول من أي جهاز آخر
         const existingOrderIds = new Set(orders.map(o => String(o.OrderID).trim()));
         const brandNewOrders = parsedOrders.filter(o => !existingOrderIds.has(String(o.OrderID).trim()));
 
         if (brandNewOrders.length > 0) {
           brandNewOrders.forEach(newOrder => {
             orders.push(newOrder);
-            prependOrderCardIfMatches(newOrder);
+            syncOrderDOM(newOrder, true);
             playStoreChime();
             sendBrowserNotification(
               "🔔 طلب جديد في متجر الفؤاد!", 
@@ -1469,7 +1503,7 @@
           updateStats();
         }
 
-        // 2. فحص تحديث الحالات أو المبالغ لأي طلب قائم دون إعادة تحميل الصفحة
+        // 2. فحص تحديث الحالات أو المبالغ لأي طلب قائم
         let hasRemoteUpdates = false;
         parsedOrders.forEach(remoteOrder => {
           const localOrder = orders.find(o => String(o.OrderID).trim() === String(remoteOrder.OrderID).trim());
@@ -1488,13 +1522,31 @@
               localOrder.Price = remoteOrder.Total_Amount;
               changed = true;
             }
+            // تحديث رقم الصف دائماً
+            localOrder.row = remoteOrder.row;
+
             if (changed) {
-              localOrder.row = remoteOrder.row;
-              updateOrderCardDOM(localOrder);
+              syncOrderDOM(localOrder);
               hasRemoteUpdates = true;
             }
           }
         });
+
+        // 3. فحص الطلبات المحذوفة من الشيت
+        const remoteOrderIds = new Set(parsedOrders.map(o => String(o.OrderID).trim()));
+        const deletedOrders = orders.filter(o => !remoteOrderIds.has(String(o.OrderID).trim()));
+        if (deletedOrders.length > 0) {
+          deletedOrders.forEach(delOrder => {
+            const card = document.querySelector(`.order-card[data-order-id="${delOrder.OrderID}"]`);
+            if (card) {
+              card.style.transition = 'all 0.3s ease';
+              card.style.opacity = '0';
+              setTimeout(() => card.remove(), 300);
+            }
+          });
+          orders = orders.filter(o => remoteOrderIds.has(String(o.OrderID).trim()));
+          hasRemoteUpdates = true;
+        }
 
         if (hasRemoteUpdates) {
           localStorage.setItem("alfoad_orders_cache", JSON.stringify(orders));
@@ -1558,6 +1610,7 @@
       const emptyState = document.getElementById('emptyState');
       container.innerHTML = '';
 
+      // تحويل الأرقام العربية في البحث تلقائياً
       const rawQ = searchQuery.toLowerCase().trim();
       const q = rawQ.replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
 
@@ -1585,6 +1638,9 @@
       });
     }
 
+    /**
+     * توليد رابط تتبع دقيق 100% متوافق مع GitHub Pages والاستضافات المختلفة
+     */
     function getTrackingUrl(orderId) {
       if (CUSTOM_TRACKING_URL) {
         return `${CUSTOM_TRACKING_URL}${CUSTOM_TRACKING_URL.includes('?') ? '&' : '?'}order=${orderId}`;
@@ -1594,6 +1650,7 @@
       if (cleanUrl.endsWith('/')) cleanUrl = cleanUrl.slice(0, -1);
       if (cleanUrl.endsWith('/index.html')) cleanUrl = cleanUrl.slice(0, -11);
 
+      // إذا كان الرابط ينتهي بـ /admin
       if (cleanUrl.endsWith('/admin')) {
         const rootPath = cleanUrl.slice(0, -6);
         return `${rootPath}/customer/index.html?order=${orderId}`;
@@ -1609,6 +1666,7 @@
     function createOrderCard(order) {
       const div = document.createElement('div');
       div.className = 'order-card';
+      div.dataset.orderId = order.OrderID;
       div.dataset.row = order.row;
 
       const st = statusMeta[order.Status] || statusMeta[1];
@@ -1626,6 +1684,7 @@
         payBadge = '<span class="payment-badge pay-unpaid">غير مدفوع ⚠️</span>';
       }
 
+      // إظهار وصف وملاحظات الطلب إذا كانت موجودة
       let descHtml = '';
       if (order.Order_Description) {
         descHtml = `<div class="order-desc-text">🎁 <strong>الطلب:</strong> ${order.Order_Description}</div>`;
@@ -1635,9 +1694,10 @@
         noteHtml = `<span class="order-note-text">📌 ${order.Order_Notes}</span>`;
       }
 
+      // زر تسوية مصغر إذا كان هناك متبقي
       let settleBtnMini = '';
       if (remainingAmt > 0) {
-        settleBtnMini = `<button class="btn-settle-mini" onclick="handleDirectSettlement(${order.row})" title="تسوية المبلغ المتبقي بالكامل">💳 تسوية</button>`;
+        settleBtnMini = `<button class="btn-settle-mini" onclick="handleDirectSettlement('${order.OrderID}')" title="تسوية المبلغ المتبقي بالكامل">💳 تسوية</button>`;
       }
 
       div.innerHTML = `
@@ -1671,10 +1731,10 @@
 
         <div class="card-footer">
           <div class="status-buttons-group">
-            <button class="status-btn ${order.Status == 1 ? 'active-1' : ''}" onclick="onStatusButtonClick(${order.row}, 1)">📥 استلام</button>
-            <button class="status-btn ${order.Status == 2 ? 'active-2' : ''}" onclick="onStatusButtonClick(${order.row}, 2)">⏳ تجهيز</button>
-            <button class="status-btn ${order.Status == 3 ? 'active-3' : ''}" onclick="onStatusButtonClick(${order.row}, 3)">✅ جاهز</button>
-            <button class="status-btn ${order.Status == 4 ? 'active-4' : ''}" onclick="onStatusButtonClick(${order.row}, 4)">🚚 تسليم</button>
+            <button class="status-btn ${order.Status == 1 ? 'active-1' : ''}" onclick="onStatusButtonClick('${order.OrderID}', 1)">📥 استلام</button>
+            <button class="status-btn ${order.Status == 2 ? 'active-2' : ''}" onclick="onStatusButtonClick('${order.OrderID}', 2)">⏳ تجهيز</button>
+            <button class="status-btn ${order.Status == 3 ? 'active-3' : ''}" onclick="onStatusButtonClick('${order.OrderID}', 3)">✅ جاهز</button>
+            <button class="status-btn ${order.Status == 4 ? 'active-4' : ''}" onclick="onStatusButtonClick('${order.OrderID}', 4)">🚚 تسليم</button>
           </div>
 
           <div class="card-tools">
@@ -1684,10 +1744,10 @@
             <button class="tool-btn" onclick="copyTrackingLink('${order.OrderID}')" title="نسخ رابط التتبع">
               🔗 تتبع
             </button>
-            <button class="tool-btn" onclick="openEditModal(${order.row})" title="تعديل">
+            <button class="tool-btn" onclick="openEditModal('${order.OrderID}')" title="تعديل">
               ✏️
             </button>
-            <button class="tool-btn tool-btn-delete" onclick="handleDeleteOrder(${order.row})" title="حذف">
+            <button class="tool-btn tool-btn-delete" onclick="handleDeleteOrder('${order.OrderID}')" title="حذف">
               🗑️
             </button>
           </div>
@@ -1698,12 +1758,10 @@
     }
 
     // ==========================================
-    // تحديث بطاقة الطلب وحدها فورياً (0 ثانية بدون إعادة رندرة الكل)
+    // تحديث محتوى بطاقة الطلب داخلياً فورياً (0 ثانية)
     // ==========================================
-    function updateOrderCardDOM(order) {
-      const card = document.querySelector(`.order-card[data-row="${order.row}"]`);
-      if (!card) return;
-
+    function updateCardContent(card, order) {
+      card.dataset.row = order.row;
       const st = statusMeta[order.Status] || statusMeta[1];
       const totalAmt = Number(order.Total_Amount !== undefined ? order.Total_Amount : order.Price) || 0;
       const receivedAmt = Number(order.Received) || 0;
@@ -1750,7 +1808,7 @@
         newBtn.className = 'btn-settle-mini';
         newBtn.title = 'تسوية المبلغ المتبقي بالكامل';
         newBtn.textContent = '💳 تسوية';
-        newBtn.onclick = () => handleDirectSettlement(order.row);
+        newBtn.onclick = () => handleDirectSettlement(order.OrderID);
         valRem.parentElement.appendChild(newBtn);
       }
 
@@ -1778,20 +1836,54 @@
           order.Order_Description || ''
         );
       }
+    }
 
-      // 7. إذا كان الأدمن داخل تبويب فلتر محدد (مثل "قيد التجهيز") ونقل الطلب لحالة أخرى: إخفاء ناعم للبطاقة
-      if (currentFilter !== 'all' && String(order.Status) !== String(currentFilter)) {
-        card.style.transition = 'all 0.35s ease';
-        card.style.opacity = '0';
-        card.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-          card.remove();
-          const container = document.getElementById('ordersContainer');
-          const emptyState = document.getElementById('emptyState');
-          if (container.querySelectorAll('.order-card').length === 0) {
-            emptyState.style.display = 'block';
-          }
-        }, 350);
+    // ==========================================
+    // محرك مزامنة البطاقات الذكي عبر الفلاتر والأجهزة
+    // ==========================================
+    function syncOrderDOM(order, isNew = false) {
+      const container = document.getElementById('ordersContainer');
+      const emptyState = document.getElementById('emptyState');
+      const card = document.querySelector(`.order-card[data-order-id="${order.OrderID}"]`);
+
+      // التحقق من مطابقة الفلتر والبحث الحالي
+      const rawQ = searchQuery.toLowerCase().trim();
+      const q = rawQ.replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
+
+      const matchesFilter = (currentFilter === 'all') || (String(order.Status) === String(currentFilter));
+      const matchesQuery = !q || 
+        String(order.OrderID).toLowerCase().includes(q) ||
+        String(order.CustomerName).toLowerCase().includes(q) ||
+        String(order.Phone).toLowerCase().includes(q) ||
+        String(order.Order_Description || '').toLowerCase().includes(q) ||
+        String(order.Order_Notes || '').toLowerCase().includes(q);
+
+      const shouldBeVisible = matchesFilter && matchesQuery;
+
+      if (shouldBeVisible) {
+        if (card) {
+          // البطاقة ظاهرة في الفلتر الحالي: تحديث بياناتها فوراً (0 ثانية)
+          updateCardContent(card, order);
+        } else {
+          // البطاقة لم تكن ظاهرة (مثلاً انتقلت إلى هذا الفلتر من جهاز آخر): إدراجها فوراً
+          const newCard = createOrderCard(order);
+          if (isNew) newCard.classList.add('card-highlight-new');
+          container.prepend(newCard);
+          if (emptyState) emptyState.style.display = 'none';
+        }
+      } else {
+        // إذا كانت البطاقة معروضة ولكنها لم تعد تطابق الفلتر الحالي (انتقلت لفلتر آخر)
+        if (card) {
+          card.style.transition = 'all 0.3s ease';
+          card.style.opacity = '0';
+          card.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+            card.remove();
+            if (container.querySelectorAll('.order-card').length === 0 && emptyState) {
+              emptyState.style.display = 'block';
+            }
+          }, 300);
+        }
       }
     }
 
@@ -1800,8 +1892,8 @@
     // ==========================================
     let pendingDeliveryOrder = null;
 
-    function onStatusButtonClick(row, status) {
-      const order = orders.find(o => o.row === row);
+    function onStatusButtonClick(orderId, status) {
+      const order = orders.find(o => String(o.OrderID).trim() === String(orderId).trim());
       if (!order) return;
 
       const totalAmt = Number(order.Total_Amount !== undefined ? order.Total_Amount : order.Price) || 0;
@@ -1818,7 +1910,7 @@
         return;
       }
 
-      handleStatusChange(row, status, false);
+      handleStatusChange(order.OrderID, status, false);
     }
 
     function closeSettlementModal() {
@@ -1828,21 +1920,21 @@
 
     document.getElementById('confirmSettleAndDeliverBtn').onclick = () => {
       if (pendingDeliveryOrder) {
-        handleStatusChange(pendingDeliveryOrder.row, 4, true); // true = settlePayment
+        handleStatusChange(pendingDeliveryOrder.OrderID, 4, true); // true = settlePayment
       }
       closeSettlementModal();
     };
 
     document.getElementById('confirmDeliverOnlyBtn').onclick = () => {
       if (pendingDeliveryOrder) {
-        handleStatusChange(pendingDeliveryOrder.row, 4, false); // false = deliver only
+        handleStatusChange(pendingDeliveryOrder.OrderID, 4, false); // false = deliver only
       }
       closeSettlementModal();
     };
 
     // تسوية مالية مباشرة بضغطة زر
-    async function handleDirectSettlement(row) {
-      const order = orders.find(o => o.row === row);
+    async function handleDirectSettlement(orderId) {
+      const order = orders.find(o => String(o.OrderID).trim() === String(orderId).trim());
       if (!order) return;
 
       const totalAmt = Number(order.Total_Amount !== undefined ? order.Total_Amount : order.Price) || 0;
@@ -1858,7 +1950,7 @@
       // تحديث فوري محلياً للبطاقة نفسها فقط
       order.Received = totalAmt;
       order.Remaining = 0;
-      updateOrderCardDOM(order);
+      syncOrderDOM(order);
       updateStats();
       localStorage.setItem("alfoad_orders_cache", JSON.stringify(orders));
 
@@ -1868,7 +1960,7 @@
       try {
         const res = await fetch(API_URL, {
           method: 'POST',
-          body: JSON.stringify({ token: API_TOKEN, action: 'settlePayment', row })
+          body: JSON.stringify({ token: API_TOKEN, action: 'settlePayment', OrderID: order.OrderID, row: order.row })
         });
         const data = await res.json();
         if (data.success || data.result) {
@@ -1879,15 +1971,15 @@
       } catch(e) {
         order.Received = prevReceived;
         order.Remaining = prevRemaining;
-        updateOrderCardDOM(order);
+        syncOrderDOM(order);
         updateStats();
         showToast("فشلت مزامنة التسوية مع الخادم", 'error');
         setSyncState(false, 'خطأ مزامنة');
       }
     }
 
-    async function handleStatusChange(row, newStatus, settlePayment = false) {
-      const order = orders.find(o => o.row === row);
+    async function handleStatusChange(orderId, newStatus, settlePayment = false) {
+      const order = orders.find(o => String(o.OrderID).trim() === String(orderId).trim());
       if (!order) return;
 
       const prevStatus = order.Status;
@@ -1902,8 +1994,8 @@
         order.Remaining = 0;
       }
 
-      // 2. تحديث البطاقة المحددة وحدها في الـ DOM بدون إعادة رندرة الكل!
-      updateOrderCardDOM(order);
+      // 2. مزامنة البطاقة الذكية في الـ DOM (تحديث أو إخفاء من الفلتر الحالي)
+      syncOrderDOM(order);
 
       // 3. تحديث العدادات والإحصائيات فوراً
       updateStats();
@@ -1921,7 +2013,8 @@
         const payload = {
           token: API_TOKEN,
           action: 'updateStatus',
-          row: row,
+          OrderID: order.OrderID,
+          row: order.row,
           status: newStatus,
           settlePayment: settlePayment
         };
@@ -1943,7 +2036,7 @@
         order.Status = prevStatus;
         order.Received = prevReceived;
         order.Remaining = prevRemaining;
-        updateOrderCardDOM(order);
+        syncOrderDOM(order);
         updateStats();
         showToast("فشلت المزامنة مع الخادم، تمت استعادة الحالة السابقة", 'error');
         setSyncState(false, 'خطأ في الحفظ');
@@ -1953,16 +2046,16 @@
     // ==========================================
     // حذف الطلب الفوري
     // ==========================================
-    async function handleDeleteOrder(row) {
-      const order = orders.find(o => o.row === row);
+    async function handleDeleteOrder(orderId) {
+      const order = orders.find(o => String(o.OrderID).trim() === String(orderId).trim());
       if (!order) return;
 
       if (!confirm(`هل أنت متأكد من حذف الطلب رقم #${order.OrderID} للعميل (${order.CustomerName})؟`)) {
         return;
       }
 
-      // إخفاء وحذف بطاقة الطلب المحددة فقط من الـ DOM
-      const card = document.querySelector(`.order-card[data-row="${row}"]`);
+      // إخفاء وحذف بطاقة الطلب من الـ DOM
+      const card = document.querySelector(`.order-card[data-order-id="${order.OrderID}"]`);
       if (card) {
         card.style.transition = 'all 0.3s ease';
         card.style.opacity = '0';
@@ -1978,7 +2071,7 @@
       }
 
       const backupOrders = [...orders];
-      orders = orders.filter(o => o.row !== row);
+      orders = orders.filter(o => String(o.OrderID).trim() !== String(orderId).trim());
       updateStats();
       localStorage.setItem("alfoad_orders_cache", JSON.stringify(orders));
 
@@ -1988,7 +2081,7 @@
       try {
         const res = await fetch(API_URL, {
           method: 'POST',
-          body: JSON.stringify({ token: API_TOKEN, action: 'deleteOrder', row })
+          body: JSON.stringify({ token: API_TOKEN, action: 'deleteOrder', OrderID: order.OrderID, row: order.row })
         });
         const data = await res.json();
         if (data.success || data.result) {
@@ -2014,6 +2107,7 @@
       document.getElementById('modalTitle').textContent = 'إضافة طلب جديد';
       document.getElementById('editRow').value = '';
       
+      // توليد رقم عشوائي مكون من 6 أرقام
       document.getElementById('orderIDInput').value = generateRandomOrderId();
       document.getElementById('customerNameInput').value = '';
       document.getElementById('phoneInput').value = '';
@@ -2031,12 +2125,12 @@
       document.getElementById('customerNameInput').focus();
     };
 
-    function openEditModal(row) {
-      const o = orders.find(x => x.row === row);
+    function openEditModal(orderId) {
+      const o = orders.find(x => String(x.OrderID).trim() === String(orderId).trim());
       if (!o) return;
 
       document.getElementById('modalTitle').textContent = `تعديل الطلب #${o.OrderID}`;
-      document.getElementById('editRow').value = o.row;
+      document.getElementById('editRow').value = o.OrderID; // استخدام رقم الطلب كمعرف دقيق
       document.getElementById('orderIDInput').value = o.OrderID;
       document.getElementById('customerNameInput').value = o.CustomerName;
       document.getElementById('phoneInput').value = o.Phone;
@@ -2057,6 +2151,7 @@
     document.getElementById('closeModalBtn').onclick = closeModal;
     document.getElementById('cancelModalBtn').onclick = closeModal;
 
+    // نافذة إرسال واتساب بعد الإضافة
     let pendingWhatsAppOrder = null;
     function showWhatsAppPrompt(order) {
       pendingWhatsAppOrder = order;
@@ -2078,7 +2173,7 @@
           pendingWhatsAppOrder.Received,
           pendingWhatsAppOrder.Remaining,
           pendingWhatsAppOrder.Order_Description || '',
-          true
+          true // isNewOrder
         );
       }
       closeWhatsAppPrompt();
@@ -2086,18 +2181,20 @@
 
     orderForm.onsubmit = async (e) => {
       e.preventDefault();
-      const rowVal = document.getElementById('editRow').value;
-      const isEdit = Boolean(rowVal);
+      const editOrderId = document.getElementById('editRow').value.trim();
+      const isEdit = Boolean(editOrderId);
 
       const totalAmt = Number(document.getElementById('totalAmountInput').value) || 0;
       const receivedAmt = Number(document.getElementById('receivedInput').value) || 0;
       const remainingAmt = Math.max(0, totalAmt - receivedAmt);
 
+      const targetOrder = isEdit ? orders.find(o => String(o.OrderID).trim() === editOrderId) : null;
+
       const orderData = {
         token: API_TOKEN,
         action: isEdit ? 'updateOrder' : 'addOrder',
-        row: isEdit ? Number(rowVal) : undefined,
         OrderID: document.getElementById('orderIDInput').value.trim(),
+        row: targetOrder ? targetOrder.row : undefined,
         CustomerName: document.getElementById('customerNameInput').value.trim(),
         Phone: document.getElementById('phoneInput').value.trim(),
         Order_Description: document.getElementById('descInput').value.trim(),
@@ -2107,13 +2204,14 @@
         Received: receivedAmt,
         Remaining: remainingAmt,
         Date: document.getElementById('orderDateInput').value,
-        Status: 1
+        Status: targetOrder ? targetOrder.Status : 1
       };
 
       closeModal();
       setSyncState(true, 'جاري الحفظ...');
 
       if (!isEdit) {
+        // عند إضافة طلب جديد: تحويل الفلتر تلقائياً للكل لظهوره في تم الاستلام مباشرة
         currentFilter = 'all';
         document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
         document.querySelector('.filter-pill[data-filter="all"]')?.classList.add('active');
@@ -2124,15 +2222,14 @@
           Status: 1
         };
         orders.push(tempOrder);
-        prependOrderCardIfMatches(tempOrder);
+        syncOrderDOM(tempOrder, true);
         updateStats();
         showToast("تمت إضافة الطلب في مرحلة (تم الاستلام) ✅", 'success');
         showWhatsAppPrompt(tempOrder);
       } else {
-        const existingOrder = orders.find(o => o.row === Number(rowVal));
-        if (existingOrder) {
-          Object.assign(existingOrder, orderData);
-          updateOrderCardDOM(existingOrder);
+        if (targetOrder) {
+          Object.assign(targetOrder, orderData);
+          syncOrderDOM(targetOrder);
           updateStats();
           localStorage.setItem("alfoad_orders_cache", JSON.stringify(orders));
         }
@@ -2243,9 +2340,11 @@
       render();
     };
 
-    document.getElementById('refreshBtn').onclick = () => {
-      pollGvizBackground();
+    document.getElementById('refreshBtn').onclick = async () => {
+      setSyncState(true, 'جاري التحديث الكامل...');
       showToast("جاري فحص وتحديث البيانات من Google Sheets...", 'info');
+      await fetchOrders(true);
+      await pollGvizBackground();
     };
 
     // ==========================================
@@ -2294,9 +2393,12 @@
     loadCachedOrders();
     fetchOrders();
 
-    // تشغيل المراقبة اللحظية الخفيفة والفورية عبر Google CDN (GViz) كل 10 ثوانٍ (0.2 ثانية استجابة وبدون أي استهلاك)
-    setInterval(pollGvizBackground, 10000);
-    setTimeout(pollGvizBackground, 3000);
+    // تشغيل المراقبة اللحظية فائقة الخفة والسرعة عبر Google CDN (GViz) كل 7 ثوانٍ
+    setInterval(pollGvizBackground, 7000);
+    setTimeout(pollGvizBackground, 1500);
+
+    // فحص دوري من السيرفر المباشر كل 35 ثانية لضمان المزامنة التامة بين الجوال والكمبيوتر
+    setInterval(() => fetchOrders(false), 35000);
   </script>
 </body>
 </html>
