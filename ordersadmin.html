@@ -1072,7 +1072,7 @@
     // ==========================================
     // تهيئة الإعدادات والمتغيرات الأساسية
     // ==========================================
-    const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbxFaW-aAd7Seiik_o0jdk5eRQxJFzg5iAVJbmyEScIfbGAdW_oR9476gMpcPymz3p9k/exec";
+    const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbwVf94emAu8turDCDmpQHyZSXIW9DMDXNaduFMzTMd32KvuYntutSzNrOuSqcgiqFxw/exec";
     const DEFAULT_API_TOKEN = "s3cr3tK3y123";
     const DEFAULT_SPREADSHEET_ID = "1olejIBhQty7dtosCWYCn8sy8RCKsq0ks6eid_SOBpOY";
     const SHEET_NAME = "Orders";
@@ -1313,15 +1313,24 @@
       const s = String(val).trim();
       if (!s) return null;
 
-      // فحص النصوص العربية والإنجليزية الصريحة
-      if (s.includes("تسليم") || s.includes("مسلم") || s.includes("مسلّم") || s.toLowerCase() === 'delivered' || s === '4') return 4;
-      if (s.includes("جاهز") || s.toLowerCase() === 'ready' || s === '3') return 3;
-      if (s.includes("تجهيز") || s.includes("تنفيذ") || s.toLowerCase() === 'processing' || s === '2') return 2;
-      if (s.includes("استلام") || s.toLowerCase() === 'received' || s === '1') return 1;
-
-      // تحويل الأرقام العربية إلى إنجليزية
+      // 1. تحويل الأرقام العربية إلى إنجليزية وفحص الأرقام المباشرة (1, 2, 3, 4)
       const numStr = s.replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
       const n = parseInt(numStr, 10);
+      if (numStr.length === 1 && n >= 1 && n <= 4) return n;
+
+      // 2. أولوية مطلقة لحالة (جاهز): لمنع أي تداخل مع عبارات مثل "جاهز للتسليم" أو "جاهز للاستلام"
+      if (s.includes("جاهز") || s.toLowerCase() === 'ready') return 3;
+
+      // 3. فحص حالة (تم التسليم) الصريحة
+      if (s.includes("تم التسليم") || s.includes("تم تسليم") || s.includes("مسلم") || s.includes("مسلّم") || s.toLowerCase() === 'delivered' || s === 'تسليم' || s === 'مكتمل') return 4;
+
+      // 4. فحص حالة (قيد التجهيز)
+      if (s.includes("تجهيز") || s.includes("تنفيذ") || s.toLowerCase() === 'processing') return 2;
+
+      // 5. فحص حالة (تم الاستلام)
+      if (s.includes("استلام") || s.toLowerCase() === 'received') return 1;
+
+      // تحويل أي أرقام أخرى متبقية
       if (n >= 1 && n <= 4) return n;
 
       return null;
@@ -1358,9 +1367,9 @@
       const recIdx = findColIndex(["المبلغ الواصل", "الواصل", "المدفوع", "received", "received_amount", "paid", "عربون"], 4);
       const remIdx = findColIndex(["remaining", "المتبقي", "المبلغ المتبقي", "باقي"], 5);
       const dateIdx = findColIndex(["date", "تاريخ", "التاريخ", "تاريخ الطلب"], 6);
-      const descIdx = findColIndex(["order_description", "description", "وصف الطلب", "الوصف", "تفاصيل", "تفاصيل الطلب", "الطلب"], -1);
+      const descIdx = findColIndex(["order_description", "description", "وصف الطلب", "الوصف", "تفاصيل الطلب", "تفاصيل"], -1);
       const notesIdx = findColIndex(["order_notes", "notes", "ملاحظات الطلب", "ملاحظات", "الملاحظات"], -1);
-      const statusIdx = findColIndex(["status", "الحالة", "حالة الطلب", "حالة", "المرحلة", "مرحلة الطلب", "st_status"], -1);
+      const statusIdx = findColIndex(["status", "الحالة", "الحاله", "حالة الطلب", "حاله الطلب", "حالة", "حاله", "المرحلة", "المرحله", "مرحلة الطلب", "مرحله الطلب", "st_status"], -1);
 
       const stRecIdx = findColIndex(["تم الاستلام", "حالة الاستلام", "st_received"], -1);
       const stProcIdx = findColIndex(["processing", "قيد التجهيز", "st_processing"], -1);
@@ -1392,20 +1401,22 @@
         dateVal = dateVal.toISOString().slice(0, 10);
       }
 
-      // استخراج الحالة بذكاء ودقة متناهية
+      // استخراج الحالة بذكاء ودقة متناهية (أولوية للعمود الموحد ثم الأعمدة الأربعة ثم الفحص الآمن)
       let status = null;
       if (statusIdx >= 0) {
         status = normalizeStatusValue(getVal(statusIdx));
       }
       if (!status) {
-        if (stDelIdx >= 0 && isTruthyCell(cells[stDelIdx])) status = 4;
-        else if (stRdyIdx >= 0 && isTruthyCell(cells[stRdyIdx])) status = 3;
+        if (stRdyIdx >= 0 && isTruthyCell(cells[stRdyIdx])) status = 3;
+        else if (stDelIdx >= 0 && isTruthyCell(cells[stDelIdx])) status = 4;
         else if (stProcIdx >= 0 && isTruthyCell(cells[stProcIdx])) status = 2;
         else if (stRecIdx >= 0 && isTruthyCell(cells[stRecIdx])) status = 1;
       }
-      // إذا لم يُعثر على عمود الحالة الصريح، نفحص كافة خلايا الصف للبحث عن أي نص حالة صريح
+      // إذا لم يُعثر على عمود الحالة الصريح، نفحص فقط الأعمدة غير المعروفة (مع استبعاد أعمدة البيانات الأساسية كالاسم والوصف والملاحظات)
       if (!status) {
+        const excludedIndices = new Set([idIdx, custIdx, phoneIdx, totalIdx, recIdx, remIdx, dateIdx, descIdx, notesIdx].filter(x => x >= 0));
         for (let i = 0; i < cells.length; i++) {
+          if (excludedIndices.has(i)) continue;
           const s = normalizeStatusValue(cells[i]?.v);
           if (s) {
             status = s;
@@ -1509,7 +1520,10 @@
           const localOrder = orders.find(o => String(o.OrderID).trim() === String(remoteOrder.OrderID).trim());
           if (localOrder) {
             let changed = false;
-            if (Number(localOrder.Status) !== Number(remoteOrder.Status)) {
+            // حماية التعديل المحلي الحديث لمنع رجوع أو قفز الحالة بسبب تأخر استجابة جوجل شيت
+            const isUnderGracePeriod = localOrder._statusChangeTime && (Date.now() - localOrder._statusChangeTime < 8000);
+
+            if (!isUnderGracePeriod && Number(localOrder.Status) !== Number(remoteOrder.Status)) {
               localOrder.Status = remoteOrder.Status;
               changed = true;
             }
@@ -1988,6 +2002,7 @@
 
       // 1. تحديث الذاكرة فورياً (0 ثانية)
       order.Status = newStatus;
+      order._statusChangeTime = Date.now(); // حماية فورية لمدة 8 ثوانٍ لمنع القفز أو الرجوع أثناء معالجة الخادم
       if (settlePayment) {
         const totalAmt = Number(order.Total_Amount !== undefined ? order.Total_Amount : order.Price) || 0;
         order.Received = totalAmt;
@@ -2033,6 +2048,7 @@
       } catch (err) {
         console.error("فشل التحديث:", err);
         // استعادة الحالة السابقة عند حدوث خطأ
+        delete order._statusChangeTime;
         order.Status = prevStatus;
         order.Received = prevReceived;
         order.Remaining = prevRemaining;
