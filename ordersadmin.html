@@ -622,7 +622,7 @@
       color: var(--txt-dim);
     }
 
-    /* Modal */
+       /* Modal */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -631,11 +631,14 @@
       width: 100%;
       height: 100%;
       background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
       z-index: 100;
       align-items: center;
       justify-content: center;
       padding: 16px;
+      overflow-y: auto; /* يسمح بالتمرير عند تجاوز حجم الشاشة */
+      -webkit-overflow-scrolling: touch;
     }
     .modal-overlay.active {
       display: flex;
@@ -647,9 +650,15 @@
       border-radius: var(--radius-lg);
       width: 100%;
       max-width: 520px;
+      max-height: 90vh;
+      max-height: 90dvh; /* متوافق مع شاشات الجوال وارتفاع المتصفح الديناميكي */
+      overflow-y: auto; /* تمكين التمرير الداخلي السلس */
+      -webkit-overflow-scrolling: touch;
       padding: 24px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
       animation: modalIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      margin: auto;
+      position: relative;
     }
     @keyframes modalIn {
       from { opacity: 0; transform: scale(0.95) translateY(10px); }
@@ -661,6 +670,12 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 18px;
+      position: sticky;
+      top: -24px;
+      background: var(--bg-card);
+      padding: 6px 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
     .modal-header h3 {
       font-size: 18px;
@@ -671,8 +686,10 @@
       background: transparent;
       border: none;
       color: var(--txt-dim);
-      font-size: 20px;
+      font-size: 24px;
       cursor: pointer;
+      line-height: 1;
+      padding: 4px;
     }
     .modal-close:hover { color: #fff; }
 
@@ -728,8 +745,96 @@
       justify-content: flex-end;
       gap: 10px;
       margin-top: 20px;
+      position: sticky;
+      bottom: -24px;
+      background: var(--bg-card);
+      padding: 12px 0;
+      z-index: 10;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
     }
 
+    /* Prompt Modal for WhatsApp */
+    .whatsapp-prompt-box {
+      text-align: center;
+      padding: 10px 0;
+    }
+    .whatsapp-prompt-icon {
+      font-size: 48px;
+      margin-bottom: 8px;
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 200;
+      pointer-events: none;
+    }
+    .toast {
+      background: #1e293b;
+      color: #fff;
+      border: 1px solid var(--border-color);
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: auto;
+    }
+    .toast.toast-success { border-right: 4px solid var(--status-3); }
+    .toast.toast-error { border-right: 4px solid var(--danger); }
+    .toast.toast-info { border-right: 4px solid var(--status-1); }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* تحسينات وتجاوب شاشات الجوال بالكامل */
+    @media (max-width: 640px) {
+      .modal-overlay {
+        padding: 10px 8px;
+        align-items: flex-start; /* يبدأ من الأعلى لمنع اقتطاع الرأس على الشاشات الصغيرة */
+      }
+      .modal-content {
+        max-height: 94vh;
+        max-height: 94dvh;
+        padding: 16px 14px;
+        border-radius: var(--radius-md);
+        margin: 8px auto;
+      }
+      .modal-header {
+        top: -16px;
+        margin-bottom: 14px;
+        padding: 4px 0;
+      }
+      .modal-footer {
+        bottom: -16px;
+        margin-top: 14px;
+        padding: 10px 0;
+      }
+      .modal-footer .btn {
+        flex: 1;
+        justify-content: center;
+        padding: 12px 14px;
+        font-size: 14px;
+      }
+      .form-group input, .form-group select, .form-group textarea {
+        font-size: 16px !important; /* يمنع التكبير التلقائي المزعج في متصفح سفاري والكروم على الجوال */
+      }
+      .input-row, .input-row-3 { grid-template-columns: 1fr; }
+      .card-header { flex-direction: column; align-items: flex-start; }
+      .card-footer { flex-direction: column; align-items: stretch; }
+      .status-buttons-group { justify-content: space-between; }
+      .card-tools { justify-content: space-between; }
+    }
     /* Prompt Modal for WhatsApp */
     .whatsapp-prompt-box {
       text-align: center;
