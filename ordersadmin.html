@@ -363,6 +363,16 @@
       background: var(--bg-card-hover);
     }
 
+    /* وميض احتفالي ناعم عند وصول طلب جديد عبر GViz */
+    @keyframes newOrderGlow {
+      0% { transform: translateY(-10px) scale(0.97); box-shadow: 0 0 25px rgba(245, 158, 11, 0.7); border-color: #f59e0b; }
+      50% { transform: translateY(0) scale(1.01); box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); border-color: #10b981; }
+      100% { transform: scale(1); box-shadow: var(--shadow-card); border-color: var(--border-color); }
+    }
+    .card-highlight-new {
+      animation: newOrderGlow 2.5s ease-out;
+    }
+
     .card-header {
       display: flex;
       justify-content: space-between;
@@ -409,6 +419,7 @@
       border-radius: 20px;
       font-size: 12px;
       font-weight: 700;
+      transition: all 0.25s ease;
     }
     .badge-status-1 { background: rgba(6, 182, 212, 0.15); color: var(--status-1); border: 1px solid rgba(6, 182, 212, 0.3); }
     .badge-status-2 { background: rgba(245, 158, 11, 0.15); color: var(--status-2); border: 1px solid rgba(245, 158, 11, 0.3); }
@@ -420,6 +431,7 @@
       font-weight: 700;
       padding: 3px 8px;
       border-radius: 12px;
+      transition: all 0.25s ease;
     }
     .pay-paid { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
     .pay-partial { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
@@ -607,9 +619,7 @@
       color: var(--txt-dim);
     }
 
-    /* ==============================================================
-       تحسين النوافذ المنبثقة: متجاوبة 100% مع تمرير رأسي وسلس
-       ============================================================== */
+    /* تحسين النوافذ المنبثقة: متجاوبة 100% مع تمرير رأسي */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -621,13 +631,13 @@
       -webkit-backdrop-filter: blur(5px);
       z-index: 100;
       padding: 20px 14px;
-      overflow-y: auto; /* يسمح بالتمرير الرأسي لأي شاشة */
+      overflow-y: auto;
       scrollbar-width: thin;
     }
     .modal-overlay.active {
       display: flex;
       justify-content: center;
-      align-items: flex-start; /* يبدأ من الأعلى لمنع اقتطاع أزرار الأسفل */
+      align-items: flex-start;
     }
 
     .modal-content {
@@ -636,7 +646,7 @@
       border-radius: var(--radius-lg);
       width: 100%;
       max-width: 560px;
-      margin: auto 0; /* توسيط رأسي تلقائي ومرن */
+      margin: auto 0;
       padding: 22px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
       animation: modalIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -803,7 +813,7 @@
           <span class="status-dot" id="syncDot"></span>
           <span id="syncText">جاهز ومحدث</span>
         </div>
-        <button class="btn btn-secondary" id="notifyPermBtn" title="تفعيل إشعارات الطلبات">
+        <button class="btn btn-secondary" id="notifyPermBtn" title="تفعيل إشعارات وتنبيهات الطلبات">
           🔔 إشعارات
         </button>
         <button class="btn btn-secondary" id="refreshBtn" title="تحديث البيانات">
@@ -1053,6 +1063,10 @@
         <input type="text" id="settingApiToken" style="direction: ltr;">
       </div>
       <div class="form-group">
+        <label>معرف جدول Google Sheets (Spreadsheet ID)</label>
+        <input type="text" id="settingSpreadsheetId" style="direction: ltr;">
+      </div>
+      <div class="form-group">
         <label>رابط صفحة تتبع العملاء (Customer Tracking Base URL)</label>
         <input type="text" id="settingTrackingUrl" placeholder="اتركه فارغاً للاستخدام التلقائي" style="direction: ltr;">
         <small style="color: var(--txt-dim); font-size: 11px;">سيتم تضمين هذا الرابط في رسائل الواتساب مع رقم الطلب تلقائياً.</small>
@@ -1073,9 +1087,12 @@
     // ==========================================
     const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbyS_6f97T9sbDY7U63k6yJp5B2j95nsWz9wMUBszWL-4UDslKJ2Yk_AyTCZATjs3r22/exec";
     const DEFAULT_API_TOKEN = "s3cr3tK3y123";
+    const DEFAULT_SPREADSHEET_ID = "1olejIBhQty7dtosCWYCn8sy8RCKsq0ks6eid_SOBpOY";
+    const SHEET_NAME = "Orders";
 
     let API_URL = localStorage.getItem("alfoad_api_url") || DEFAULT_API_URL;
     let API_TOKEN = localStorage.getItem("alfoad_api_token") || DEFAULT_API_TOKEN;
+    let SPREADSHEET_ID = localStorage.getItem("alfoad_spreadsheet_id") || DEFAULT_SPREADSHEET_ID;
     let CUSTOM_TRACKING_URL = localStorage.getItem("alfoad_tracking_url") || "";
 
     let orders = [];
@@ -1085,6 +1102,20 @@
     // ==========================================
     // محرك النغمات الصوتية الفاخرة (Web Audio API)
     // ==========================================
+    let audioContextUnlocked = false;
+    function unlockAudio() {
+      if (audioContextUnlocked) return;
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) {
+          const ctx = new AudioContext();
+          ctx.resume().then(() => { audioContextUnlocked = true; });
+        }
+      } catch(e) {}
+    }
+    window.addEventListener('click', unlockAudio, { once: true });
+    window.addEventListener('touchstart', unlockAudio, { once: true });
+
     function playStoreChime() {
       try {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -1092,29 +1123,20 @@
         const ctx = new AudioContext();
         const now = ctx.currentTime;
 
-        // النغمة الأولى
-        const osc1 = ctx.createOscillator();
-        const gain1 = ctx.createGain();
-        osc1.type = 'sine';
-        osc1.frequency.setValueAtTime(587.33, now); // D5
-        gain1.gain.setValueAtTime(0.25, now);
-        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
-        osc1.connect(gain1);
-        gain1.connect(ctx.destination);
-        osc1.start(now);
-        osc1.stop(now + 0.4);
-
-        // النغمة الثانية
-        const osc2 = ctx.createOscillator();
-        const gain2 = ctx.createGain();
-        osc2.type = 'sine';
-        osc2.frequency.setValueAtTime(880, now + 0.12); // A5
-        gain2.gain.setValueAtTime(0.25, now + 0.12);
-        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
-        osc2.connect(gain2);
-        gain2.connect(ctx.destination);
-        osc2.start(now + 0.12);
-        osc2.stop(now + 0.7);
+        // وتر رنين متسلسل لطيف (C5 -> E5 -> G5 -> C6)
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.1);
+          gain.gain.setValueAtTime(0.2, now + idx * 0.1);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.1 + 0.45);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + idx * 0.1);
+          osc.stop(now + idx * 0.1 + 0.45);
+        });
       } catch (e) {}
     }
 
@@ -1150,7 +1172,7 @@
             playStoreChime();
             notifyPermBtn.style.color = "#10b981";
             notifyPermBtn.title = "الإشعارات مفعلة ✅";
-            sendBrowserNotification("متجر الفؤاد للتحف والهدايا", "تم تفعيل إشعارات الطلبات بنجاح 🔔");
+            sendBrowserNotification("متجر الفؤاد للتحف والهدايا", "تم تفعيل إشعارات وتنبيهات الطلبات بنجاح 🔔");
             showToast("تم تفعيل إشعارات المتصفح بنجاح ✅", "success");
           } else {
             showToast("تم رفض إذن الإشعارات من إعدادات المتصفح", "error");
@@ -1272,16 +1294,6 @@
         const data = await res.json();
 
         if (Array.isArray(data)) {
-          // فحص وصول طلبات جديدة لتشغيل الصوت والإشعار
-          if (orders.length > 0 && data.length > orders.length) {
-            const latest = data[data.length - 1];
-            playStoreChime();
-            sendBrowserNotification(
-              "🔔 طلب جديد في متجر الفؤاد!", 
-              `طلب جديد #${latest.OrderID} للعميل: ${latest.CustomerName}`
-            );
-          }
-
           orders = data;
           localStorage.setItem("alfoad_orders_cache", JSON.stringify(orders));
           render();
@@ -1294,6 +1306,209 @@
         console.error("فشل جلب البيانات:", err);
         showToast("تعذر جلب البيانات من الخادم، تم عرض النسخة المحفوظة", 'error');
         setSyncState(false, 'وضع أوفلاين');
+      }
+    }
+
+    // ==========================================
+    // محرك الفحص اللحظي فائق السرعة عبر Google CDN (GViz)
+    // ==========================================
+    function parseGvizRowAdmin(cells, cols, rowNumber) {
+      const getVal = (idx) => {
+        if (idx >= 0 && idx < cells.length && cells[idx] && cells[idx].v !== null && cells[idx].v !== undefined) {
+          return cells[idx].v;
+        }
+        return '';
+      };
+
+      const lowerCols = (cols || []).map(c => String(c || '').toLowerCase());
+      function findColIndex(keywords, fallback) {
+        for (let i = 0; i < lowerCols.length; i++) {
+          for (const kw of keywords) {
+            if (lowerCols[i] === kw || lowerCols[i].includes(kw)) return i;
+          }
+        }
+        return fallback;
+      }
+
+      const idIdx = findColIndex(["orderid", "order_id", "طلب", "رقم الطلب", "id"], 0);
+      const custIdx = findColIndex(["customername", "customer_name", "customer", "اسم العميل", "العميل"], 1);
+      const phoneIdx = findColIndex(["phone", "mobile", "رقم الهاتف", "الهاتف", "جوال"], 2);
+      const totalIdx = findColIndex(["total_amount", "totalamount", "total", "المبلغ الاجمالي", "المبلغ الإجمالي", "الاجمالي", "السعر", "price"], 3);
+      const recIdx = findColIndex(["المبلغ الواصل", "الواصل", "المدفوع", "received", "received_amount", "paid"], 4);
+      const remIdx = findColIndex(["remaining", "المتبقي", "المبلغ المتبقي", "باقي"], 5);
+      const dateIdx = findColIndex(["date", "تاريخ", "التاريخ"], 6);
+      const descIdx = findColIndex(["order_description", "description", "وصف الطلب", "الوصف", "تفاصيل"], 7);
+      const notesIdx = findColIndex(["order_notes", "notes", "ملاحظات الطلب", "ملاحظات"], 8);
+      const statusIdx = findColIndex(["status", "الحالة", "حالة الطلب", "حالة"], 9);
+
+      const stRecIdx = findColIndex(["تم الاستلام", "حالة الاستلام", "st_received"], -1);
+      const stProcIdx = findColIndex(["processing", "قيد التجهيز", "st_processing"], -1);
+      const stRdyIdx = findColIndex(["ready", "جاهز", "st_ready"], -1);
+      const stDelIdx = findColIndex(["delivered", "تم التسليم", "st_delivered"], -1);
+
+      const orderId = String(getVal(idIdx)).trim();
+      if (!orderId) return null;
+
+      const custName = String(getVal(custIdx) || 'عميل المتجر');
+      const phone = String(getVal(phoneIdx) || '');
+      const total = Number(getVal(totalIdx)) || 0;
+      const received = Number(getVal(recIdx)) || 0;
+      const remVal = getVal(remIdx);
+      const remaining = (remVal !== '') ? Number(remVal) : Math.max(0, total - received);
+
+      let dateVal = getVal(dateIdx);
+      if (typeof dateVal === 'string' && dateVal.includes('Date(')) {
+        try {
+          const m = dateVal.match(/\((.*?)\)/);
+          if (m) {
+            const parts = m[1].split(',');
+            dateVal = `${parts[0]}-${String(Number(parts[1])+1).padStart(2,'0')}-${String(parts[2]).padStart(2,'0')}`;
+          }
+        } catch(e){}
+      } else if (dateVal instanceof Date) {
+        dateVal = dateVal.toISOString().slice(0, 10);
+      }
+
+      let status = Number(getVal(statusIdx));
+      if (!status || status < 1 || status > 4) {
+        if (stDelIdx >= 0 && (getVal(stDelIdx) === 1 || getVal(stDelIdx) === true || String(getVal(stDelIdx)).toLowerCase() === 'true')) status = 4;
+        else if (stRdyIdx >= 0 && (getVal(stRdyIdx) === 1 || getVal(stRdyIdx) === true || String(getVal(stRdyIdx)).toLowerCase() === 'true')) status = 3;
+        else if (stProcIdx >= 0 && (getVal(stProcIdx) === 1 || getVal(stProcIdx) === true || String(getVal(stProcIdx)).toLowerCase() === 'true')) status = 2;
+        else status = 1;
+      }
+
+      return {
+        row: rowNumber,
+        OrderID: orderId,
+        CustomerName: custName,
+        Phone: phone,
+        Total_Amount: total,
+        Price: total,
+        Received: received,
+        Remaining: remaining,
+        Order_Description: String(getVal(descIdx) || ''),
+        Order_Notes: String(getVal(notesIdx) || ''),
+        Date: String(dateVal || ''),
+        Status: status
+      };
+    }
+
+    function prependOrderCardIfMatches(order) {
+      const container = document.getElementById('ordersContainer');
+      const emptyState = document.getElementById('emptyState');
+
+      const rawQ = searchQuery.toLowerCase().trim();
+      const q = rawQ.replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
+
+      const matchesFilter = (currentFilter === 'all') || (String(order.Status) === String(currentFilter));
+      const matchesQuery = !q || 
+        String(order.OrderID).toLowerCase().includes(q) ||
+        String(order.CustomerName).toLowerCase().includes(q) ||
+        String(order.Phone).toLowerCase().includes(q) ||
+        String(order.Order_Description || '').toLowerCase().includes(q) ||
+        String(order.Order_Notes || '').toLowerCase().includes(q);
+
+      if (matchesFilter && matchesQuery) {
+        const card = createOrderCard(order);
+        card.classList.add('card-highlight-new');
+        container.prepend(card);
+        if (emptyState) emptyState.style.display = 'none';
+      }
+    }
+
+    let isPollingGviz = false;
+    async function pollGvizBackground() {
+      if (isPollingGviz || !SPREADSHEET_ID) return;
+      isPollingGviz = true;
+      try {
+        const gvizUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&headers=1&sheet=${encodeURIComponent(SHEET_NAME)}&_nc=${Date.now()}`;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 4000);
+        const res = await fetch(gvizUrl, { cache: 'no-store', signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        if (!res.ok) return;
+        const text = await res.text();
+        const match = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]+)\);?$/);
+        if (!match) return;
+
+        const gvizJson = JSON.parse(match[1]);
+        if (gvizJson.status !== 'ok' || !gvizJson.table || !gvizJson.table.rows) return;
+
+        const cols = (gvizJson.table.cols || []).map(c => (c && c.label) ? String(c.label).trim() : '');
+        const gvizRows = gvizJson.table.rows;
+
+        const parsedOrders = [];
+        for (let i = 0; i < gvizRows.length; i++) {
+          const cells = gvizRows[i].c;
+          if (!cells) continue;
+          const parsed = parseGvizRowAdmin(cells, cols, i + 2);
+          if (parsed && parsed.OrderID) {
+            parsedOrders.push(parsed);
+          }
+        }
+
+        if (parsedOrders.length === 0) return;
+
+        // 1. فحص الطلبات الجديدة المضافة للجدول
+        const existingOrderIds = new Set(orders.map(o => String(o.OrderID).trim()));
+        const brandNewOrders = parsedOrders.filter(o => !existingOrderIds.has(String(o.OrderID).trim()));
+
+        if (brandNewOrders.length > 0) {
+          brandNewOrders.forEach(newOrder => {
+            orders.push(newOrder);
+            prependOrderCardIfMatches(newOrder);
+            playStoreChime();
+            sendBrowserNotification(
+              "🔔 طلب جديد في متجر الفؤاد!", 
+              `طلب جديد #${newOrder.OrderID} للعميل: ${newOrder.CustomerName} (${Number(newOrder.Total_Amount).toLocaleString('ar-YE')} ر.ي)`
+            );
+            showToast(`✨ وصل طلب جديد رقم #${newOrder.OrderID} للعميل (${newOrder.CustomerName})`, 'success');
+          });
+          localStorage.setItem("alfoad_orders_cache", JSON.stringify(orders));
+          updateStats();
+        }
+
+        // 2. فحص تحديث الحالات أو المبالغ لأي طلب قائم دون إعادة تحميل الصفحة
+        let hasRemoteUpdates = false;
+        parsedOrders.forEach(remoteOrder => {
+          const localOrder = orders.find(o => String(o.OrderID).trim() === String(remoteOrder.OrderID).trim());
+          if (localOrder) {
+            let changed = false;
+            if (Number(localOrder.Status) !== Number(remoteOrder.Status)) {
+              localOrder.Status = remoteOrder.Status;
+              changed = true;
+            }
+            if (Number(localOrder.Received) !== Number(remoteOrder.Received) || 
+                Number(localOrder.Remaining) !== Number(remoteOrder.Remaining) || 
+                Number(localOrder.Total_Amount) !== Number(remoteOrder.Total_Amount)) {
+              localOrder.Received = remoteOrder.Received;
+              localOrder.Remaining = remoteOrder.Remaining;
+              localOrder.Total_Amount = remoteOrder.Total_Amount;
+              localOrder.Price = remoteOrder.Total_Amount;
+              changed = true;
+            }
+            if (changed) {
+              localOrder.row = remoteOrder.row;
+              updateOrderCardDOM(localOrder);
+              hasRemoteUpdates = true;
+            }
+          }
+        });
+
+        if (hasRemoteUpdates) {
+          localStorage.setItem("alfoad_orders_cache", JSON.stringify(orders));
+          updateStats();
+        }
+
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('ar-YE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        setSyncState(false, `⚡ مراقبة لحظية ${timeStr}`);
+
+      } catch (err) {
+        // صامت لعدم إزعاج المستخدم عند تقطع الشبكة المؤقت
+      } finally {
+        isPollingGviz = false;
       }
     }
 
@@ -1483,7 +1698,105 @@
     }
 
     // ==========================================
-    // منطق تغيير الحالة والتسوية المالية
+    // تحديث بطاقة الطلب وحدها فورياً (0 ثانية بدون إعادة رندرة الكل)
+    // ==========================================
+    function updateOrderCardDOM(order) {
+      const card = document.querySelector(`.order-card[data-row="${order.row}"]`);
+      if (!card) return;
+
+      const st = statusMeta[order.Status] || statusMeta[1];
+      const totalAmt = Number(order.Total_Amount !== undefined ? order.Total_Amount : order.Price) || 0;
+      const receivedAmt = Number(order.Received) || 0;
+      const remainingAmt = (order.Remaining !== undefined) ? Number(order.Remaining) : Math.max(0, totalAmt - receivedAmt);
+
+      // 1. تحديث شارة الحالة الملونة
+      const statusBadge = card.querySelector('.status-badge');
+      if (statusBadge) {
+        statusBadge.className = `status-badge ${st.class}`;
+        statusBadge.innerHTML = `${st.icon} ${st.name}`;
+      }
+
+      // 2. تحديث شارة حالة الدفع
+      const payBadge = card.querySelector('.payment-badge');
+      if (payBadge) {
+        if (totalAmt > 0 && remainingAmt === 0) {
+          payBadge.className = 'payment-badge pay-paid';
+          payBadge.innerHTML = 'مسدد بالكامل ✅';
+        } else if (receivedAmt > 0 && remainingAmt > 0) {
+          payBadge.className = 'payment-badge pay-partial';
+          payBadge.innerHTML = `باقي: ${remainingAmt.toLocaleString('ar-YE')} ر.ي`;
+        } else {
+          payBadge.className = 'payment-badge pay-unpaid';
+          payBadge.innerHTML = 'غير مدفوع ⚠️';
+        }
+      }
+
+      // 3. تحديث مبالغ الحسابات
+      const valTotal = card.querySelector('.val-total');
+      if (valTotal) valTotal.textContent = `${totalAmt.toLocaleString('ar-YE')} ر.ي`;
+
+      const valRec = card.querySelector('.val-received');
+      if (valRec) valRec.textContent = `${receivedAmt.toLocaleString('ar-YE')} ر.ي`;
+
+      const valRem = card.querySelector('.val-remaining');
+      if (valRem) valRem.textContent = `${remainingAmt.toLocaleString('ar-YE')} ر.ي`;
+
+      // 4. تحديث زر التسوية المصغر
+      let settleBtnMini = card.querySelector('.btn-settle-mini');
+      if (remainingAmt <= 0 && settleBtnMini) {
+        settleBtnMini.remove();
+      } else if (remainingAmt > 0 && !settleBtnMini && valRem && valRem.parentElement) {
+        const newBtn = document.createElement('button');
+        newBtn.className = 'btn-settle-mini';
+        newBtn.title = 'تسوية المبلغ المتبقي بالكامل';
+        newBtn.textContent = '💳 تسوية';
+        newBtn.onclick = () => handleDirectSettlement(order.row);
+        valRem.parentElement.appendChild(newBtn);
+      }
+
+      // 5. تحديث تفعيل أزرار الحالات الأربعة
+      const btns = card.querySelectorAll('.status-btn');
+      btns.forEach((btn, idx) => {
+        const s = idx + 1;
+        btn.classList.remove('active-1', 'active-2', 'active-3', 'active-4');
+        if (s === Number(order.Status)) {
+          btn.classList.add(`active-${s}`);
+        }
+      });
+
+      // 6. تحديث حدث زر الواتساب بالقيم الجديدة
+      const waBtn = card.querySelector('.tool-btn-whatsapp');
+      if (waBtn) {
+        waBtn.onclick = () => openCustomerWhatsApp(
+          order.Phone,
+          order.CustomerName,
+          order.OrderID,
+          order.Status,
+          totalAmt,
+          receivedAmt,
+          remainingAmt,
+          order.Order_Description || ''
+        );
+      }
+
+      // 7. إذا كان الأدمن داخل تبويب فلتر محدد (مثل "قيد التجهيز") ونقل الطلب لحالة أخرى: إخفاء ناعم للبطاقة
+      if (currentFilter !== 'all' && String(order.Status) !== String(currentFilter)) {
+        card.style.transition = 'all 0.35s ease';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          card.remove();
+          const container = document.getElementById('ordersContainer');
+          const emptyState = document.getElementById('emptyState');
+          if (container.querySelectorAll('.order-card').length === 0) {
+            emptyState.style.display = 'block';
+          }
+        }, 350);
+      }
+    }
+
+    // ==========================================
+    // منطق تغيير الحالة والتسوية المالية عند التسليم
     // ==========================================
     let pendingDeliveryOrder = null;
 
@@ -1495,6 +1808,7 @@
       const receivedAmt = Number(order.Received) || 0;
       const remainingAmt = (order.Remaining !== undefined) ? Number(order.Remaining) : Math.max(0, totalAmt - receivedAmt);
 
+      // إذا ضغط على "تسليم" وكان هناك متبقي > 0: نسأله عن التسوية المالية
       if (status === 4 && remainingAmt > 0) {
         pendingDeliveryOrder = order;
         document.getElementById('settleOrderID').textContent = `#${order.OrderID}`;
@@ -1514,18 +1828,19 @@
 
     document.getElementById('confirmSettleAndDeliverBtn').onclick = () => {
       if (pendingDeliveryOrder) {
-        handleStatusChange(pendingDeliveryOrder.row, 4, true);
+        handleStatusChange(pendingDeliveryOrder.row, 4, true); // true = settlePayment
       }
       closeSettlementModal();
     };
 
     document.getElementById('confirmDeliverOnlyBtn').onclick = () => {
       if (pendingDeliveryOrder) {
-        handleStatusChange(pendingDeliveryOrder.row, 4, false);
+        handleStatusChange(pendingDeliveryOrder.row, 4, false); // false = deliver only
       }
       closeSettlementModal();
     };
 
+    // تسوية مالية مباشرة بضغطة زر
     async function handleDirectSettlement(row) {
       const order = orders.find(o => o.row === row);
       if (!order) return;
@@ -1537,9 +1852,16 @@
         return;
       }
 
+      const prevReceived = order.Received;
+      const prevRemaining = order.Remaining;
+
+      // تحديث فوري محلياً للبطاقة نفسها فقط
       order.Received = totalAmt;
       order.Remaining = 0;
-      render();
+      updateOrderCardDOM(order);
+      updateStats();
+      localStorage.setItem("alfoad_orders_cache", JSON.stringify(orders));
+
       showToast(`تمت تسوية حساب الطلب #${order.OrderID} بالكامل ✅`, 'success');
       setSyncState(true, 'مزامنة التسوية...');
 
@@ -1550,10 +1872,16 @@
         });
         const data = await res.json();
         if (data.success || data.result) {
-          localStorage.setItem("alfoad_orders_cache", JSON.stringify(orders));
           setSyncState(false, 'تم حفظ التسوية');
+        } else {
+          throw new Error(data.error || 'فشل حفظ التسوية');
         }
       } catch(e) {
+        order.Received = prevReceived;
+        order.Remaining = prevRemaining;
+        updateOrderCardDOM(order);
+        updateStats();
+        showToast("فشلت مزامنة التسوية مع الخادم", 'error');
         setSyncState(false, 'خطأ مزامنة');
       }
     }
@@ -1566,13 +1894,22 @@
       const prevReceived = order.Received;
       const prevRemaining = order.Remaining;
 
+      // 1. تحديث الذاكرة فورياً (0 ثانية)
       order.Status = newStatus;
       if (settlePayment) {
         const totalAmt = Number(order.Total_Amount !== undefined ? order.Total_Amount : order.Price) || 0;
         order.Received = totalAmt;
         order.Remaining = 0;
       }
-      render();
+
+      // 2. تحديث البطاقة المحددة وحدها في الـ DOM بدون إعادة رندرة الكل!
+      updateOrderCardDOM(order);
+
+      // 3. تحديث العدادات والإحصائيات فوراً
+      updateStats();
+
+      // 4. حفظ النسخة في التخزين المحلي
+      localStorage.setItem("alfoad_orders_cache", JSON.stringify(orders));
 
       const msg = settlePayment ? 
         `تم تسليم الطلب #${order.OrderID} وتسوية المبلغ بالكامل ✅` : 
@@ -1596,17 +1933,18 @@
         const data = await res.json();
 
         if (data.success || data.result) {
-          localStorage.setItem("alfoad_orders_cache", JSON.stringify(orders));
           setSyncState(false, 'تم الحفظ');
         } else {
           throw new Error(data.error || 'خطأ في التحديث');
         }
       } catch (err) {
         console.error("فشل التحديث:", err);
+        // استعادة الحالة السابقة عند حدوث خطأ
         order.Status = prevStatus;
         order.Received = prevReceived;
         order.Remaining = prevRemaining;
-        render();
+        updateOrderCardDOM(order);
+        updateStats();
         showToast("فشلت المزامنة مع الخادم، تمت استعادة الحالة السابقة", 'error');
         setSyncState(false, 'خطأ في الحفظ');
       }
@@ -1623,9 +1961,27 @@
         return;
       }
 
+      // إخفاء وحذف بطاقة الطلب المحددة فقط من الـ DOM
+      const card = document.querySelector(`.order-card[data-row="${row}"]`);
+      if (card) {
+        card.style.transition = 'all 0.3s ease';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.9)';
+        setTimeout(() => {
+          card.remove();
+          const container = document.getElementById('ordersContainer');
+          const emptyState = document.getElementById('emptyState');
+          if (container.querySelectorAll('.order-card').length === 0) {
+            emptyState.style.display = 'block';
+          }
+        }, 300);
+      }
+
       const backupOrders = [...orders];
       orders = orders.filter(o => o.row !== row);
-      render();
+      updateStats();
+      localStorage.setItem("alfoad_orders_cache", JSON.stringify(orders));
+
       showToast(`تم حذف الطلب #${order.OrderID}`, 'info');
       setSyncState(true, 'جاري الحذف من الخادم...');
 
@@ -1636,7 +1992,6 @@
         });
         const data = await res.json();
         if (data.success || data.result) {
-          localStorage.setItem("alfoad_orders_cache", JSON.stringify(orders));
           setSyncState(false, 'تم الحذف');
         } else {
           throw new Error(data.error || 'خطأ');
@@ -1650,7 +2005,7 @@
     }
 
     // ==========================================
-    // إدارة النوافذ المنبثقة
+    // إدارة النوافذ المنبثقة (إضافة وتعديل)
     // ==========================================
     const orderModal = document.getElementById('orderModal');
     const orderForm = document.getElementById('orderForm');
@@ -1769,9 +2124,18 @@
           Status: 1
         };
         orders.push(tempOrder);
-        render();
+        prependOrderCardIfMatches(tempOrder);
+        updateStats();
         showToast("تمت إضافة الطلب في مرحلة (تم الاستلام) ✅", 'success');
         showWhatsAppPrompt(tempOrder);
+      } else {
+        const existingOrder = orders.find(o => o.row === Number(rowVal));
+        if (existingOrder) {
+          Object.assign(existingOrder, orderData);
+          updateOrderCardDOM(existingOrder);
+          updateStats();
+          localStorage.setItem("alfoad_orders_cache", JSON.stringify(orders));
+        }
       }
 
       try {
@@ -1783,7 +2147,7 @@
 
         if (data.success || data.result) {
           showToast(isEdit ? "تم تحديث الطلب بنجاح" : "تم حفظ الطلب في Google Sheets بنجاح", 'success');
-          fetchOrders(true);
+          pollGvizBackground();
         } else {
           showToast(data.message || data.error || "حدث خطأ أثناء الحفظ", 'error');
         }
@@ -1880,8 +2244,8 @@
     };
 
     document.getElementById('refreshBtn').onclick = () => {
-      fetchOrders(true);
-      showToast("جاري تحديث البيانات من Google Sheets...", 'info');
+      pollGvizBackground();
+      showToast("جاري فحص وتحديث البيانات من Google Sheets...", 'info');
     };
 
     // ==========================================
@@ -1891,6 +2255,7 @@
     document.getElementById('settingsBtn').onclick = () => {
       document.getElementById('settingApiUrl').value = API_URL;
       document.getElementById('settingApiToken').value = API_TOKEN;
+      document.getElementById('settingSpreadsheetId').value = SPREADSHEET_ID;
       document.getElementById('settingTrackingUrl').value = CUSTOM_TRACKING_URL;
       settingsModal.classList.add('active');
     };
@@ -1899,20 +2264,23 @@
     document.getElementById('saveSettingsBtn').onclick = () => {
       API_URL = document.getElementById('settingApiUrl').value.trim();
       API_TOKEN = document.getElementById('settingApiToken').value.trim();
+      SPREADSHEET_ID = document.getElementById('settingSpreadsheetId').value.trim() || DEFAULT_SPREADSHEET_ID;
       CUSTOM_TRACKING_URL = document.getElementById('settingTrackingUrl').value.trim();
       
       localStorage.setItem("alfoad_api_url", API_URL);
       localStorage.setItem("alfoad_api_token", API_TOKEN);
+      localStorage.setItem("alfoad_spreadsheet_id", SPREADSHEET_ID);
       localStorage.setItem("alfoad_tracking_url", CUSTOM_TRACKING_URL);
 
       settingsModal.classList.remove('active');
       showToast("تم حفظ إعدادات النظام والروابط بنجاح", 'success');
-      fetchOrders(true);
+      pollGvizBackground();
     };
 
     document.getElementById('resetSettingsBtn').onclick = () => {
       document.getElementById('settingApiUrl').value = DEFAULT_API_URL;
       document.getElementById('settingApiToken').value = DEFAULT_API_TOKEN;
+      document.getElementById('settingSpreadsheetId').value = DEFAULT_SPREADSHEET_ID;
       document.getElementById('settingTrackingUrl').value = "";
     };
 
@@ -1923,13 +2291,12 @@
       if (e.target === document.getElementById('deliverySettlementModal')) closeSettlementModal();
     };
 
-    // فحص دوري تلقائي للطلبات الجديدة في الخلفية كل 60 ثانية
-    setInterval(() => {
-      fetchOrders(true);
-    }, 60000);
-
     loadCachedOrders();
     fetchOrders();
+
+    // تشغيل المراقبة اللحظية الخفيفة والفورية عبر Google CDN (GViz) كل 10 ثوانٍ (0.2 ثانية استجابة وبدون أي استهلاك)
+    setInterval(pollGvizBackground, 10000);
+    setTimeout(pollGvizBackground, 3000);
   </script>
 </body>
 </html>
