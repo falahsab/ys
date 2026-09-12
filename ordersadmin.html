@@ -622,7 +622,7 @@
       color: var(--txt-dim);
     }
 
-       /* Modal */
+    /* Modal */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -637,7 +637,7 @@
       align-items: center;
       justify-content: center;
       padding: 16px;
-      overflow-y: auto; /* يسمح بالتمرير عند تجاوز حجم الشاشة */
+      overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
     .modal-overlay.active {
@@ -651,8 +651,8 @@
       width: 100%;
       max-width: 520px;
       max-height: 90vh;
-      max-height: 90dvh; /* متوافق مع شاشات الجوال وارتفاع المتصفح الديناميكي */
-      overflow-y: auto; /* تمكين التمرير الداخلي السلس */
+      max-height: 90dvh;
+      overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       padding: 24px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
@@ -797,11 +797,10 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* تحسينات وتجاوب شاشات الجوال بالكامل */
     @media (max-width: 640px) {
       .modal-overlay {
         padding: 10px 8px;
-        align-items: flex-start; /* يبدأ من الأعلى لمنع اقتطاع الرأس على الشاشات الصغيرة */
+        align-items: flex-start;
       }
       .modal-content {
         max-height: 94vh;
@@ -823,63 +822,12 @@
       .modal-footer .btn {
         flex: 1;
         justify-content: center;
-        padding: 12px 14px;
+        padding: 11px 12px;
         font-size: 14px;
       }
       .form-group input, .form-group select, .form-group textarea {
-        font-size: 16px !important; /* يمنع التكبير التلقائي المزعج في متصفح سفاري والكروم على الجوال */
+        font-size: 16px !important; /* منع التكبير التلقائي المزعج في متصفح سفاري على الآيفون */
       }
-      .input-row, .input-row-3 { grid-template-columns: 1fr; }
-      .card-header { flex-direction: column; align-items: flex-start; }
-      .card-footer { flex-direction: column; align-items: stretch; }
-      .status-buttons-group { justify-content: space-between; }
-      .card-tools { justify-content: space-between; }
-    }
-    /* Prompt Modal for WhatsApp */
-    .whatsapp-prompt-box {
-      text-align: center;
-      padding: 10px 0;
-    }
-    .whatsapp-prompt-icon {
-      font-size: 48px;
-      margin-bottom: 8px;
-    }
-
-    /* Toast Notification */
-    .toast-container {
-      position: fixed;
-      bottom: 24px;
-      left: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      z-index: 200;
-      pointer-events: none;
-    }
-    .toast {
-      background: #1e293b;
-      color: #fff;
-      border: 1px solid var(--border-color);
-      padding: 12px 18px;
-      border-radius: var(--radius-md);
-      font-size: 14px;
-      font-weight: 600;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      pointer-events: auto;
-    }
-    .toast.toast-success { border-right: 4px solid var(--status-3); }
-    .toast.toast-error { border-right: 4px solid var(--danger); }
-    .toast.toast-info { border-right: 4px solid var(--status-1); }
-    @keyframes toastIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 640px) {
       .input-row, .input-row-3 { grid-template-columns: 1fr; }
       .card-header { flex-direction: column; align-items: flex-start; }
       .card-footer { flex-direction: column; align-items: stretch; }
@@ -996,7 +944,7 @@
           الكل <span class="badge-count" id="countAll">0</span>
         </button>
         <button class="filter-pill" data-filter="1">
-          تم الاستلام <span class="badge-count" id="count1">0</span>
+          الطلبات الجديدة <span class="badge-count" id="count1">0</span>
         </button>
         <button class="filter-pill" data-filter="2">
           قيد التجهيز <span class="badge-count" id="count2">0</span>
@@ -1432,8 +1380,8 @@
       // 4. فحص حالة (قيد التجهيز)
       if (s.includes("تجهيز") || s.includes("تنفيذ") || s.toLowerCase() === 'processing') return 2;
 
-      // 5. فحص حالة (تم الاستلام)
-      if (s.includes("استلام") || s.toLowerCase() === 'received') return 1;
+      // 5. فحص حالة (الطلبات الجديدة / تم الاستلام)
+      if (s.includes("جديد") || s.includes("جديدة") || s.includes("استلام") || s.toLowerCase() === 'received' || s.toLowerCase() === 'new') return 1;
 
       // تحويل أي أرقام أخرى متبقية
       if (n >= 1 && n <= 4) return n;
@@ -1476,7 +1424,7 @@
       const notesIdx = findColIndex(["order_notes", "notes", "ملاحظات الطلب", "ملاحظات", "الملاحظات"], -1);
       const statusIdx = findColIndex(["status", "الحالة", "الحاله", "حالة الطلب", "حاله الطلب", "حالة", "حاله", "المرحلة", "المرحله", "مرحلة الطلب", "مرحله الطلب", "st_status"], -1);
 
-      const stRecIdx = findColIndex(["تم الاستلام", "حالة الاستلام", "st_received"], -1);
+      const stRecIdx = findColIndex(["الطلبات الجديدة", "طلبات جديدة", "جديد", "تم الاستلام", "حالة الاستلام", "st_received"], -1);
       const stProcIdx = findColIndex(["processing", "قيد التجهيز", "st_processing"], -1);
       const stRdyIdx = findColIndex(["ready", "جاهز", "st_ready"], -1);
       const stDelIdx = findColIndex(["delivered", "تم التسليم", "st_delivered"], -1);
@@ -1687,7 +1635,7 @@
     // الرندرة وحساب الإحصائيات (Render Engine)
     // ==========================================
     const statusMeta = {
-      1: { name: 'تم الاستلام', icon: '📥', class: 'badge-status-1' },
+      1: { name: 'الطلبات الجديدة', icon: '📥', class: 'badge-status-1' },
       2: { name: 'قيد التجهيز', icon: '⏳', class: 'badge-status-2' },
       3: { name: 'جاهز', icon: '✅', class: 'badge-status-3' },
       4: { name: 'تم التسليم', icon: '🚚', class: 'badge-status-4' }
@@ -1850,7 +1798,7 @@
 
         <div class="card-footer">
           <div class="status-buttons-group">
-            <button class="status-btn ${order.Status == 1 ? 'active-1' : ''}" onclick="onStatusButtonClick('${order.OrderID}', 1)">📥 استلام</button>
+            <button class="status-btn ${order.Status == 1 ? 'active-1' : ''}" onclick="onStatusButtonClick('${order.OrderID}', 1)">📥 جديدة</button>
             <button class="status-btn ${order.Status == 2 ? 'active-2' : ''}" onclick="onStatusButtonClick('${order.OrderID}', 2)">⏳ تجهيز</button>
             <button class="status-btn ${order.Status == 3 ? 'active-3' : ''}" onclick="onStatusButtonClick('${order.OrderID}', 3)">✅ جاهز</button>
             <button class="status-btn ${order.Status == 4 ? 'active-4' : ''}" onclick="onStatusButtonClick('${order.OrderID}', 4)">🚚 تسليم</button>
@@ -2345,7 +2293,7 @@
         orders.push(tempOrder);
         syncOrderDOM(tempOrder, true);
         updateStats();
-        showToast("تمت إضافة الطلب في مرحلة (تم الاستلام) ✅", 'success');
+        showToast("تمت إضافة الطلب في مرحلة (الطلبات الجديدة) ✅", 'success');
         showWhatsAppPrompt(tempOrder);
       } else {
         if (targetOrder) {
@@ -2387,7 +2335,7 @@
       if (cleanPhone.startsWith('0')) cleanPhone = cleanPhone.substring(1);
       if (!cleanPhone.startsWith('967')) cleanPhone = '967' + cleanPhone;
 
-      const stName = statusMeta[status]?.name || 'تم الاستلام';
+      const stName = statusMeta[status]?.name || 'الطلبات الجديدة';
       const trackingUrl = getTrackingUrl(orderId);
 
       let descSnippet = desc ? `🎁 *تفاصيل الطلب:* ${desc}\n` : '';
